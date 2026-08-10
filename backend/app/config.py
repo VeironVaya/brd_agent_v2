@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     jwt_expiry_days: int = 7
     cors_origins: str = "http://localhost:5173"
     groq_api_key: str | None = None
+    gemini_api_key: str | None = None
 
     @property
     def cors_origin_list(self) -> list[str]:
