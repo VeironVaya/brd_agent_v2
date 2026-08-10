@@ -11,6 +11,7 @@ export default function SectionTree({
   customSections,
   onRenameCustomNode,
   onRemoveCustomNode,
+  canEdit = true,
 }) {
   return (
     <div className="px-7 pt-2 pb-7 flex flex-col gap-5">
@@ -78,6 +79,7 @@ export default function SectionTree({
                         onFocus={onFocus}
                         onViewAnswer={onViewAnswer}
                         indent
+                        canEdit={canEdit}
                       />
                     ))}
                   </div>
@@ -94,6 +96,7 @@ export default function SectionTree({
                   focusedFieldId={focusedFieldId}
                   onFocus={onFocus}
                   onViewAnswer={onViewAnswer}
+                  canEdit={canEdit}
                 />
               ))}
             </div>

@@ -69,3 +69,62 @@ async def test_post_message_to_nonexistent_room_404s(client):
         headers=session["headers"],
     )
     assert res.status_code == 404
+
+
+async def test_message_in_leaf_room_updates_the_answer(client):
+    """The real pipeline the dummy AI now drives end to end: a message
+    to a leaf room should actually create/update that leaf's Answer —
+    this used to be an explicit no-op (see chat_service.py's history)."""
+    session = await register_and_login(client)
+    conv_id = await create_conversation(client, session["headers"])
+
+    before = (await client.get(f"/api/conversations/{conv_id}", headers=session["headers"])).json()
+    assert "3.2" not in before["answers"]  # nothing recorded yet
+
+    await client.post(
+        f"/api/conversations/{conv_id}/rooms/3.2/messages",
+        json={"text": "Vendor master data lives in SAP Ariba."},
+        headers=session["headers"],
+    )
+
+    after = (await client.get(f"/api/conversations/{conv_id}", headers=session["headers"])).json()
+    answer = after["answers"]["3.2"]
+    assert answer["status"] == "progress"
+    assert answer["completeness"] > 0
+    assert answer["confidence"] is not None
+    assert "Vendor master data lives in SAP Ariba." in answer["answer"]
+    assert answer["missing"]  # not complete yet, should still have a gap listed
+
+
+async def test_leaf_answer_reaches_done_after_enough_turns(client):
+    session = await register_and_login(client)
+    conv_id = await create_conversation(client, session["headers"])
+
+    for i in range(3):
+        res = await client.post(
+            f"/api/conversations/{conv_id}/rooms/3.2/messages",
+            json={"text": f"Turn {i}"},
+            headers=session["headers"],
+        )
+        assert res.status_code == 200
+
+    detail = (await client.get(f"/api/conversations/{conv_id}", headers=session["headers"])).json()
+    answer = detail["answers"]["3.2"]
+    assert answer["completeness"] == 100
+    assert answer["status"] == "done"
+    assert answer["missing"] == []
+    assert detail["answered_count"] == 1
+
+
+async def test_message_in_general_room_never_creates_an_answer(client):
+    session = await register_and_login(client)
+    conv_id = await create_conversation(client, session["headers"])
+
+    await client.post(
+        f"/api/conversations/{conv_id}/rooms/general/messages",
+        json={"text": "unrelated question"},
+        headers=session["headers"],
+    )
+
+    detail = (await client.get(f"/api/conversations/{conv_id}", headers=session["headers"])).json()
+    assert detail["answers"] == {}  # General is never a leaf — no Answer row, ever

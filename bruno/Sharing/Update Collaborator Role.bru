@@ -1,0 +1,30 @@
+meta {
+  name: Update Collaborator Role
+  type: http
+  seq: 10
+}
+
+patch {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/collaborators/{{viewerCollaboratorId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "role": "editor"
+  }
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("role is now editor", function () {
+    expect(res.body.role).to.equal("editor");
+  });
+}

@@ -1,0 +1,40 @@
+meta {
+  name: Register For Logout Test
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  // A separate scratch user/token, never touching the shared {{token}}
+  // — every folder after this one keeps using {{token}} to authenticate,
+  // so actually revoking it here (this collection's Logout request now
+  // does real server-side revocation, not a no-op) would 401 the entire
+  // rest of the collection. This scratch session is disposable.
+  bru.setEnvVar("logoutTestEmail", `bruno-logout-${Date.now()}@example.com`);
+}
+
+body:json {
+  {
+    "email": "{{logoutTestEmail}}",
+    "password": "password123",
+    "name": "Logout Test User"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.token) {
+    bru.setEnvVar("logoutToken", res.body.token);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+}

@@ -1,0 +1,38 @@
+meta {
+  name: Register Editor
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  bru.setEnvVar("editorEmail", `bruno-editor-${Date.now()}@example.com`);
+}
+
+body:json {
+  {
+    "email": "{{editorEmail}}",
+    "password": "password123",
+    "name": "Bruno Editor"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.token) {
+    bru.setEnvVar("editorToken", res.body.token);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("returns a token", function () {
+    expect(res.body).to.have.property("token");
+  });
+}

@@ -17,7 +17,8 @@ export default function MessageInput({ onSend, disabled }) {
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSend()}
         placeholder="Type your answer…"
-        className="flex-1 h-14 bg-white rounded-btn px-4.5 text-base outline-none shadow-[0_1px_2px_rgba(0,0,0,.05),0_1px_1px_rgba(0,0,0,.03)] focus:shadow-[0_0_0_1.5px_#222222]"
+        disabled={disabled}
+        className="flex-1 h-14 bg-white rounded-btn px-4.5 text-base outline-none shadow-[0_1px_2px_rgba(0,0,0,.05),0_1px_1px_rgba(0,0,0,.03)] focus:shadow-[0_0_0_1.5px_#222222] disabled:opacity-60 disabled:cursor-not-allowed"
       />
       <button
         type="button"

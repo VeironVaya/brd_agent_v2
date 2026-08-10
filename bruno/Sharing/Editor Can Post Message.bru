@@ -1,0 +1,27 @@
+meta {
+  name: Editor Can Post Message
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/rooms/general/messages
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{editorToken}}
+}
+
+body:json {
+  {
+    "text": "Posting as an editor collaborator."
+  }
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+}

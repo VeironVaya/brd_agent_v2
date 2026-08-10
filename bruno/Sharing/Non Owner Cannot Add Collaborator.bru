@@ -1,0 +1,28 @@
+meta {
+  name: Non Owner Cannot Add Collaborator
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/collaborators
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{viewerToken}}
+}
+
+body:json {
+  {
+    "email": "bruno-outsider@example.com",
+    "role": "viewer"
+  }
+}
+
+tests {
+  test("status is 404", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+}

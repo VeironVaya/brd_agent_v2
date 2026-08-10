@@ -9,7 +9,16 @@ from alembic import context
 
 from app.config import settings
 from app.db import Base
-from app.models import Answer, Bubble, Conversation, Section, SectionDependency, User  # noqa: F401
+from app.models import (  # noqa: F401
+    Answer,
+    Bubble,
+    Collaborator,
+    Conversation,
+    RevokedToken,
+    Section,
+    SectionDependency,
+    User,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

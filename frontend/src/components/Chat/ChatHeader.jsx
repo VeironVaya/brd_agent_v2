@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import Logo from '../common/Logo.jsx'
 import UserMenu from '../common/UserMenu.jsx'
+import RoleBadge from '../common/RoleBadge.jsx'
 
 export default function ChatHeader({
   conversation,
@@ -8,11 +9,13 @@ export default function ChatHeader({
   onToggleModel,
   flaggedCount,
   onOpenReview,
+  onOpenShare,
   onLogout,
 }) {
   const navigate = useNavigate()
   const isCloud = aiModel === 'Cloud'
   const generateReady = flaggedCount === 0
+  const isOwner = conversation.role === 'owner'
 
   return (
     <div className="flex items-center justify-between gap-4 px-10 py-5 border-b border-divider flex-wrap">
@@ -34,6 +37,7 @@ export default function ChatHeader({
         <div className="text-[21px] font-bold whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
           {conversation.title}
         </div>
+        {!isOwner && <RoleBadge role={conversation.role} className="flex-shrink-0" />}
       </div>
 
       <div className="flex items-center gap-2.5 flex-shrink-0">
@@ -65,6 +69,22 @@ export default function ChatHeader({
           </svg>
           Review flagged ({flaggedCount})
         </button>
+
+        {isOwner && (
+          <button
+            type="button"
+            onClick={onOpenShare}
+            className="flex items-center gap-2 bg-white text-text-primary border border-text-primary rounded-btn h-11 px-4.5 text-sm font-medium cursor-pointer whitespace-nowrap"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9" />
+            </svg>
+            Share
+          </button>
+        )}
 
         {generateReady ? (
           <button

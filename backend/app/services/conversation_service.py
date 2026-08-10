@@ -4,19 +4,25 @@ explicit decision."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.exceptions import NotFoundError, TitleRequiredError
+from app.exceptions import ForbiddenError, NotFoundError, TitleRequiredError
 from app.models.conversation import Conversation
 from app.models.section import Section
 from app.models.section_dependency import SectionDependency
 from app.repositories import (
     answer_repository,
     bubble_repository,
+    collaborator_repository,
     conversation_repository,
     section_dependency_repository,
     section_repository,
+    user_repository,
 )
 from app.services import review_service, section_tree_service, template_service
 from app.utils.ids import new_id
+
+# Effective access levels, ranked low-to-high. "owner" is never a stored
+# Collaborator row — it's implicit from Conversation.user_id, see erd.md.
+ROLE_RANK = {"viewer": 0, "editor": 1, "owner": 2}
 
 
 async def _seed_template_and_general(session: AsyncSession, conversation_id: str) -> None:
@@ -106,9 +112,11 @@ async def create(session: AsyncSession, *, user_id: str, title: str, context: st
 
 
 async def list_for_user(session: AsyncSession, user_id: str) -> list[dict]:
-    conversations = await conversation_repository.list_by_user(session, user_id)
+    owned = await conversation_repository.list_by_user(session, user_id)
+    shared = await collaborator_repository.list_conversations_for_user(session, user_id)
+
     items = []
-    for c in conversations:
+    for c in owned:
         count = await conversation_repository.answered_count(session, c.conversation_id)
         items.append(
             {
@@ -116,16 +124,62 @@ async def list_for_user(session: AsyncSession, user_id: str) -> list[dict]:
                 "title": c.title,
                 "updated_at": c.updated_at,
                 "answered_count": count,
+                "role": "owner",
+                "owner_name": None,
+                "owner_email": None,
             }
         )
+    for c, collab in shared:
+        count = await conversation_repository.answered_count(session, c.conversation_id)
+        owner = await user_repository.find_by_id(session, c.user_id)
+        items.append(
+            {
+                "id": c.conversation_id,
+                "title": c.title,
+                "updated_at": c.updated_at,
+                "answered_count": count,
+                "role": collab.role,
+                "owner_name": owner.name if owner else None,
+                "owner_email": owner.email if owner else None,
+            }
+        )
+    items.sort(key=lambda i: i["updated_at"], reverse=True)
     return items
 
 
 async def get_owned(session: AsyncSession, conversation_id: str, user_id: str) -> Conversation:
+    """Strict owner-only gate — for conversation lifecycle (rename/delete)
+    and collaborator management. Everything a collaborator should also be
+    able to do goes through get_accessible instead."""
     conversation = await conversation_repository.find_by_id_for_user(session, conversation_id, user_id)
     if conversation is None:
         raise NotFoundError("Conversation not found.")
     return conversation
+
+
+async def get_accessible(
+    session: AsyncSession, conversation_id: str, user_id: str, *, min_role: str = "viewer"
+) -> tuple[Conversation, str]:
+    """Owner-or-collaborator gate, with a minimum required role. Returns the
+    conversation plus the caller's effective role so callers (get_detail)
+    can surface it on the wire."""
+    conversation = await conversation_repository.find_by_id(session, conversation_id)
+    if conversation is None:
+        raise NotFoundError("Conversation not found.")
+
+    if conversation.user_id == user_id:
+        role = "owner"
+    else:
+        collaborator = await collaborator_repository.find_by_conversation_and_user(session, conversation_id, user_id)
+        if collaborator is None:
+            # 404, not 403 — a non-collaborator shouldn't learn this conversation exists.
+            raise NotFoundError("Conversation not found.")
+        role = collaborator.role
+
+    if ROLE_RANK[role] < ROLE_RANK[min_role]:
+        raise ForbiddenError("You don't have permission to do that.")
+
+    return conversation, role
 
 
 async def rename(session: AsyncSession, *, conversation_id: str, user_id: str, title: str) -> Conversation:
@@ -146,7 +200,7 @@ def _wire_key(section: Section) -> str:
 
 
 async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: str) -> dict:
-    conversation = await get_owned(session, conversation_id, user_id)
+    conversation, role = await get_accessible(session, conversation_id, user_id, min_role="viewer")
 
     sections = await section_repository.list_by_conversation(session, conversation_id)
     by_id = {s.section_id: s for s in sections}
@@ -194,6 +248,7 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
         "last_generated_version": conversation.last_generated_version,
         "answered_count": answered_count,
         "focused_field_id": focused_field_id,
+        "role": role,
         "answers": answers_dict,
         "custom_sections": custom_sections,
         "flagged_items": flagged_items,

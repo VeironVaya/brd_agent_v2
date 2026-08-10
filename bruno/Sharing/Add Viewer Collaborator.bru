@@ -1,0 +1,37 @@
+meta {
+  name: Add Viewer Collaborator
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/collaborators
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "email": "{{viewerEmail}}",
+    "role": "viewer"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("viewerCollaboratorId", res.body.id);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("role is viewer", function () {
+    expect(res.body.role).to.equal("viewer");
+  });
+}

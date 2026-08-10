@@ -10,6 +10,9 @@ class ConversationListItem(BaseModel):
     title: str
     updated_at: datetime
     answered_count: int
+    role: str
+    owner_name: str | None = None
+    owner_email: str | None = None
 
 
 class ConversationListResponse(BaseModel):
@@ -73,6 +76,7 @@ class ConversationDetailResponse(BaseModel):
     last_generated_version: str | None = None
     answered_count: int
     focused_field_id: str | None = None
+    role: str
     answers: dict[str, AnswerDto]
     custom_sections: list[CustomSectionNodeDto]
     flagged_items: list[FlaggedItemDto]

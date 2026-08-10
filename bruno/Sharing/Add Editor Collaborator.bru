@@ -1,0 +1,37 @@
+meta {
+  name: Add Editor Collaborator
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/collaborators
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "email": "{{editorEmail}}",
+    "role": "editor"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("editorCollaboratorId", res.body.id);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("role is editor", function () {
+    expect(res.body.role).to.equal("editor");
+  });
+}

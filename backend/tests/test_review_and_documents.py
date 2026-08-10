@@ -17,9 +17,14 @@ async def test_recompute_review_empty_for_fresh_conversation(client):
 
 async def test_flagged_detection_when_prerequisite_answered_more_recently(client):
     """Exercises erd.md's actual worked query — 4.1 depends on 3.3.5 and 3.8.
-    No HTTP endpoint lets the test fabricate a completed answer (the AI is
-    a dummy stub, see ai_integration.py), so this goes straight at the
-    service/repository layer, same as any other service-level test would."""
+    Posting real chat messages *can* now drive a leaf to 'done' through the
+    API (see test_chat.py's test_leaf_answer_reaches_done_after_enough_turns)
+    — but this test needs two answers hours apart with exact, controlled
+    `answered_at` values to deterministically prove the ordering comparison,
+    and every message-driven update stamps 'now()' at request time. No
+    amount of API calls gets you that precision, so this goes straight at
+    the service/repository layer instead, same as any other test that needs
+    to control time precisely would."""
     session = await register_and_login(client)
     conv_id = await create_conversation(client, session["headers"])
 

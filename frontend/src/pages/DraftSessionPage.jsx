@@ -25,6 +25,7 @@ import AddCustomSectionModal from '../components/DraftPanel/AddCustomSectionModa
 import ReviewFlaggedModal from '../components/DraftPanel/ReviewFlaggedModal.jsx'
 import AnswerDetailModal from '../components/DraftPanel/AnswerDetailModal.jsx'
 import ConfirmModal from '../components/common/ConfirmModal.jsx'
+import ShareModal from '../components/common/ShareModal.jsx'
 
 export default function DraftSessionPage() {
   const { id } = useParams()
@@ -40,6 +41,7 @@ export default function DraftSessionPage() {
   const [addSectionOpen, setAddSectionOpen] = useState(false)
   const [viewAnswerFieldId, setViewAnswerFieldId] = useState(null)
   const [logoutOpen, setLogoutOpen] = useState(false)
+  const [shareOpen, setShareOpen] = useState(false)
   // Optimistic send: the user's own message renders immediately, with a
   // "thinking" indicator in place of the agent's reply, rather than
   // blocking on the full round trip — matters once the AI stub is a real,
@@ -53,7 +55,13 @@ export default function DraftSessionPage() {
     api.getConversation(id).then((detail) => {
       if (!active) return
       setConversation(detail)
-      setFocusedFieldId(detail.focusedFieldId || null)
+      const focusedId = detail.focusedFieldId || null
+      setFocusedFieldId(focusedId)
+      // A brand-new conversation has nothing focused yet — land on General
+      // chat, which is always usable, instead of defaulting to "This
+      // question" with a disabled input and nothing to discuss. Once
+      // something's been discussed before, keep returning to that focus.
+      setRoomTab(focusedId ? 'question' : 'general')
       setLoading(false)
     })
     return () => {
@@ -68,6 +76,8 @@ export default function DraftSessionPage() {
   const answers = conversation.answers
   const percent = Math.round((overallProgress(answers).done / 26) * 100)
   const buckets = statusBuckets(answers)
+  // "owner"/"editor" can chat and edit sections; "viewer" is read + export only.
+  const canEdit = conversation.role === 'owner' || conversation.role === 'editor'
 
   const roomId = roomTab === 'question' ? focusedFieldId : GENERAL_ROOM_ID
   const isSending = pending?.roomId === roomId
@@ -89,9 +99,11 @@ export default function DraftSessionPage() {
   const focusedCode = focusedLeaf ? (focusedLeaf.code ?? focusedLeaf.id) : null
   const focusedStatus = focusedFieldId ? fieldState(focusedFieldId, answers) : null
   const placeholderText =
-    focusedLeaf && messages.length === 0 && roomTab === 'question'
-      ? missingByStatus(focusedStatus, buildNote(focusedLeaf, answers))
-      : "Ask me anything about this BRD, or pick a question from the panel on the right."
+    roomTab === 'question' && !focusedLeaf
+      ? 'Pick a question from the panel on the right to start discussing it here — or switch to General chat to talk freely in the meantime.'
+      : focusedLeaf && messages.length === 0 && roomTab === 'question'
+        ? missingByStatus(focusedStatus, buildNote(focusedLeaf, answers))
+        : "Ask me anything about this BRD, or pick a question from the panel on the right."
 
   async function refreshDetail() {
     const detail = await api.getConversation(id)
@@ -103,7 +115,7 @@ export default function DraftSessionPage() {
     // click/double-Enter can otherwise fire two real POSTs before React
     // re-renders the disabled state, producing two user+agent pairs for
     // one send.
-    if (isSending) return
+    if (isSending || !canEdit) return
     setPending({ roomId, text })
     try {
       await api.postMessage(id, roomId, text)
@@ -144,6 +156,7 @@ export default function DraftSessionPage() {
           onToggleModel={() => setAiModel((m) => (m === 'Local' ? 'Cloud' : 'Local'))}
           flaggedCount={conversation.flaggedItems.length}
           onOpenReview={() => setReviewOpen(true)}
+          onOpenShare={() => setShareOpen(true)}
           onLogout={() => setLogoutOpen(true)}
         />
       </div>
@@ -161,7 +174,7 @@ export default function DraftSessionPage() {
           <div className="flex-shrink-0">
             <MessageInput
               onSend={handleSend}
-              disabled={(!focusedFieldId && roomTab === 'question') || isSending}
+              disabled={(!focusedFieldId && roomTab === 'question') || isSending || !canEdit}
             />
           </div>
         </div>
@@ -182,6 +195,7 @@ export default function DraftSessionPage() {
               customSections={conversation.customSections}
               onRenameCustomNode={handleRenameCustomNode}
               onRemoveCustomNode={handleRemoveCustomNode}
+              canEdit={canEdit}
             />
             <div className="px-7 pb-7 flex flex-col gap-5">
               <BoilerplateSection />
@@ -197,6 +211,7 @@ export default function DraftSessionPage() {
                   setRoomTab('question')
                 }}
                 onViewAnswer={setViewAnswerFieldId}
+                canEdit={canEdit}
               />
             </div>
           </div>
@@ -235,6 +250,7 @@ export default function DraftSessionPage() {
         description="You'll be signed out of BRD-Agent and returned to the sign-in screen."
         confirmLabel="Log out"
       />
+      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} conversationId={id} />
     </div>
   )
 }
