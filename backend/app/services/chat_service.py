@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.exceptions import NotFoundError
 from app.models.bubble import Bubble
 from app.models.section import Section
-from app.repositories import bubble_repository, conversation_repository, section_repository
+from app.repositories import answer_repository, bubble_repository, conversation_repository, section_repository
 from app.services import ai_integration, conversation_service, template_service
 
 
@@ -48,11 +48,27 @@ async def post_message(
     user_bubble = Bubble(section_id=section.section_id, role="user", text=text, created_at=datetime.now(timezone.utc))
     await bubble_repository.insert(session, user_bubble)
 
-    reply_text = await ai_integration.get_reply(room_title=section.title, message_text=text)
+    ai_response = await ai_integration.get_reply(
+        session=session,
+        conversation_id=conversation_id,
+        room_title=section.title,
+        message_text=text
+    )
     agent_bubble = Bubble(
-        section_id=section.section_id, role="agent", text=reply_text, created_at=datetime.now(timezone.utc)
+        section_id=section.section_id, role="agent", text=ai_response.agent_message, created_at=datetime.now(timezone.utc)
     )
     await bubble_repository.insert(session, agent_bubble)
+
+    for update in ai_response.draft_updates:
+        status = "completed" if update.confidence_score >= 80 else "draft"
+        await answer_repository.upsert(
+            session=session,
+            section_id=update.section_id,
+            status=status,
+            confidence=update.confidence_score,
+            answer_text=update.draft_content,
+            touch_answered_at=True
+        )
 
     if not section.is_general:
         conversation.focused_section_id = section.section_id
