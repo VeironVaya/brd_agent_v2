@@ -6,7 +6,7 @@ class Settings(BaseSettings):
 
     database_url: str
     jwt_secret: str
-    jwt_expiry_days: int = 7
+    jwt_expiry_hours: int = 168  # 7 days
     cors_origins: str = "http://localhost:5173"
 
     @property

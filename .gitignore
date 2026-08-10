@@ -5,6 +5,7 @@ node_modules/
 dist/
 dist-ssr/
 build/
+out/
 
 # Env files (frontend-safe values only ever go in .env.example — see CLAUDE.md)
 .env
@@ -36,3 +37,4 @@ desktop.ini
 
 CLAUDE.md
 /brainstorming
+/out
