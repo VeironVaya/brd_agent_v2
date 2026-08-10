@@ -99,6 +99,12 @@ function mapConversationListItem(item) {
     title: item.title,
     timeLabel: formatRelativeTime(item.updated_at),
     answeredCount: item.answered_count,
+    // "owner" | "editor" | "viewer" — the caller's own access to this BRD.
+    // ownerName/ownerEmail are null for the caller's own conversations
+    // (role === 'owner'); populated for shared ones ("Shared by Priya Shah").
+    role: item.role,
+    ownerName: item.owner_name ?? null,
+    ownerEmail: item.owner_email ?? null,
   }
 }
 
@@ -111,6 +117,7 @@ function mapConversationDetail(detail) {
     docGeneratedLabel: detail.last_generated_at ? `Generated ${formatGeneratedDate(detail.last_generated_at)}` : null,
     answeredCount: detail.answered_count,
     focusedFieldId: detail.focused_field_id,
+    role: detail.role,
     // answers/messages values already use single-word keys matching the
     // frontend's expectations 1:1 (status, completeness, confidence,
     // answer, missing / id, role, text) — no key translation needed.
@@ -118,6 +125,16 @@ function mapConversationDetail(detail) {
     customSections: (detail.custom_sections || []).map(mapCustomSectionNode),
     flaggedItems: (detail.flagged_items || []).map(mapFlaggedItem),
     messages: detail.messages,
+  }
+}
+
+function mapCollaborator(item) {
+  return {
+    id: item.id,
+    userId: item.user_id,
+    email: item.email,
+    name: item.name,
+    role: item.role,
   }
 }
 
@@ -138,14 +155,19 @@ export async function login({ email, password }) {
 }
 
 export async function logout() {
-  clearToken()
-  // Stateless JWT — nothing to invalidate server-side (see api_contract.md
-  // §1). Still call it for a consistent flow; ignore failures, we're
-  // logging out either way.
+  // The API call must happen BEFORE clearToken() — the backend now
+  // actually revokes this specific token server-side (see
+  // api_contract.md §1), so it needs the token still attached to know
+  // which one to invalidate. Clearing local storage first would send an
+  // unauthenticated request and silently skip revocation entirely.
   try {
     await request('/auth/logout', { method: 'POST' })
   } catch {
-    // no-op
+    // Revocation is best-effort from the client's perspective — even if
+    // this fails (offline, expired token, etc.), we still want the user
+    // logged out of *this* browser, which clearToken() below guarantees.
+  } finally {
+    clearToken()
   }
 }
 
@@ -186,6 +208,36 @@ export async function updateConversationTitle(conversationId, title) {
 
 export async function deleteConversation(conversationId) {
   await request(`/api/conversations/${conversationId}`, { method: 'DELETE' })
+}
+
+// ---------------------------------------------------------------------------
+// Sharing — owner-only management of who else can access a conversation.
+// `role` is "editor" | "viewer" (owner is implicit, never a collaborator row).
+// ---------------------------------------------------------------------------
+
+export async function shareConversation(conversationId, { email, role }) {
+  const data = await request(`/api/conversations/${conversationId}/collaborators`, {
+    method: 'POST',
+    body: { email, role },
+  })
+  return mapCollaborator(data)
+}
+
+export async function listCollaborators(conversationId) {
+  const data = await request(`/api/conversations/${conversationId}/collaborators`)
+  return (data.collaborators || []).map(mapCollaborator)
+}
+
+export async function updateCollaboratorRole(conversationId, collaboratorId, role) {
+  const data = await request(`/api/conversations/${conversationId}/collaborators/${collaboratorId}`, {
+    method: 'PATCH',
+    body: { role },
+  })
+  return mapCollaborator(data)
+}
+
+export async function removeCollaborator(conversationId, collaboratorId) {
+  await request(`/api/conversations/${conversationId}/collaborators/${collaboratorId}`, { method: 'DELETE' })
 }
 
 // ---------------------------------------------------------------------------

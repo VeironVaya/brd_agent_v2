@@ -1,0 +1,29 @@
+meta {
+  name: Editor Can Add Custom Section
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/custom-sections
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{editorToken}}
+}
+
+body:json {
+  {
+    "target": null,
+    "title": "Editor's Section",
+    "has_children": false
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+}

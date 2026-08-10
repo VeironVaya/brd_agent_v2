@@ -1,9 +1,10 @@
-from fastapi import Depends
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
 from app.dtos.auth_dtos import AuthResponse, LoginRequest, RegisterRequest, SessionResponse, UserDto
-from app.middleware.auth import get_current_user
+from app.middleware.auth import bearer_scheme, get_current_user
 from app.models.user import User
 from app.services import auth_service
 
@@ -24,7 +25,14 @@ async def get_session(current_user: User = Depends(get_current_user)) -> Session
     return SessionResponse(user=UserDto(id=current_user.user_id, email=current_user.email, name=current_user.name))
 
 
-async def logout() -> None:
-    # Stateless JWT — nothing to invalidate server-side yet. Real endpoint
-    # kept for a consistent client-side flow (see api_contract.md §1).
-    return None
+async def logout(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    session: AsyncSession = Depends(get_db),
+) -> None:
+    # Requires a bearer token (unlike before) — logout now records that
+    # specific token's jti as revoked (auth_service.logout), so it needs
+    # to know which token it's invalidating. See api_contract.md §1.
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Missing or invalid authorization token.")
+    await auth_service.logout(session, credentials.credentials)
+    await session.commit()

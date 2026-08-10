@@ -5,19 +5,20 @@ Business Requirement Document template via chat. A structured draft
 builds up live next to the conversation as the user answers — tracking
 completion and confidence per question, supporting user-added custom
 sections (nested to any depth), flagging answers for re-review when a
-question they depended on changes, and generating a final PDF/Markdown
+question they depended on changes, letting the owner share a BRD with
+other users as an editor or viewer, and generating a final PDF/Markdown
 document at the end.
 
 AI responses are currently a fixed placeholder (see [AI integration](#ai-integration)
-below) — everything else (auth, the 26-question tree, custom sections,
-review/flagging, document export) is real, running against a real
-PostgreSQL database.
+below) — everything else (auth with real server-side logout revocation,
+the 26-question tree, custom sections, review/flagging, sharing,
+document export) is real, running against a real PostgreSQL database.
 
 ## Project structure
 
 ```
 brd_agent_v2/
-├── docker-compose.yml       # postgres + app services for local dev
+├── docker-compose.yml       # postgres + app + frontend services for local dev
 │
 ├── backend/                 # FastAPI — controllers → services → repositories
 │   ├── app/
@@ -38,6 +39,7 @@ brd_agent_v2/
 │   │   │   ├── custom_section_service.py  # add/rename/remove, arbitrary nesting
 │   │   │   ├── review_service.py          # flagged-item detection
 │   │   │   ├── document_service.py        # Markdown/PDF export
+│   │   │   ├── share_service.py           # owner-only collaborator management
 │   │   │   └── ai_integration.py          # <- DUMMY AI, see below
 │   │   ├── middleware/       # auth (JWT), CORS, logging, error handling
 │   │   └── utils/            # id generation, etc.
@@ -69,11 +71,15 @@ brd_agent_v2/
 
 ## AI integration
 
-Every chat reply right now is a fixed placeholder string, deliberately
-centralized in `backend/app/services/ai_integration.py` (search the
-codebase for `DUMMY_AI`). Nothing else in the backend contains
-model/prompt logic — that file is the one seam a real AI integration
-plugs into later without anything else needing to change.
+Every chat reply right now comes from a deterministic placeholder,
+deliberately centralized in `backend/app/services/ai_integration.py`
+(search the codebase for `DUMMY_AI`) — zero real intelligence, but
+structured enough to genuinely drive completeness/confidence/`Answer`
+updates end to end, so the rest of the app can be built and verified
+against real behavior before a real model is wired in. Nothing else in
+the backend contains model/prompt logic — that file is the one seam a
+real AI integration plugs into later without anything else needing to
+change.
 
 ## Running it locally
 
@@ -112,8 +118,8 @@ First-time backend setup: `python -m venv .venv` then
 ## Testing
 
 ```
-cd backend && pytest                                    # 33 tests, real DB
-cd bruno && npx @usebruno/cli run --env Local -r         # 24 requests, 39 assertions
+cd backend && pytest                                    # 45 tests, real DB
+cd bruno && npx @usebruno/cli run --env Local -r         # 45 requests, 72 assertions
 ```
 
 Both are black-box — real HTTP requests against the real API, not

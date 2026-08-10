@@ -1,0 +1,21 @@
+meta {
+  name: Logout My Current Token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

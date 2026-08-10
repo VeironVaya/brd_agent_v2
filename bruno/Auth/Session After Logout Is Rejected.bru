@@ -1,0 +1,21 @@
+meta {
+  name: Session After Logout Is Rejected
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/auth/session
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{logoutToken}}
+}
+
+tests {
+  test("status is 401 — token was actually revoked, not just discarded client-side", function () {
+    expect(res.getStatus()).to.equal(401);
+  });
+}

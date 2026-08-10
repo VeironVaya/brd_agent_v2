@@ -11,6 +11,10 @@ build/
 .env.local
 .env.*.local
 
+# Bruno's Local environment holds real (if throwaway/dev-only) JWTs written
+# by test runs — same reasoning as .env above. See bruno/environments/Local.example.bru.
+bruno/environments/Local.bru
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

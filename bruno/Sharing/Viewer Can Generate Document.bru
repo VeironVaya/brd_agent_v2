@@ -1,0 +1,31 @@
+meta {
+  name: Viewer Can Generate Document
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{viewerToken}}
+}
+
+body:json {
+  {
+    "format": "markdown"
+  }
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("returns filename and markdown", function () {
+    expect(res.body).to.have.property("filename");
+    expect(res.body).to.have.property("markdown");
+  });
+}

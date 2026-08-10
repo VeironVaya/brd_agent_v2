@@ -13,6 +13,6 @@ async def recompute_review(
     current_user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_db),
 ) -> RecomputeReviewResponse:
-    await conversation_service.get_owned(session, conversation_id, current_user.user_id)
+    await conversation_service.get_accessible(session, conversation_id, current_user.user_id, min_role="viewer")
     items = await review_service.recompute(session, conversation_id)
     return RecomputeReviewResponse(flagged_items=[FlaggedItemDto(**item) for item in items])

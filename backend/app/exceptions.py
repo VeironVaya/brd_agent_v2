@@ -40,3 +40,23 @@ class InvalidCredentialsError(DomainError):
 class GenerationFailedError(DomainError):
     status_code = 500
     error = "generation_failed"
+
+
+class ForbiddenError(DomainError):
+    status_code = 403
+    error = "forbidden"
+
+
+class CannotShareWithSelfError(DomainError):
+    status_code = 400
+    error = "cannot_share_with_self"
+
+
+class AlreadySharedError(DomainError):
+    status_code = 400
+    error = "already_shared"
+
+
+class InvalidRoleError(DomainError):
+    status_code = 400
+    error = "invalid_role"

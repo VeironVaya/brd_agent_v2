@@ -1,0 +1,24 @@
+meta {
+  name: Removed Collaborator Gets 404
+  type: http
+  seq: 12
+}
+
+get {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{editorToken}}
+}
+
+tests {
+  test("status is 404", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+  test("error code is not_found", function () {
+    expect(res.body.error).to.equal("not_found");
+  });
+}

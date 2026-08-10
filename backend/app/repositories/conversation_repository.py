@@ -24,6 +24,14 @@ async def find_by_id_for_user(session: AsyncSession, conversation_id: str, user_
     return result.scalar_one_or_none()
 
 
+async def find_by_id(session: AsyncSession, conversation_id: str) -> Conversation | None:
+    """Unscoped lookup by PK — used by permission checks that still need to
+    distinguish owner vs. collaborator vs. no-access themselves, unlike
+    find_by_id_for_user's hard owner-only filter."""
+    result = await session.execute(select(Conversation).where(Conversation.conversation_id == conversation_id))
+    return result.scalar_one_or_none()
+
+
 async def insert(session: AsyncSession, conversation: Conversation) -> Conversation:
     session.add(conversation)
     await session.flush()

@@ -1,0 +1,36 @@
+meta {
+  name: Create Sharing Conversation
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/conversations
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "Sharing Test BRD"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("sharingConversationId", res.body.id);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("returns an id", function () {
+    expect(res.body).to.have.property("id");
+  });
+}

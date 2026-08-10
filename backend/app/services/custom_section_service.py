@@ -44,7 +44,7 @@ async def add_node(
     has_children: bool,
     purpose: str | None,
 ) -> Section:
-    await conversation_service.get_owned(session, conversation_id, user_id)
+    await conversation_service.get_accessible(session, conversation_id, user_id, min_role="editor")
 
     trimmed = title.strip()
     if not trimmed:
@@ -67,10 +67,10 @@ async def add_node(
     return await section_repository.insert(session, section)
 
 
-async def _find_owned_custom_section(
+async def _find_editable_custom_section(
     session: AsyncSession, conversation_id: str, user_id: str, section_id: str
 ) -> Section:
-    await conversation_service.get_owned(session, conversation_id, user_id)
+    await conversation_service.get_accessible(session, conversation_id, user_id, min_role="editor")
     section = await section_repository.find_by_id(session, section_id)
     if section is None or section.conversation_id != conversation_id or not section.is_custom:
         raise NotFoundError("Custom section not found.")
@@ -83,11 +83,11 @@ async def rename_node(
     trimmed = title.strip()
     if not trimmed:
         raise TitleRequiredError("Section title is required.")
-    section = await _find_owned_custom_section(session, conversation_id, user_id, section_id)
+    section = await _find_editable_custom_section(session, conversation_id, user_id, section_id)
     return await section_repository.update_title(session, section, trimmed)
 
 
 async def remove_node(session: AsyncSession, *, conversation_id: str, user_id: str, section_id: str) -> None:
-    section = await _find_owned_custom_section(session, conversation_id, user_id, section_id)
+    section = await _find_editable_custom_section(session, conversation_id, user_id, section_id)
     # ON DELETE CASCADE on sections.parent_id handles descendants at the DB level.
     await section_repository.delete(session, section)
