@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;-webkit-font-smoothing:antialiased;}
+a{color:#222222;text-decoration:none;}
+a:hover{color:#e00b41;}
+::selection{background:rgba(255,56,92,.18);}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ff385c"/><rect x="60" y="60" width="80" height="80" rx="16" fill="#222"/><path d="M75 90a12 12 0 0 1 12-12h26a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12H91l-8 8v-8a12 12 0 0 1-8-12z" fill="none" stroke="#fff" stroke-width="5"/></svg></template>
+
+<div id="screen-login" style="width:100%;min-height:100vh;background:#ffffff;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;color:#222222;display:flex;align-items:center;justify-content:center;padding:24px;">
+
+<div style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;">
+
+<svg width="44" height="44" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;margin-bottom:24px;"><rect width="32" height="32" rx="10" fill="#222222"></rect><path d="M9 12.5a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-5.5L11 23v-3.2A3 3 0 0 1 9 17V12.5Z" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="20" cy="14.5" r="1.6" fill="#ff385c"></circle></svg>
+
+<div style="font-size:26px;font-weight:700;color:#222222;text-align:center;">Sign in to BRD-Agent</div>
+<div style="font-size:15px;color:#6a6a6a;margin-top:8px;text-align:center;line-height:1.5;">Use your company account to continue tracking Business Requirement Documents.</div>
+
+<div style="width:100%;display:flex;flex-direction:column;gap:14px;margin-top:32px;">
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:13px;font-weight:600;color:#222222;">Work email</label>
+<input type="email" placeholder="you@company.com" value="{{ email }}" onChange="{{ onEmailChange }}" style="{{ emailInputStyle }}">
+<sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12.5px;color:#c13515;line-height:1.4;">{{ errorText }}</div>
+</sc-if>
+</div>
+
+<button type="button" onClick="{{ onContinue }}" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#ff385c;color:#ffffff;border:none;border-radius:8px;height:52px;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px;">
+Continue with SSO</button>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0;">
+<span style="flex:1;height:1px;background:#ebebeb;"></span>
+<span style="font-size:12px;color:#929292;">or</span>
+<span style="flex:1;height:1px;background:#ebebeb;"></span>
+</div>
+
+<button type="button" style="display:flex;align-items:center;justify-content:center;gap:10px;background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:8px;height:52px;font-size:15px;font-weight:600;cursor:pointer;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#222222" stroke-width="1.8"><rect x="3.5" y="3.5" width="17" height="17" rx="2"></rect><path d="M3.5 9h17M9 3.5v17"></path></svg>
+Continue with Okta</button>
+</div>
+
+<div style="font-size:13px;color:#929292;margin-top:28px;text-align:center;">Don't have access? <a href="#" style="color:#222222;font-weight:600;text-decoration:underline;">Contact your workspace admin</a>.</div>
+
+</div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;initialError&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;State&quot;}}">
+class Component extends DCLogic {
+  state = { email: '', error: '' };
+
+  onEmailChange(e) {
+    this.setState({ email: e.target.value, error: '' });
+  }
+
+  onContinue() {
+    const email = this.state.email.trim();
+    if (!email) { this.setState({ error: 'Enter your work email to continue.' }); return; }
+    if (!email.includes('@') || !email.includes('.')) { this.setState({ error: 'Enter a valid email address.' }); return; }
+    const freeProviders = ['gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com'];
+    const domain = email.split('@')[1] || '';
+    if (freeProviders.includes(domain.toLowerCase())) {
+      this.setState({ error: "We couldn't find an SSO configuration for this domain. Use your company email or contact your admin." });
+      return;
+    }
+    this.setState({ error: '' });
+  }
+
+  renderVals() {
+    const error = this.props.initialError ?? this.state.error;
+    const hasError = !!error;
+    return {
+      email: this.state.email,
+      onEmailChange: (e) => this.onEmailChange(e),
+      onContinue: () => this.onContinue(),
+      hasError,
+      errorText: error,
+      emailInputStyle: {
+        height: '52px', background: '#ffffff', fontFamily: 'inherit',
+        border: hasError ? '1.5px solid #c13515' : '1px solid #dddddd',
+        borderRadius: '8px', padding: '0 16px', fontSize: '16px', color: '#222222'
+      }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

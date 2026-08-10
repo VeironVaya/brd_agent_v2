@@ -1,0 +1,29 @@
+meta {
+  name: Add Nested Child
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/custom-sections
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "target": { "kind": "custom", "id": "{{customGroupId}}" },
+    "title": "EMEA",
+    "has_children": false
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+}

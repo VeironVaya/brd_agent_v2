@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, system-ui, Roboto,
+    "Helvetica Neue", sans-serif;
+
+  /* Accent (primary) */
+  --color-accent: #ff385c;
+  --color-accent-hover: #e00b41;
+  --color-accent-tint: #ffd1da;
+
+  /* Confidence tiers */
+  --color-confidence-high: #1a7f37;
+  --color-confidence-medium: #b45309;
+  --color-confidence-low: #c13515;
+  --color-confidence-none: #c1c1c1;
+
+  /* Neutrals / text */
+  --color-text-primary: #222222;
+  --color-text-secondary: #6a6a6a;
+  --color-text-tertiary: #929292;
+
+  /* Borders */
+  --color-border-DEFAULT: #dddddd;
+  --color-border-light: #ebebeb;
+  /* Structural container separators (top bars, panel splits) — a near-
+     invisible hairline, distinct from --color-border which is used for
+     interactive-affordance borders (inputs, buttons, cards). */
+  --color-divider: rgba(0, 0, 0, 0.08);
+
+  /* Backgrounds */
+  --color-bg-subtle: #f7f7f7;
+  --color-bg-subtler: #f5f5f5;
+  --color-bg-subtlest: #f2f2f2;
+
+  /* Radius */
+  --radius-btn: 8px;
+  --radius-pill: 9999px;
+  --radius-card: 12px;
+  --radius-modal: 16px;
+
+  /* Shadows */
+  --shadow-modal: 0 12px 40px rgba(0, 0, 0, 0.15);
+  --shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+}

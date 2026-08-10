@@ -1,0 +1,30 @@
+meta {
+  name: Rename Conversation
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "title": "Vendor Onboarding Platform — Phase 2"
+  }
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("title updated", function () {
+    expect(res.body.title).to.equal("Vendor Onboarding Platform — Phase 2");
+  });
+}

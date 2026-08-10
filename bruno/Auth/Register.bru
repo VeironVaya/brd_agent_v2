@@ -1,0 +1,42 @@
+meta {
+  name: Register
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+script:pre-request {
+  // Unique email per run so this collection stays repeatable against a
+  // real, persistent database — a hardcoded address would 400 on every
+  // run after the first (see Error Cases/Register - Duplicate Email,
+  // which deliberately re-registers this same address afterward).
+  bru.setEnvVar("registerEmail", `bruno-${Date.now()}@example.com`);
+}
+
+body:json {
+  {
+    "email": "{{registerEmail}}",
+    "password": "password123",
+    "name": "Your Name"
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.token) {
+    bru.setEnvVar("token", res.body.token);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("returns a token", function () {
+    expect(res.body).to.have.property("token");
+  });
+}

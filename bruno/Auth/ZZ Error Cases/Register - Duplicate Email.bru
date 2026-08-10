@@ -1,0 +1,28 @@
+meta {
+  name: Register - Duplicate Email
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{registerEmail}}",
+    "password": "password123",
+    "name": "Duplicate"
+  }
+}
+
+tests {
+  test("status is 400", function () {
+    expect(res.getStatus()).to.equal(400);
+  });
+  test("error code is email_taken", function () {
+    expect(res.body.error).to.equal("email_taken");
+  });
+}

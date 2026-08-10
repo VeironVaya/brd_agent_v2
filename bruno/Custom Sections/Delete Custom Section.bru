@@ -1,0 +1,21 @@
+meta {
+  name: Delete Custom Section
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/custom-sections/{{customSectionId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

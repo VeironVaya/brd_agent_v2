@@ -1,0 +1,32 @@
+meta {
+  name: Generate Document - Markdown
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "format": "markdown"
+  }
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("returns filename and markdown", function () {
+    expect(res.body).to.have.property("filename");
+    expect(res.body).to.have.property("markdown");
+    expect(res.body.filename).to.match(/\.md$/);
+  });
+}

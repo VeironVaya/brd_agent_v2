@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;-webkit-font-smoothing:antialiased;}
+a{color:#222222;text-decoration:none;}
+a:hover{color:#e00b41;}
+::selection{background:rgba(255,56,92,.18);}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ff385c"/><rect x="60" y="60" width="80" height="80" rx="16" fill="#222"/><path d="M75 90a12 12 0 0 1 12-12h26a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12H91l-8 8v-8a12 12 0 0 1-8-12z" fill="none" stroke="#fff" stroke-width="5"/></svg></template>
+<div style="background:#f7f7f7;min-height:100vh;padding:clamp(20px,3vw,56px) clamp(16px,4vw,64px) 96px;display:flex;flex-direction:column;align-items:center;gap:56px;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;color:#222222;overflow-x:hidden;">
+
+<div style="width:100%;max-width:1680px;display:flex;flex-direction:column;gap:14px;">
+<span style="font-size:11px;font-weight:700;letter-spacing:.32px;text-transform:uppercase;color:#6a6a6a;">Screen 1 — Conversations</span>
+<div id="screen-conversations" style="width:100%;background:#ffffff;border-radius:20px;box-shadow:rgba(0,0,0,.02) 0 0 0 1px,rgba(0,0,0,.04) 0 2px 6px,rgba(0,0,0,.1) 0 4px 8px;overflow:hidden;">
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:nowrap;padding:32px 32px 24px;">
+<div id="component-logo-mark" style="display:flex;align-items:center;gap:14px;min-width:0;flex-shrink:1;">
+<svg width="34" height="34" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;"><rect width="32" height="32" rx="10" fill="#222222"></rect><path d="M9 12.5a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-5.5L11 23v-3.2A3 3 0 0 1 9 17V12.5Z" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="20" cy="14.5" r="1.6" fill="#ff385c"></circle></svg>
+<div style="min-width:0;">
+<div style="font-size:21px;font-weight:700;color:#222222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Your Conversations</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">5 conversations · most recent first</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:nowrap;flex-shrink:0;">
+<div style="display:flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:12px 22px;width:min(280px,32vw);box-shadow:rgba(0,0,0,.02) 0 0 0 1px,rgba(0,0,0,.04) 0 2px 6px,rgba(0,0,0,.1) 0 4px 8px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4.5-4.5"></path></svg>
+<span style="font-size:14px;color:#929292;white-space:nowrap;overflow:hidden;">Search conversations…</span>
+</div>
+<button type="button" id="component-button-primary" style="display:flex;align-items:center;gap:8px;background:#ff385c;color:#ffffff;border:none;border-radius:8px;height:48px;padding:0 24px;font-size:16px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>New Conversation</button>
+</div>
+</div>
+
+<div style="padding:8px 32px 32px;display:flex;flex-direction:column;gap:16px;">
+
+<div id="component-conversation-card" style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:#ffffff;border:1px solid #ebebeb;border-radius:14px;padding:20px 24px;">
+<div style="flex:1;min-width:220px;">
+<div style="font-size:16px;font-weight:600;color:#222222;">Untitled BRD</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:4px;">Created 12 minutes ago · 0 of 26 answered</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;width:190px;flex-shrink:0;">
+<div style="width:100%;height:6px;border-radius:9999px;background:#f2f2f2;overflow:hidden;"><div style="width:0%;height:100%;background:#222222;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#222222;">0% complete</span>
+</div>
+<div style="width:150px;flex-shrink:0;font-size:14px;color:#6a6a6a;">Not started</div>
+<button type="button" style="flex-shrink:0;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">Open</button>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:#ffffff;border:1px solid #ebebeb;border-radius:14px;padding:20px 24px;">
+<div style="flex:1;min-width:220px;">
+<div style="font-size:16px;font-weight:600;color:#222222;">Q3 Vendor Onboarding Platform</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:4px;">Updated 2 hours ago · 14 of 26 answered</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;width:190px;flex-shrink:0;">
+<div style="width:100%;height:6px;border-radius:9999px;background:#f2f2f2;overflow:hidden;"><div style="width:54%;height:100%;background:#222222;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#222222;">54% complete</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;width:150px;flex-shrink:0;color:#c13515;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>
+<span style="font-size:14px;">2 need review</span>
+</div>
+<button type="button" style="flex-shrink:0;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">Open</button>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:#ffffff;border:1px solid #ebebeb;border-radius:14px;padding:20px 24px;">
+<div style="flex:1;min-width:220px;">
+<div style="font-size:16px;font-weight:600;color:#222222;">Warehouse Automation BRD</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:4px;">Updated yesterday · 26 of 26 answered</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;width:190px;flex-shrink:0;">
+<div style="width:100%;height:6px;border-radius:9999px;background:#f2f2f2;overflow:hidden;"><div style="width:100%;height:100%;background:#222222;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#222222;">100% complete</span>
+</div>
+<div style="width:150px;flex-shrink:0;"><span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;color:#222222;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:5px 12px;box-shadow:rgba(0,0,0,.02) 0 0 0 1px,rgba(0,0,0,.04) 0 2px 6px,rgba(0,0,0,.1) 0 4px 8px;">Ready to generate</span></div>
+<button type="button" style="flex-shrink:0;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">Open</button>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:#ffffff;border:1px solid #ebebeb;border-radius:14px;padding:20px 24px;">
+<div style="flex:1;min-width:220px;">
+<div style="font-size:16px;font-weight:600;color:#222222;">Data Retention Policy Update</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:4px;">Updated 4 days ago · 23 of 26 answered</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;width:190px;flex-shrink:0;">
+<div style="width:100%;height:6px;border-radius:9999px;background:#f2f2f2;overflow:hidden;"><div style="width:88%;height:100%;background:#222222;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#222222;">88% complete</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;width:150px;flex-shrink:0;color:#c13515;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>
+<span style="font-size:14px;">1 needs review</span>
+</div>
+<button type="button" style="flex-shrink:0;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">Open</button>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:#ffffff;border:1px solid #ebebeb;border-radius:14px;padding:20px 24px;">
+<div style="flex:1;min-width:220px;">
+<div style="font-size:16px;font-weight:600;color:#222222;">Customer Support Chatbot Revamp</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:4px;">Updated 2 weeks ago · 4 of 26 answered</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;width:190px;flex-shrink:0;">
+<div style="width:100%;height:6px;border-radius:9999px;background:#f2f2f2;overflow:hidden;"><div style="width:15%;height:100%;background:#222222;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#222222;">15% complete</span>
+</div>
+<div style="width:150px;flex-shrink:0;font-size:14px;color:#6a6a6a;">In progress</div>
+<button type="button" style="flex-shrink:0;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:40px;padding:0 20px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">Open</button>
+</div>
+
+</div>
+</div>
+</div>
+
+<div style="width:100%;max-width:1680px;display:flex;flex-direction:column;gap:14px;">
+<span style="font-size:11px;font-weight:700;letter-spacing:.32px;text-transform:uppercase;color:#6a6a6a;">Screen 2 — Workspace</span>
+<div id="screen-workspace" style="width:100%;background:#ffffff;border-radius:20px;box-shadow:rgba(0,0,0,.02) 0 0 0 1px,rgba(0,0,0,.04) 0 2px 6px,rgba(0,0,0,.1) 0 4px 8px;overflow:hidden;">
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;padding:20px 32px;border-bottom:1px solid #dddddd;">
+<div style="display:flex;align-items:center;gap:16px;min-width:0;flex-shrink:1;">
+<svg width="30" height="30" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;"><rect width="32" height="32" rx="10" fill="#222222"></rect><path d="M9 12.5a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-5.5L11 23v-3.2A3 3 0 0 1 9 17V12.5Z" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="20" cy="14.5" r="1.6" fill="#ff385c"></circle></svg>
+<span style="width:1px;height:26px;background:#dddddd;flex-shrink:0;"></span>
+<a href="#" style="display:flex;align-items:center;gap:6px;font-size:14px;color:#222222;flex-shrink:0;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>Conversations</a>
+<span style="width:1px;height:22px;background:#dddddd;flex-shrink:0;"></span>
+<div style="min-width:0;">
+<div style="font-size:21px;font-weight:700;color:#222222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Q3 Vendor Onboarding Platform</div>
+<div style="font-size:13px;color:#6a6a6a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">14 of 26 answered · 54% complete</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:nowrap;flex-shrink:0;">
+<sc-if value="{{ isCloud }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;background:#f2f2f2;border-radius:9999px;padding:4px;gap:2px;">
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:500;color:#6a6a6a;">Local</span>
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:600;color:#ffffff;background:#222222;">Cloud</span>
+</div>
+</sc-if>
+<sc-if value="{{ notCloud }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;background:#f2f2f2;border-radius:9999px;padding:4px;gap:2px;">
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:600;color:#ffffff;background:#222222;">Local</span>
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:500;color:#6a6a6a;">Cloud</span>
+</div>
+</sc-if>
+<button type="button" id="component-button-secondary" style="display:flex;align-items:center;gap:8px;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:44px;padding:0 18px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>Review flagged (2)</button>
+<sc-if value="{{ generateReady }}" hint-placeholder-val="{{ false }}">
+<button type="button" style="background:#ff385c;color:#ffffff;border:none;border-radius:8px;height:48px;padding:0 24px;font-size:16px;font-weight:500;cursor:pointer;white-space:nowrap;">Generate Document</button>
+</sc-if>
+<sc-if value="{{ notGenerateReady }}" hint-placeholder-val="{{ true }}">
+<button type="button" style="background:#ffd1da;color:#ffffff;border:none;border-radius:8px;height:48px;padding:0 24px;font-size:16px;font-weight:500;cursor:not-allowed;white-space:nowrap;" title="Resolve 2 flagged answers to generate">Generate (2 flagged)</button>
+</sc-if>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,440px);align-items:stretch;">
+
+<div style="background:#f7f7f7;display:flex;flex-direction:column;min-width:0;">
+<div style="padding:20px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid #dddddd;">
+<span style="display:inline-flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:8px 16px 8px 12px;font-size:13px;font-weight:600;color:#222222;box-shadow:rgba(0,0,0,.02) 0 0 0 1px,rgba(0,0,0,.04) 0 2px 6px,rgba(0,0,0,.1) 0 4px 8px;">
+<span style="width:8px;height:8px;border-radius:50%;background:#ff385c;display:inline-block;flex-shrink:0;"></span>Currently discussing: {{ currentLabel }}</span>
+<div style="display:flex;align-items:center;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:4px;gap:2px;">
+<span style="padding:6px 14px;border-radius:9999px;font-size:13px;font-weight:600;color:#ffffff;background:#222222;">This question</span>
+<span style="padding:6px 14px;border-radius:9999px;font-size:13px;font-weight:500;color:#6a6a6a;">General chat</span>
+</div>
+</div>
+
+<div style="flex:1;padding:28px 32px;display:flex;flex-direction:column;gap:16px;">
+
+<sc-if value="{{ isDefaultFocus }}" hint-placeholder-val="{{ true }}">
+<div id="component-chat-bubble-bot" style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">What data sources will feed the vendor onboarding platform, and where does each one currently live (system of record)?</div>
+</div>
+
+<div id="component-chat-bubble-user" style="display:flex;justify-content:flex-end;">
+<div style="max-width:74%;background:#222222;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#ffffff;">We'll pull vendor master data, contract terms, and compliance docs. Should be pretty straightforward.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">"Pretty straightforward" isn't something I can put in the document. Which system holds vendor master data today, and are contract terms structured fields or scanned PDFs?</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;">
+<div style="max-width:74%;background:#222222;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#ffffff;">Vendor master data lives in SAP Ariba. Contract terms are a mix — about 60% structured fields, 40% scanned PDFs we'd need to OCR.</div>
+</div>
+
+<div style="align-self:center;display:flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:8px 16px;max-width:80%;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6a6a6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+<span style="font-size:12px;color:#6a6a6a;">Assumption logged — OCR accuracy target not yet specified. Added to Assumptions &amp; Dependencies.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">Logged. One more: compliance docs (W-9s, insurance certificates) — do those need automatic validation, or is manual review acceptable for this phase?</div>
+</div>
+</sc-if>
+<sc-if value="{{ isNotDefaultFocus }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">{{ currentMissing }}</div>
+</div>
+</sc-if>
+
+</div>
+
+<div style="padding:20px 32px 28px;display:flex;align-items:center;gap:12px;">
+<input placeholder="Type your answer…" style="flex:1;height:56px;background:#ffffff;border:1px solid #dddddd;border-radius:8px;padding:0 18px;font-size:16px;color:#222222;font-family:inherit;">
+<button type="button" aria-label="Send" style="width:48px;height:48px;border-radius:9999px;background:#ff385c;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+</div>
+</div>
+
+<div id="component-progress-panel" style="background:#ffffff;display:flex;flex-direction:column;min-width:0;">
+
+<div style="padding:28px 28px 20px;border-bottom:1px solid #dddddd;">
+<div style="display:flex;align-items:baseline;justify-content:space-between;">
+<span style="font-size:16px;font-weight:600;color:#222222;">Progress</span>
+<span style="font-size:40px;font-weight:700;color:#222222;letter-spacing:-.5px;">54%</span>
+</div>
+<div style="font-size:13px;color:#6a6a6a;margin-top:2px;">14 done · 1 in progress · 1 ready · 5 conditional · 3 locked · 2 need review</div>
+<div style="height:6px;border-radius:9999px;background:#f2f2f2;margin-top:14px;overflow:hidden;"><div style="width:54%;height:100%;background:#222222;"></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;">
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#222222"></circle><path d="M7 12.5l3 3 7-7" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>Done</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><span style="width:12px;height:12px;border-radius:50%;background:conic-gradient(#222222 0deg 180deg, #e3e3e3 180deg 360deg);display:inline-block;"></span>In progress</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>Flagged</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.3 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.9 2.4-2.9 4.3"></path><path d="M12 17.2v.01"></path></svg>Conditional (tap disabled until deps are met)</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" stroke-width="2.2"><rect x="5.5" y="10.5" width="13" height="9" rx="2"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>Locked</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><span style="width:12px;height:12px;background:#f5f5f5;border-left:2px solid #222222;display:inline-block;"></span>Focused (tapped)</span>
+</div>
+</div>
+
+<div style="flex:1;padding:8px 28px 28px;display:flex;flex-direction:column;gap:20px;">
+
+<sc-for list="{{ sections }}" as="section" hint-placeholder-count="5">
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 8px;border-bottom:1px solid #ebebeb;">
+<div style="display:flex;align-items:center;gap:10px;">
+<div style="{{ section.ringStyle }}"><div style="position:absolute;inset:4px;background:#ffffff;border-radius:50%;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#3f3f3f;">{{ section.title }}</span>
+</div>
+<span style="font-size:12px;color:#929292;">{{ section.countLabel }}</span>
+</div>
+<div style="display:flex;flex-direction:column;">
+<sc-for list="{{ section.items }}" as="item" hint-placeholder-count="4">
+<sc-if value="{{ item.isHeader }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding:4px 0 6px 4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+<span style="font-size:12px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.03em;">{{ item.label }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ item.isRow }}" hint-placeholder-val="{{ true }}">
+<div style="{{ item.wrapStyle }}">
+<div onClick="{{ item.onClick }}" style="{{ item.rowStyle }}">
+<sc-if value="{{ item.isDone }}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="12" cy="12" r="12" fill="#222222"></circle><path d="M7 12.5l3 3 7-7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</sc-if>
+<sc-if value="{{ item.isProgress }}" hint-placeholder-val="{{ false }}">
+<div style="width:18px;height:18px;border-radius:50%;background:conic-gradient(#222222 0deg 180deg, #e3e3e3 180deg 360deg);flex-shrink:0;"></div>
+</sc-if>
+<sc-if value="{{ item.isReady }}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" stroke-width="1.8" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle></svg>
+</sc-if>
+<sc-if value="{{ item.isConditional }}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle><path d="M9.3 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.9 2.4-2.9 4.3"></path><path d="M12 17.2v.01"></path></svg>
+</sc-if>
+<sc-if value="{{ item.isLocked }}" hint-placeholder-val="{{ false }}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><rect x="5.5" y="10.5" width="13" height="9" rx="2"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>
+</sc-if>
+<sc-if value="{{ item.isReview }}" hint-placeholder-val="{{ false }}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>
+</sc-if>
+<div style="flex:1;">
+<div style="font-size:14px;color:{{ item.textColor }};font-weight:{{ item.textWeight }};">{{ item.label }}</div>
+<sc-if value="{{ item.hasNote }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:11px;color:#929292;margin-top:1px;">{{ item.note }}</div>
+</sc-if>
+</div>
+<sc-if value="{{ item.showReview }}" hint-placeholder-val="{{ false }}">
+<button type="button" style="background:none;border:none;color:#222222;font-size:12px;font-weight:600;cursor:pointer;text-decoration:underline;white-space:nowrap;flex-shrink:0;">Review</button>
+</sc-if>
+</div>
+<sc-if value="{{ item.isFocused }}" hint-placeholder-val="{{ false }}">
+<div style="margin:2px 0 6px;padding:10px 12px;background:#fafafa;border-radius:8px;">
+<div style="font-size:11px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;">What's missing?</div>
+<sc-if value="{{ item.hasMissingItems }}" hint-placeholder-val="{{ false }}">
+<ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:3px;">
+<sc-for list="{{ item.missingItems }}" as="m" hint-placeholder-count="2">
+<li style="font-size:13px;color:#3f3f3f;line-height:1.4;">{{ m }}</li>
+</sc-for>
+</ul>
+</sc-if>
+<sc-if value="{{ item.noMissingItems }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:13px;color:#929292;">Nothing outstanding — this answer is complete.</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</sc-for>
+</div>
+</div>
+</sc-for>
+
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;border-bottom:1px solid #ebebeb;">
+<span style="font-size:13px;font-weight:600;color:#3f3f3f;">Document Signoff</span>
+<span style="font-size:11px;font-weight:600;color:#929292;background:#f2f2f2;border-radius:9999px;padding:3px 10px;">Boilerplate</span>
+</div>
+<div style="padding:9px 0;font-size:13px;color:#929292;">Name / Role / Date placeholders for approvers — included automatically, not gathered through chat.</div>
+</div>
+
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;border-bottom:1px solid #ebebeb;">
+<span style="font-size:13px;font-weight:600;color:#3f3f3f;">Custom Sections</span>
+</div>
+<div style="display:flex;flex-direction:column;">
+<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 0;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff385c" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.2" fill="#ff385c"></circle></svg>
+<div><div style="font-size:14px;color:#222222;">3.3.6 Vendor Escalation Path</div><div style="font-size:11px;color:#929292;margin-top:1px;">Custom · no fixed checklist</div></div>
+</div>
+<div style="margin-top:8px;border:1.5px dashed #dddddd;border-radius:8px;padding:12px 14px;font-size:13px;color:#929292;text-align:center;">+ Add custom section</div>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;aiModel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Local&quot;,&quot;options&quot;:[&quot;Local&quot;,&quot;Cloud&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;generateReady&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+class Component extends DCLogic {
+  state = { focusedCode: '3.2' };
+
+  sectionsData = [
+    { id: 's1', title: '1. Introduction', total: 7, done: 7, items: [
+      { type: 'header', label: '1.1 Overview' },
+      { code: '1.1.1', label: '1.1.1 Background', status: 'done' },
+      { code: '1.1.2', label: '1.1.2 Business and Market Analysis', status: 'done' },
+      { code: '1.1.3', label: '1.1.3 Relevant Historical Data', status: 'done' },
+      { code: '1.2', label: '1.2 Business Objective', status: 'done' },
+      { code: '1.3', label: '1.3 Purpose of this Business Requirement', status: 'done' },
+      { code: '1.4', label: '1.4 Program Type', status: 'done' },
+      { code: '1.5', label: '1.5 Business Risk', status: 'done' }
+    ]},
+    { id: 's2', title: '2. Benefit Analysis', total: 2, done: 2, items: [
+      { code: '2.1', label: '2.1 Summary', status: 'done' },
+      { code: '2.2', label: '2.2 Assumption and Calculation', status: 'done' }
+    ]},
+    { id: 's3', title: '3. Service Description', total: 12, done: 5, items: [
+      { code: '3.1', label: '3.1 General Requirement', status: 'done' },
+      { code: '3.2', label: '3.2 Product / Service Specification', status: 'progress' },
+      { type: 'header', label: '3.3 Business Process' },
+      { code: '3.3.1', label: '3.3.1 Business process impact', status: 'done', group: true },
+      { code: '3.3.2', label: '3.3.2 Description', status: 'done', group: true },
+      { code: '3.3.3', label: '3.3.3 Security', status: 'review', group: true },
+      { code: '3.3.4', label: '3.3.4 Organization and policy', status: 'ready', group: true },
+      { code: '3.3.5', label: '3.3.5 Service Delivery Plan', status: 'conditional', conditionText: 'Conditional · applies since Program Type = new application', dependsOn: ['3.3.4'], group: true },
+      { code: '3.4', label: '3.4 Complain Handling', status: 'done' },
+      { code: '3.5', label: '3.5 Reporting', status: 'review' },
+      { code: '3.6', label: '3.6 Monitoring', status: 'conditional', conditionText: 'Conditional · applies if monitoring is required', dependsOn: ['3.5'] },
+      { code: '3.7', label: '3.7 Settlement Plan', status: 'conditional', conditionText: 'Conditional · applies if financial settlement is involved', dependsOn: ['2.2'] },
+      { code: '3.8', label: '3.8 Assumptions and Dependencies', status: 'done' }
+    ]},
+    { id: 's4', title: '4. Release Plan', total: 4, done: 0, items: [
+      { code: '4.1', label: '4.1 Target Ready for Service', status: 'locked', dependsOn: ['3.3.5', '3.8'] },
+      { code: '4.2', label: '4.2 Commercial Launch', status: 'locked', dependsOn: ['4.1'] },
+      { code: '4.3', label: '4.3 Internal Socialization Plan', status: 'conditional', conditionText: 'Conditional · applies if internal rollout is needed', dependsOn: ['3.3.4'] },
+      { code: '4.4', label: '4.4 Rollout Scenario', status: 'conditional', conditionText: 'Conditional · applies if a phased or pilot rollout is planned', dependsOn: ['4.2'] }
+    ]},
+    { id: 's5', title: '5. Product/Service Retirement Plan', total: 1, done: 0, items: [
+      { code: '5.1', label: 'Retirement Plan', status: 'locked', dependsOn: ['4.4'] }
+    ]}
+  ];
+
+  missingByStatus(status, note) {
+    if (status === 'done') return "Already answered — you can amend it below if anything changed.";
+    if (status === 'progress') return "Still gathering details — continue the thread below.";
+    if (status === 'ready') return "Not started yet. Tell me about this and I'll capture it.";
+    if (status === 'review') return "This answer was flagged for review — reply below to resolve it.";
+    if (status === 'conditional') return note + ". I'll confirm whether it applies once Program Type is set.";
+    if (status === 'locked') return note + " before this can start.";
+    return '';
+  }
+
+  missingItemsByCode = {
+    '3.2': [
+      'Which reporting fields need to feed the BI warehouse',
+      'Whether the OCR accuracy target also applies to compliance docs',
+      'Confirmation of the 40% scanned-PDF volume estimate'
+    ],
+    '3.3.3': [
+      'Encryption-at-rest requirement for scanned contract PDFs',
+      'Access control model (RBAC vs. ABAC) not yet decided'
+    ],
+    '3.3.4': [
+      'Which team owns the vendor master data policy',
+      'Whether Procurement or IT signs off on policy changes',
+      'Any existing policy documents to reference'
+    ],
+    '3.3.5': [
+      'Delivery/support model for the platform once live',
+      'Who provides day-2 operational support'
+    ],
+    '3.5': [
+      'Report frequency (daily vs. weekly) not specified',
+      'Recipient list for exception reports'
+    ],
+    '3.6': [
+      'Whether monitoring is required for this platform',
+      'Alerting thresholds, if required'
+    ],
+    '3.7': [
+      'Whether financial settlement applies here',
+      'Settlement cadence, if applicable'
+    ],
+    '4.1': [
+      'Concrete target date or milestone for readiness',
+      'Reason for any uncertainty, if not yet fixed'
+    ],
+    '4.2': ['Commercial launch plan and timing, consistent with the readiness date'],
+    '4.3': [
+      'Whether internal rollout/training is needed',
+      'Audience and timing, if needed'
+    ],
+    '4.4': ['Whether a phased or big-bang rollout is planned'],
+    '5.1': ['Retirement approach, or explicit confirmation that none applies yet']
+  };
+
+  setFocus(code) {
+    this.setState({ focusedCode: code });
+  }
+
+  renderVals() {
+    const aiModel = this.props.aiModel ?? 'Local';
+    const isCloud = aiModel === 'Cloud';
+    const generateReady = this.props.generateReady ?? false;
+    const focusedCode = this.state.focusedCode;
+
+    let currentLabel = '3.2 Product / Service Specification';
+    let currentMissing = '';
+
+    const byCode = {};
+    this.sectionsData.forEach(sec => sec.items.forEach(it => { if (it.code) byCode[it.code] = it; }));
+
+    const sections = this.sectionsData.map(sec => {
+      const pct = Math.round((sec.done / sec.total) * 100);
+      const ringStyle = {
+        position: 'relative', width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
+        background: `conic-gradient(#222222 0% ${pct}%, #f2f2f2 ${pct}% 100%)`
+      };
+      const items = sec.items.map((it, idx) => {
+        if (it.type === 'header') {
+          return { key: sec.id + '-h' + idx, isHeader: true, isRow: false, label: it.label };
+        }
+        const deps = it.dependsOn || [];
+        const neededLabels = deps.filter(c => byCode[c] && byCode[c].status !== 'done').map(c => byCode[c].label);
+        const isBlocked = neededLabels.length > 0;
+        let note = '';
+        if (it.status === 'conditional') {
+          note = it.conditionText || '';
+          if (isBlocked) note += (note ? ' · ' : '') + 'Needs: ' + neededLabels.join(', ');
+        } else if (isBlocked) {
+          note = 'Needs: ' + neededLabels.join(', ');
+        }
+        const hasNote = !!note;
+
+        const isFocused = !isBlocked && it.code === focusedCode;
+        if (isFocused) {
+          currentLabel = it.label;
+          currentMissing = this.missingByStatus(it.status, note);
+        }
+        const missingItems = this.missingItemsByCode[it.code] || [];
+        return {
+          key: it.code,
+          isHeader: false,
+          isRow: true,
+          isFocused,
+          label: it.label,
+          isDone: it.status === 'done',
+          isProgress: it.status === 'progress',
+          isReady: it.status === 'ready',
+          isConditional: it.status === 'conditional',
+          isLocked: it.status === 'locked',
+          isReview: it.status === 'review',
+          showReview: it.status === 'review',
+          hasNote,
+          note,
+          textWeight: it.status === 'progress' ? 600 : 400,
+          textColor: (it.status === 'locked' || it.status === 'conditional') ? '#929292' : '#222222',
+          wrapStyle: it.group ? { borderLeft: '2px solid #ebebeb', marginLeft: '8px', paddingLeft: '14px' } : {},
+          rowStyle: {
+            display: 'flex', alignItems: hasNote ? 'flex-start' : 'center',
+            justifyContent: it.status === 'review' ? 'space-between' : 'flex-start',
+            gap: '10px', padding: isFocused ? '9px 8px 9px 12px' : '9px 0',
+            margin: isFocused ? '0 -8px' : '0',
+            background: isFocused ? '#f5f5f5' : 'transparent',
+            borderLeft: isFocused ? '3px solid #222222' : '3px solid transparent',
+            borderRadius: '6px', cursor: isBlocked ? 'default' : 'pointer'
+          },
+          missingItems,
+          hasMissingItems: missingItems.length > 0,
+          noMissingItems: missingItems.length === 0,
+          onClick: isBlocked ? undefined : (() => this.setFocus(it.code))
+        };
+      });
+      return { key: sec.id, title: sec.title, countLabel: `${sec.done} / ${sec.total}`, ringStyle, items };
+    });
+
+    return {
+      isCloud,
+      notCloud: !isCloud,
+      generateReady,
+      notGenerateReady: !generateReady,
+      sections,
+      currentLabel,
+      currentMissing,
+      isDefaultFocus: focusedCode === '3.2',
+      isNotDefaultFocus: focusedCode !== '3.2'
+    };
+  }
+}
+</script>
+</body>
+</html>

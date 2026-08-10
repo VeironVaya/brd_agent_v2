@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;-webkit-font-smoothing:antialiased;}
+a{color:#222222;text-decoration:none;}
+a:hover{color:#e00b41;}
+::selection{background:rgba(255,56,92,.18);}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ff385c"/><rect x="60" y="60" width="80" height="80" rx="16" fill="#222"/><path d="M75 90a12 12 0 0 1 12-12h26a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12H91l-8 8v-8a12 12 0 0 1-8-12z" fill="none" stroke="#fff" stroke-width="5"/></svg></template>
+
+<div id="screen-workspace" style="width:100%;min-height:100vh;background:#ffffff;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;color:#222222;">
+
+<div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:nowrap;padding:20px 40px;border-bottom:1px solid #dddddd;">
+<div style="display:flex;align-items:center;gap:16px;min-width:0;flex-shrink:1;">
+<svg width="30" height="30" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;"><rect width="32" height="32" rx="10" fill="#222222"></rect><path d="M9 12.5a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-5.5L11 23v-3.2A3 3 0 0 1 9 17V12.5Z" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></path><circle cx="20" cy="14.5" r="1.6" fill="#ff385c"></circle></svg>
+<span style="width:1px;height:26px;background:#dddddd;flex-shrink:0;"></span>
+<a href="#" style="display:flex;align-items:center;gap:6px;font-size:14px;color:#222222;flex-shrink:0;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>Conversations</a>
+<span style="width:1px;height:22px;background:#dddddd;flex-shrink:0;"></span>
+<div style="min-width:0;">
+<div style="font-size:21px;font-weight:700;color:#222222;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Q3 Vendor Onboarding Platform</div>
+<div style="font-size:13px;color:#6a6a6a;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">14 of 26 answered · 54% complete</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:nowrap;flex-shrink:0;">
+<sc-if value="{{ isCloud }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;background:#f2f2f2;border-radius:9999px;padding:4px;gap:2px;">
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:500;color:#6a6a6a;">Local</span>
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:600;color:#ffffff;background:#222222;">Cloud</span>
+</div>
+</sc-if>
+<sc-if value="{{ notCloud }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;background:#f2f2f2;border-radius:9999px;padding:4px;gap:2px;">
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:600;color:#ffffff;background:#222222;">Local</span>
+<span style="padding:7px 16px;border-radius:9999px;font-size:14px;font-weight:500;color:#6a6a6a;">Cloud</span>
+</div>
+</sc-if>
+<button type="button" id="component-button-secondary" onClick="{{ openReviewModal }}" style="display:flex;align-items:center;gap:8px;background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:44px;padding:0 18px;font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>Review flagged (2)</button>
+<sc-if value="{{ generateReady }}" hint-placeholder-val="{{ false }}">
+<button type="button" style="background:#ff385c;color:#ffffff;border:none;border-radius:8px;height:48px;padding:0 24px;font-size:16px;font-weight:500;cursor:pointer;white-space:nowrap;">View Draft</button>
+</sc-if>
+<sc-if value="{{ notGenerateReady }}" hint-placeholder-val="{{ true }}">
+<button type="button" style="background:#ffd1da;color:#ffffff;border:none;border-radius:8px;height:48px;padding:0 24px;font-size:16px;font-weight:500;cursor:not-allowed;white-space:nowrap;" title="Resolve 2 flagged answers to view the draft">View Draft (2 flagged)</button>
+</sc-if>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(320px,440px);align-items:stretch;">
+
+<div style="background:#f7f7f7;display:flex;flex-direction:column;min-width:0;">
+<div style="padding:20px 40px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid #dddddd;">
+<span style="display:inline-flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:8px 16px 8px 12px;font-size:13px;font-weight:600;color:#222222;box-shadow:rgba(0,0,0,.02) 0 0 0 1px,rgba(0,0,0,.04) 0 2px 6px,rgba(0,0,0,.1) 0 4px 8px;">
+<span style="width:8px;height:8px;border-radius:50%;background:#ff385c;display:inline-block;flex-shrink:0;"></span>Currently discussing: {{ currentLabel }}</span>
+<div style="display:flex;align-items:center;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:4px;gap:2px;">
+<span style="padding:6px 14px;border-radius:9999px;font-size:13px;font-weight:600;color:#ffffff;background:#222222;">This question</span>
+<span style="padding:6px 14px;border-radius:9999px;font-size:13px;font-weight:500;color:#6a6a6a;">General chat</span>
+</div>
+</div>
+
+<div style="flex:1;padding:28px 40px;display:flex;flex-direction:column;gap:16px;">
+
+<sc-if value="{{ isDefaultFocus }}" hint-placeholder-val="{{ true }}">
+<div id="component-chat-bubble-bot" style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">What data sources will feed the vendor onboarding platform, and where does each one currently live (system of record)?</div>
+</div>
+
+<div id="component-chat-bubble-user" style="display:flex;justify-content:flex-end;">
+<div style="max-width:74%;background:#222222;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#ffffff;">We'll pull vendor master data, contract terms, and compliance docs. Should be pretty straightforward.</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">"Pretty straightforward" isn't something I can put in the document. Which system holds vendor master data today, and are contract terms structured fields or scanned PDFs?</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;">
+<div style="max-width:74%;background:#222222;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#ffffff;">Vendor master data lives in SAP Ariba. Contract terms are a mix — about 60% structured fields, 40% scanned PDFs we'd need to OCR.</div>
+</div>
+
+<div style="align-self:center;display:flex;align-items:center;gap:8px;background:#ffffff;border:1px solid #dddddd;border-radius:9999px;padding:8px 16px;max-width:80%;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6a6a6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+<span style="font-size:12px;color:#6a6a6a;">Assumption logged — OCR accuracy target not yet specified. Added to Assumptions &amp; Dependencies.</span>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">Logged. One more: compliance docs (W-9s, insurance certificates) — do those need automatic validation, or is manual review acceptable for this phase?</div>
+</div>
+</sc-if>
+<sc-if value="{{ isNotDefaultFocus }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-start;">
+<span style="font-size:11px;font-weight:600;color:#929292;padding-left:4px;">BRD-Agent</span>
+<div style="max-width:74%;background:#ffffff;border:1px solid #dddddd;border-radius:20px;padding:14px 18px;font-size:16px;line-height:1.5;color:#222222;">{{ currentMissing }}</div>
+</div>
+</sc-if>
+
+</div>
+
+<div style="padding:20px 40px 28px;display:flex;align-items:center;gap:12px;">
+<input placeholder="Type your answer…" style="flex:1;height:56px;background:#ffffff;border:1px solid #dddddd;border-radius:8px;padding:0 18px;font-size:16px;color:#222222;font-family:inherit;">
+<button type="button" aria-label="Send" style="width:48px;height:48px;border-radius:9999px;background:#ff385c;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+</div>
+</div>
+
+<div id="component-progress-panel" style="background:#ffffff;display:flex;flex-direction:column;min-width:0;border-left:1px solid #dddddd;">
+
+<div style="padding:28px 28px 20px;border-bottom:1px solid #dddddd;">
+<div style="display:flex;align-items:baseline;justify-content:space-between;">
+<span style="font-size:16px;font-weight:600;color:#222222;">Progress</span>
+<span style="font-size:40px;font-weight:700;color:#222222;letter-spacing:-.5px;">54%</span>
+</div>
+<div style="font-size:13px;color:#6a6a6a;margin-top:2px;">15 answered · 1 ready · 5 conditional · 3 locked · 2 need review</div>
+<div style="font-size:11.5px;color:#929292;margin-top:6px;line-height:1.4;">Completeness = required fields captured for that item · Confidence = the model's certainty in the answer given</div>
+<div style="height:6px;border-radius:9999px;background:#f2f2f2;margin-top:14px;overflow:hidden;"><div style="width:54%;height:100%;background:#222222;"></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;">
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><span style="width:12px;height:12px;border-radius:50%;background:conic-gradient(#222222 0% 60%, #eeeeee 60% 100%);display:inline-block;position:relative;"><span style="position:absolute;inset:2px;background:#ffffff;border-radius:50%;"><span style="position:absolute;inset:1.5px;border-radius:50%;background:conic-gradient(#1a7f37 0% 70%, #eeeeee 70% 100%);"></span></span></span>Completeness · Confidence</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>Flagged</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.3 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.9 2.4-2.9 4.3"></path><path d="M12 17.2v.01"></path></svg>Conditional (tap disabled until deps are met)</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" stroke-width="2.2"><rect x="5.5" y="10.5" width="13" height="9" rx="2"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>Locked</span>
+<span style="display:flex;align-items:center;gap:5px;font-size:11px;color:#929292;"><span style="width:12px;height:12px;background:#f5f5f5;border-left:2px solid #222222;display:inline-block;"></span>Focused (tapped)</span>
+</div>
+</div>
+
+<div style="flex:1;padding:8px 28px 28px;display:flex;flex-direction:column;gap:20px;">
+
+<sc-for list="{{ sections }}" as="section" hint-placeholder-count="5">
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 8px;border-bottom:1px solid #ebebeb;">
+<div style="display:flex;align-items:center;gap:10px;">
+<div style="{{ section.ringStyle }}"><div style="position:absolute;inset:4px;background:#ffffff;border-radius:50%;"></div></div>
+<span style="font-size:13px;font-weight:600;color:#3f3f3f;">{{ section.title }}</span>
+</div>
+<span style="font-size:12px;color:#929292;">{{ section.countLabel }}</span>
+</div>
+<div style="display:flex;flex-direction:column;">
+<sc-for list="{{ section.items }}" as="item" hint-placeholder-count="4">
+<sc-if value="{{ item.isHeader }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;margin-top:10px;padding:4px 0 6px 4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+<span style="font-size:12px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.03em;">{{ item.label }}</span>
+</div>
+</sc-if>
+<sc-if value="{{ item.isRow }}" hint-placeholder-val="{{ true }}">
+<div style="{{ item.wrapStyle }}">
+<div onClick="{{ item.onClick }}" style="{{ item.rowStyle }}">
+<sc-if value="{{ item.hasMetrics }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;flex-shrink:0;">
+<div style="{{ item.donutOuterStyle }}">
+<div style="position:absolute;inset:3px;background:#ffffff;border-radius:50%;">
+<div style="{{ item.donutInnerStyle }}"></div>
+</div>
+</div>
+<sc-if value="{{ item.isReview }}" hint-placeholder-val="{{ false }}">
+<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;top:-3px;right:-4px;background:#ffffff;border-radius:50%;"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>
+</sc-if>
+</div>
+</sc-if>
+<sc-if value="{{ item.isDoneNoConf }}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="12" cy="12" r="12" fill="#222222"></circle><path d="M7 12.5l3 3 7-7" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</sc-if>
+<sc-if value="{{ item.isReady }}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" stroke-width="1.8" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle></svg>
+</sc-if>
+<sc-if value="{{ item.isConditional }}" hint-placeholder-val="{{ false }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#929292" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="9"></circle><path d="M9.3 9.3a2.9 2.9 0 0 1 5.6 1c0 1.9-2.9 2.4-2.9 4.3"></path><path d="M12 17.2v.01"></path></svg>
+</sc-if>
+<sc-if value="{{ item.isLocked }}" hint-placeholder-val="{{ false }}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" stroke-width="1.8" style="flex-shrink:0;margin-top:1px;"><rect x="5.5" y="10.5" width="13" height="9" rx="2"></rect><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"></path></svg>
+</sc-if>
+<sc-if value="{{ item.isReviewNoConf }}" hint-placeholder-val="{{ false }}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>
+</sc-if>
+<div style="flex:1;min-width:0;">
+<div style="display:flex;align-items:baseline;gap:8px;">
+<span style="font-size:14px;color:{{ item.textColor }};font-weight:{{ item.textWeight }};">{{ item.label }}</span>
+<sc-if value="{{ item.hasMetrics }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:10.5px;font-weight:600;color:#929292;flex-shrink:0;">{{ item.completeness }}% complete</span>
+<span style="font-size:10.5px;font-weight:700;color:{{ item.tierColor }};text-transform:uppercase;letter-spacing:.02em;flex-shrink:0;">{{ item.confidence }}% {{ item.tierLabel }}</span>
+</sc-if>
+<sc-if value="{{ item.hasAnswer }}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{ item.onView }}" style="margin-left:auto;background:none;border:none;color:#222222;font-size:11px;font-weight:600;cursor:pointer;text-decoration:underline;white-space:nowrap;flex-shrink:0;">View</button>
+</sc-if>
+</div>
+<sc-if value="{{ item.hasNote }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:11px;color:#929292;margin-top:1px;">{{ item.note }}</div>
+</sc-if>
+</div>
+</div>
+<sc-if value="{{ item.isFocused }}" hint-placeholder-val="{{ false }}">
+<div style="margin:2px 0 6px;padding:10px 12px;background:#fafafa;border-radius:8px;">
+<sc-if value="{{ item.hasAnswer }}" hint-placeholder-val="{{ false }}">
+<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #ebebeb;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+<span style="font-size:11px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.04em;">Result</span>
+<span style="font-size:11px;font-weight:700;color:{{ item.tierColor }};text-transform:uppercase;letter-spacing:.02em;">{{ item.confidence }}% {{ item.tierLabel }} confidence</span>
+</div>
+<div style="font-size:13px;color:#3f3f3f;line-height:1.5;">{{ item.answer }}</div>
+</div>
+</sc-if>
+<div style="font-size:11px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;">What's missing?</div>
+<sc-if value="{{ item.hasMissingItems }}" hint-placeholder-val="{{ false }}">
+<ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:3px;">
+<sc-for list="{{ item.missingItems }}" as="m" hint-placeholder-count="2">
+<li style="font-size:13px;color:#3f3f3f;line-height:1.4;">{{ m }}</li>
+</sc-for>
+</ul>
+</sc-if>
+<sc-if value="{{ item.noMissingItems }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:13px;color:#929292;">Nothing outstanding — this answer is complete.</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
+</sc-if>
+</sc-for>
+</div>
+</div>
+</sc-for>
+
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;border-bottom:1px solid #ebebeb;">
+<span style="font-size:13px;font-weight:600;color:#3f3f3f;">Document Signoff</span>
+<span style="font-size:11px;font-weight:600;color:#929292;background:#f2f2f2;border-radius:9999px;padding:3px 10px;">Boilerplate</span>
+</div>
+<div style="padding:9px 0;font-size:13px;color:#929292;">Name / Role / Date placeholders for approvers — included automatically, not gathered through chat.</div>
+</div>
+
+<div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0 8px;border-bottom:1px solid #ebebeb;">
+<span style="font-size:13px;font-weight:600;color:#3f3f3f;">Custom Sections</span>
+</div>
+<div style="display:flex;flex-direction:column;">
+<sc-for list="{{ customSections }}" as="cs" hint-placeholder-count="1">
+<sc-if value="{{ cs.hasChildren }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:10px;padding:4px 0 6px 4px;">
+<div style="display:flex;align-items:center;gap:6px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff385c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+<span style="font-size:12px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.03em;">{{ cs.title }}</span>
+</div>
+<button type="button" onClick="{{ cs.onRemove }}" aria-label="Remove section" style="background:none;border:none;cursor:pointer;padding:2px;color:#c1c1c1;display:flex;" style-hover="color:#c13515;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg></button>
+</div>
+<sc-for list="{{ cs.children }}" as="child" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0 9px 14px;border-left:2px solid #ebebeb;margin-left:8px;">
+<div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff385c" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.2" fill="#ff385c"></circle></svg>
+<div><div style="font-size:14px;color:#222222;">{{ child.title }}</div><div style="font-size:11px;color:#929292;margin-top:1px;">Custom · no fixed checklist</div></div>
+</div>
+<button type="button" onClick="{{ child.onRemove }}" aria-label="Remove sub-section" style="background:none;border:none;cursor:pointer;padding:2px;color:#c1c1c1;display:flex;flex-shrink:0;" style-hover="color:#c13515;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg></button>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ cs.isSingle }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;">
+<div style="display:flex;align-items:flex-start;gap:10px;min-width:0;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff385c" stroke-width="2" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="3.2" fill="#ff385c"></circle></svg>
+<div><div style="font-size:14px;color:#222222;">{{ cs.title }}</div><div style="font-size:11px;color:#929292;margin-top:1px;">Custom · no fixed checklist</div></div>
+</div>
+<button type="button" onClick="{{ cs.onRemove }}" aria-label="Remove section" style="background:none;border:none;cursor:pointer;padding:2px;color:#c1c1c1;display:flex;flex-shrink:0;" style-hover="color:#c13515;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg></button>
+</div>
+</sc-if>
+</sc-for>
+<div onClick="{{ openAddSection }}" style="margin-top:8px;border:1.5px dashed #dddddd;border-radius:8px;padding:12px 14px;font-size:13px;color:#929292;text-align:center;cursor:pointer;" style-hover="border-color:#222222;color:#3f3f3f;">+ Add custom section</div>
+</div>
+</div>
+
+<sc-if value="{{ addSectionOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:24px;z-index:10;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;">
+<div style="width:100%;max-width:480px;background:#ffffff;border-radius:16px;padding:28px;box-shadow:rgba(0,0,0,.15) 0 12px 40px;">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<span style="font-size:19px;font-weight:700;color:#222222;">Add Custom Section</span>
+<button type="button" onClick="{{ closeAddSection }}" aria-label="Close" style="background:none;border:none;cursor:pointer;padding:4px;color:#6a6a6a;display:flex;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:6px;">For content this document needs that isn't part of the standard checklist. No fixed questions — tell BRD-Agent what to capture and it'll ask you in chat.</div>
+
+<div style="display:flex;flex-direction:column;gap:16px;margin-top:22px;">
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:13px;font-weight:600;color:#222222;">Section title</label>
+<input placeholder="e.g. Vendor Escalation Path" value="{{ newSection.title }}" onChange="{{ onTitleChange }}" style="{{ sectionTitleInputStyle }}">
+<sc-if value="{{ sectionTitleError }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12.5px;color:#c13515;line-height:1.4;">Section title is required.</div>
+</sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;position:relative;">
+<label style="font-size:13px;font-weight:600;color:#222222;">Nest under</label>
+<div onClick="{{ toggleNestDropdown }}" style="height:48px;background:#ffffff;border:1px solid #dddddd;border-radius:8px;padding:0 16px;font-size:15px;color:#222222;font-family:inherit;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<span>{{ nestSelected }}</span>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6a6a6a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ nestChevronStyle }}"><path d="m6 9 6 6 6-6"></path></svg>
+</div>
+<sc-if value="{{ nestDropdownOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:76px;left:0;right:0;background:#ffffff;border:1px solid #dddddd;border-radius:8px;box-shadow:rgba(0,0,0,.12) 0 8px 24px;z-index:5;overflow:hidden;">
+<sc-for list="{{ nestOptions }}" as="opt" hint-placeholder-count="6">
+<div onClick="{{ opt.onSelect }}" style="{{ opt.rowStyle }}">{{ opt.label }}</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:13px;font-weight:600;color:#222222;">Structure</label>
+<div style="display:flex;align-items:center;background:#f2f2f2;border-radius:9999px;padding:4px;gap:2px;width:fit-content;">
+<span onClick="{{ setSingleStructure }}" style="{{ singleOptStyle }}">Single item</span>
+<span onClick="{{ setGroupStructure }}" style="{{ groupOptStyle }}">Has sub-sections</span>
+</div>
+<div style="font-size:12px;color:#929292;">{{ structureHint }}</div>
+</div>
+<sc-if value="{{ newSection.hasChildren }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px;">
+<label style="font-size:13px;font-weight:600;color:#222222;">Sub-sections</label>
+<sc-for list="{{ newSectionChildren }}" as="child" hint-placeholder-count="0">
+<div style="display:flex;align-items:center;gap:8px;">
+<span style="flex:1;font-size:14px;color:#222222;background:#fafafa;border:1px solid #ebebeb;border-radius:8px;padding:8px 12px;">{{ child.title }}</span>
+<button type="button" onClick="{{ child.onRemove }}" aria-label="Remove" style="background:none;border:none;cursor:pointer;padding:2px;color:#c1c1c1;display:flex;flex-shrink:0;" style-hover="color:#c13515;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path></svg></button>
+</div>
+</sc-for>
+<div style="display:flex;gap:8px;">
+<input placeholder="Sub-section title" value="{{ newSection.childDraft }}" onChange="{{ onChildDraftChange }}" style="flex:1;height:44px;background:#ffffff;border:1px solid #dddddd;border-radius:8px;padding:0 14px;font-size:14px;color:#222222;font-family:inherit;">
+<button type="button" onClick="{{ addChildDraft }}" style="background:#ffffff;color:#222222;border:1px solid #222222;border-radius:8px;height:44px;padding:0 16px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;">+ Add</button>
+</div>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column;gap:6px;">
+<label style="font-size:13px;font-weight:600;color:#222222;">What should this section cover?</label>
+<textarea placeholder="A sentence or two on what to capture here — BRD-Agent uses this to guide its questions." rows="3" value="{{ newSection.purpose }}" onChange="{{ onPurposeChange }}" style="background:#ffffff;border:1px solid #dddddd;border-radius:8px;padding:12px 16px;font-size:15px;color:#222222;font-family:inherit;resize:none;"></textarea>
+</div>
+</div>
+
+<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:26px;">
+<button type="button" onClick="{{ closeAddSection }}" style="background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:8px;height:44px;padding:0 20px;font-size:14px;font-weight:600;cursor:pointer;">Cancel</button>
+<button type="button" onClick="{{ commitNewSection }}" style="background:#ff385c;color:#ffffff;border:none;border-radius:8px;height:44px;padding:0 22px;font-size:14px;font-weight:600;cursor:pointer;">Add Section</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+
+</div>
+</div>
+
+<sc-if value="{{ viewResultOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:24px;z-index:10;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;">
+<div style="width:100%;max-width:480px;background:#ffffff;border-radius:16px;padding:28px;box-shadow:rgba(0,0,0,.15) 0 12px 40px;">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<span style="font-size:17px;font-weight:700;color:#222222;">{{ viewResultItem.label }}</span>
+<button type="button" onClick="{{ closeViewResult }}" aria-label="Close" style="background:none;border:none;cursor:pointer;padding:4px;color:#6a6a6a;display:flex;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+<span style="font-size:11px;font-weight:600;color:#929292;">{{ viewResultItem.completeness }}% complete</span>
+<span style="font-size:11px;font-weight:700;color:{{ viewResultItem.tierColor }};text-transform:uppercase;letter-spacing:.02em;">{{ viewResultItem.confidence }}% {{ viewResultItem.tierLabel }} confidence</span>
+</div>
+<div style="font-size:14px;color:#3f3f3f;margin-top:14px;line-height:1.6;">{{ viewResultItem.answer }}</div>
+<div style="display:flex;justify-content:flex-end;margin-top:22px;">
+<button type="button" onClick="{{ closeViewResult }}" style="background:#222222;color:#ffffff;border:none;border-radius:8px;height:40px;padding:0 20px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ reviewModalOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;padding:24px;z-index:10;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;">
+<div style="width:100%;max-width:640px;max-height:86vh;overflow-y:auto;background:#ffffff;border-radius:16px;padding:28px;box-shadow:rgba(0,0,0,.15) 0 12px 40px;">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<span style="font-size:19px;font-weight:700;color:#222222;">Review Flagged Answers</span>
+<button type="button" onClick="{{ closeReviewModal }}" aria-label="Close" style="background:none;border:none;cursor:pointer;padding:4px;color:#6a6a6a;display:flex;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<div style="font-size:14px;color:#6a6a6a;margin-top:6px;">Items flagged because an answer they depend on changed since they were last completed.</div>
+
+<button type="button" onClick="{{ toggleRecompute }}" style="display:flex;align-items:center;gap:8px;background:#222222;color:#ffffff;border:none;border-radius:8px;height:44px;padding:0 18px;font-size:14px;font-weight:600;cursor:pointer;margin-top:18px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"></path><path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path><path d="M3 22v-6h6"></path><path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path></svg>Recompute flagged sections</button>
+
+<div style="display:flex;flex-direction:column;gap:14px;margin-top:20px;">
+<sc-for list="{{ flaggedItems }}" as="f" hint-placeholder-count="2">
+<div style="border:1px solid #ebebeb;border-radius:12px;padding:16px 18px;">
+<div style="display:flex;align-items:center;gap:8px;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M4 22V4"></path><path d="M4 4h13l-2.5 4L17 12H4"></path></svg>
+<span style="font-size:14px;font-weight:600;color:#222222;">{{ f.label }}</span>
+</div>
+<div style="font-size:11px;color:#929292;margin-top:4px;margin-left:23px;">Depends on {{ f.dependsOnLabel }} — changed</div>
+<div style="font-size:13px;color:#6a6a6a;margin-top:8px;line-height:1.5;">{{ f.reason }}</div>
+<sc-if value="{{ f.hasMissingItems }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:10px;padding:10px 12px;background:#fafafa;border-radius:8px;">
+<div style="font-size:11px;font-weight:700;color:#3f3f3f;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;">What's missing now</div>
+<ul style="margin:0;padding-left:16px;display:flex;flex-direction:column;gap:3px;">
+<sc-for list="{{ f.missingItems }}" as="m" hint-placeholder-count="2">
+<li style="font-size:13px;color:#3f3f3f;line-height:1.4;">{{ m }}</li>
+</sc-for>
+</ul>
+</div>
+</sc-if>
+<div style="display:flex;gap:10px;margin-top:14px;">
+<button type="button" style="background:#ff385c;color:#ffffff;border:none;border-radius:8px;height:38px;padding:0 16px;font-size:13px;font-weight:600;cursor:pointer;">Resolve in chat</button>
+</div>
+</div>
+</sc-for>
+</div>
+
+<div style="display:flex;justify-content:flex-end;margin-top:22px;">
+<button type="button" onClick="{{ closeReviewModal }}" style="background:#222222;color:#ffffff;border:none;border-radius:8px;height:44px;padding:0 22px;font-size:14px;font-weight:600;cursor:pointer;">Done</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;aiModel&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;Local&quot;,&quot;options&quot;:[&quot;Local&quot;,&quot;Cloud&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;generateReady&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;},&quot;showReviewFlaggedModal&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;State&quot;},&quot;showAddSectionModal&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;State&quot;},&quot;showSectionTitleError&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;State&quot;},&quot;showNestDropdownOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;State&quot;}}">
+class Component extends DCLogic {
+  state = {
+    focusedCode: '3.2', reviewModalOpen: null, recomputed: false, addSectionOpen: null, sectionTitleError: false,
+    customSections: [{ id: 'cs1', title: '3.3.6 Vendor Escalation Path', hasChildren: false, children: [] }],
+    newSection: { title: '', hasChildren: false, purpose: '', childDraft: '', children: [] },
+    nestDropdownOpen: false, nestValue: '3. Service Description'
+  };
+
+  flaggedItems = [
+    { code: '3.3.3', label: '3.3.3 Security', dependsOnCode: '3.2', dependsOnLabel: '3.2 Product / Service Specification',
+      reason: '3.2 Product / Service Specification was updated — its answer no longer matches what this item assumed. Re-verify encryption-at-rest and access control requirements against the new data sources.' },
+    { code: '3.5', label: '3.5 Reporting', dependsOnCode: '3.2', dependsOnLabel: '3.2 Product / Service Specification',
+      reason: '3.2 Product / Service Specification was updated — reporting fields may need to change to match the new data sources.' }
+  ];
+
+  toggleRecompute() { this.setState({ recomputed: true }); }
+
+  sectionsData = [
+    { id: 's1', title: '1. Introduction', total: 7, done: 7, confidence: 95, items: [
+      { type: 'header', label: '1.1 Overview' },
+      { code: '1.1.1', label: '1.1.1 Background', status: 'done', confidence: 92, completeness: 100, answer: 'Vendor onboarding for indirect suppliers is currently manual and email-based, taking 3–4 weeks per vendor on average.' },
+      { code: '1.1.2', label: '1.1.2 Business and Market Analysis', status: 'done', confidence: 88, completeness: 100, answer: 'Peer companies use automated onboarding platforms; industry benchmarks put onboarding under 5 days.' },
+      { code: '1.1.3', label: '1.1.3 Relevant Historical Data', status: 'done', confidence: 90, completeness: 100, answer: 'Procurement processed 640 new vendor requests last year; 22% were delayed by missing compliance docs.' },
+      { code: '1.2', label: '1.2 Business Objective', status: 'done', confidence: 95, completeness: 100, answer: 'Reduce vendor onboarding time from weeks to days and cut manual data entry by 70%.' },
+      { code: '1.3', label: '1.3 Purpose of this Business Requirement', status: 'done', confidence: 97, completeness: 100, answer: 'Define requirements for a self-service vendor onboarding platform integrated with SAP Ariba.' },
+      { code: '1.4', label: '1.4 Program Type', status: 'done', confidence: 99, completeness: 100, answer: 'New application.' },
+      { code: '1.5', label: '1.5 Business Risk', status: 'done', confidence: 85, completeness: 100, answer: "Delayed rollout could extend the current onboarding bottleneck into next fiscal year's vendor renewal cycle." }
+    ]},
+    { id: 's2', title: '2. Benefit Analysis', total: 2, done: 2, confidence: 92, items: [
+      { code: '2.1', label: '2.1 Summary', status: 'done', confidence: 90, completeness: 100, answer: 'Estimated annual savings of 1,800 procurement hours and faster vendor activation.' },
+      { code: '2.2', label: '2.2 Assumption and Calculation', status: 'done', confidence: 82, completeness: 100, answer: 'Savings based on an average 4-hour manual review time per vendor across ~450 annual onboardings.' }
+    ]},
+    { id: 's3', title: '3. Service Description', total: 12, done: 5, confidence: 58, items: [
+      { code: '3.1', label: '3.1 General Requirement', status: 'done', confidence: 93, completeness: 100, answer: 'Web-based self-service portal for vendors to submit and track onboarding status.' },
+      { code: '3.2', label: '3.2 Product / Service Specification', status: 'progress', completeness: 45, confidence: 70 },
+      { type: 'header', label: '3.3 Business Process' },
+      { code: '3.3.1', label: '3.3.1 Business process impact', status: 'done', confidence: 87, completeness: 100, answer: 'Replaces manual email intake; Procurement shifts from data entry to exception handling.', group: true },
+      { code: '3.3.2', label: '3.3.2 Description', status: 'done', confidence: 89, completeness: 100, answer: 'Vendors self-register, upload documents, and receive automated status updates.', group: true },
+      { code: '3.3.3', label: '3.3.3 Security', status: 'review', confidence: 54, completeness: 45, answer: 'Encryption-at-rest requirement and access control model (RBAC vs. ABAC) are unresolved.', group: true },
+      { code: '3.3.4', label: '3.3.4 Organization and policy', status: 'ready', group: true },
+      { code: '3.3.5', label: '3.3.5 Service Delivery Plan', status: 'conditional', conditionText: 'Conditional · applies since Program Type = new application', dependsOn: ['3.3.4'], group: true },
+      { code: '3.4', label: '3.4 Complain Handling', status: 'done', confidence: 84, completeness: 100, answer: 'Vendor disputes route to a shared Procurement inbox with a 3-business-day SLA.' },
+      { code: '3.5', label: '3.5 Reporting', status: 'review', confidence: 61, completeness: 55, answer: 'Report frequency and recipient list are missing; not yet confirmed to meet audit requirements.' },
+      { code: '3.6', label: '3.6 Monitoring', status: 'conditional', conditionText: 'Conditional · applies if monitoring is required', dependsOn: ['3.5'] },
+      { code: '3.7', label: '3.7 Settlement Plan', status: 'conditional', conditionText: 'Conditional · applies if financial settlement is involved', dependsOn: ['2.2'] },
+      { code: '3.8', label: '3.8 Assumptions and Dependencies', status: 'done', confidence: 79, completeness: 100, answer: 'Assumes SAP Ariba remains system of record; OCR accuracy target still pending confirmation.' }
+    ]},
+    { id: 's4', title: '4. Release Plan', total: 4, done: 0, confidence: null, items: [
+      { code: '4.1', label: '4.1 Target Ready for Service', status: 'locked', dependsOn: ['3.3.5', '3.8'] },
+      { code: '4.2', label: '4.2 Commercial Launch', status: 'locked', dependsOn: ['4.1'] },
+      { code: '4.3', label: '4.3 Internal Socialization Plan', status: 'conditional', conditionText: 'Conditional · applies if internal rollout is needed', dependsOn: ['3.3.4'] },
+      { code: '4.4', label: '4.4 Rollout Scenario', status: 'conditional', conditionText: 'Conditional · applies if a phased or pilot rollout is planned', dependsOn: ['4.2'] }
+    ]},
+    { id: 's5', title: '5. Product/Service Retirement Plan', total: 1, done: 0, confidence: null, items: [
+      { code: '5.1', label: 'Retirement Plan', status: 'locked', dependsOn: ['4.4'] }
+    ]}
+  ];
+
+  missingByStatus(status, note) {
+    if (status === 'done') return "Already answered — you can amend it below if anything changed.";
+    if (status === 'progress') return "Still gathering details — continue the thread below.";
+    if (status === 'ready') return "Not started yet. Tell me about this and I'll capture it.";
+    if (status === 'review') return "This answer was flagged for review — reply below to resolve it.";
+    if (status === 'conditional') return note + ". I'll confirm whether it applies once Program Type is set.";
+    if (status === 'locked') return note + " before this can start.";
+    return '';
+  }
+
+  missingItemsByCode = {
+    '3.2': [
+      'Which reporting fields need to feed the BI warehouse',
+      'Whether the OCR accuracy target also applies to compliance docs',
+      'Confirmation of the 40% scanned-PDF volume estimate'
+    ],
+    '3.3.3': [
+      'Encryption-at-rest requirement for scanned contract PDFs',
+      'Access control model (RBAC vs. ABAC) not yet decided'
+    ],
+    '3.3.4': [
+      'Which team owns the vendor master data policy',
+      'Whether Procurement or IT signs off on policy changes',
+      'Any existing policy documents to reference'
+    ],
+    '3.3.5': [
+      'Delivery/support model for the platform once live',
+      'Who provides day-2 operational support'
+    ],
+    '3.5': [
+      'Report frequency (daily vs. weekly) not specified',
+      'Recipient list for exception reports'
+    ],
+    '3.6': [
+      'Whether monitoring is required for this platform',
+      'Alerting thresholds, if required'
+    ],
+    '3.7': [
+      'Whether financial settlement applies here',
+      'Settlement cadence, if applicable'
+    ],
+    '4.1': [
+      'Concrete target date or milestone for readiness',
+      'Reason for any uncertainty, if not yet fixed'
+    ],
+    '4.2': ['Commercial launch plan and timing, consistent with the readiness date'],
+    '4.3': [
+      'Whether internal rollout/training is needed',
+      'Audience and timing, if needed'
+    ],
+    '4.4': ['Whether a phased or big-bang rollout is planned'],
+    '5.1': ['Retirement approach, or explicit confirmation that none applies yet']
+  };
+
+  setFocus(code) {
+    this.setState({ focusedCode: code });
+  }
+
+  openReviewModal() { this.setState({ reviewModalOpen: true }); }
+  closeReviewModal() { this.setState({ reviewModalOpen: false }); }
+
+  openAddSection() { this.setState({ addSectionOpen: true, newSection: { title: '', hasChildren: false, purpose: '', childDraft: '', children: [] },
+    nestDropdownOpen: false, nestValue: '3. Service Description', sectionTitleError: false }); }
+  closeAddSection() { this.setState({ addSectionOpen: false }); }
+
+  nestOptionsList = ['3. Service Description', '1. Introduction', '2. Benefit Analysis', '4. Release Plan', '5. Product/Service Retirement Plan', 'None — standalone top-level section'];
+  toggleNestDropdown() { this.setState(s => ({ nestDropdownOpen: !s.nestDropdownOpen })); }
+  selectNest(val) { this.setState({ nestValue: val, nestDropdownOpen: false }); }
+
+  openViewResult(code, e) { if (e) e.stopPropagation(); this.setState({ viewResultCode: code }); }
+  closeViewResult() { this.setState({ viewResultCode: null }); }
+
+  setNewSectionField(field, value) { this.setState(s => ({ newSection: { ...s.newSection, [field]: value }, sectionTitleError: field === 'title' ? false : s.sectionTitleError })); }
+  setStructure(hasChildren) { this.setNewSectionField('hasChildren', hasChildren); }
+
+  addChildDraft() {
+    this.setState(s => {
+      const t = s.newSection.childDraft.trim();
+      if (!t) return {};
+      return { newSection: { ...s.newSection, children: [...s.newSection.children, { id: 'tmp' + Date.now() + Math.random(), title: t }], childDraft: '' } };
+    });
+  }
+  removeDraftChild(id) {
+    this.setState(s => ({ newSection: { ...s.newSection, children: s.newSection.children.filter(c => c.id !== id) } }));
+  }
+  commitNewSection() {
+    const ns = this.state.newSection;
+    if (!ns.title.trim()) { this.setState({ sectionTitleError: true }); return; }
+    this.setState(s => ({
+      customSections: [...s.customSections, { id: 'cs' + Date.now(), title: ns.title.trim(), hasChildren: ns.hasChildren, children: ns.children }],
+      addSectionOpen: false
+    }));
+  }
+  removeCustomSection(id) {
+    this.setState(s => ({ customSections: s.customSections.filter(cs => cs.id !== id) }));
+  }
+  removeCustomChild(sectionId, childId) {
+    this.setState(s => ({ customSections: s.customSections.map(cs => cs.id === sectionId ? { ...cs, children: cs.children.filter(c => c.id !== childId) } : cs) }));
+  }
+
+  confidenceTier(conf) {
+    if (conf === null || conf === undefined) return { label: 'Not started', color: '#c1c1c1' };
+    if (conf >= 85) return { label: 'High', color: '#1a7f37' };
+    if (conf >= 60) return { label: 'Medium', color: '#b45309' };
+    return { label: 'Low', color: '#c13515' };
+  }
+
+  renderVals() {
+    const aiModel = this.props.aiModel ?? 'Local';
+    const isCloud = aiModel === 'Cloud';
+    const generateReady = this.props.generateReady ?? false;
+    const focusedCode = this.state.focusedCode;
+
+    let currentLabel = '3.2 Product / Service Specification';
+    let currentMissing = '';
+
+    const byCode = {};
+    this.sectionsData.forEach(sec => sec.items.forEach(it => { if (it.code) byCode[it.code] = it; }));
+
+    const viewSrc = byCode[this.state.viewResultCode];
+    const viewTier = viewSrc ? this.confidenceTier(viewSrc.confidence) : null;
+    const viewResultItem = viewSrc ? {
+      code: viewSrc.code, label: viewSrc.label, answer: viewSrc.answer,
+      confidence: viewSrc.confidence, completeness: viewSrc.completeness,
+      tierLabel: viewTier.label, tierColor: viewTier.color
+    } : null;
+
+    const sections = this.sectionsData.map(sec => {
+      const pct = Math.round((sec.done / sec.total) * 100);
+      const ringStyle = {
+        position: 'relative', width: '26px', height: '26px', borderRadius: '50%', flexShrink: 0,
+        background: `conic-gradient(#222222 0% ${pct}%, #f2f2f2 ${pct}% 100%)`
+      };
+      const items = sec.items.map((it, idx) => {
+        if (it.type === 'header') {
+          return { key: sec.id + '-h' + idx, isHeader: true, isRow: false, label: it.label };
+        }
+        const deps = it.dependsOn || [];
+        const neededLabels = deps.filter(c => byCode[c] && byCode[c].status !== 'done').map(c => byCode[c].label);
+        const isBlocked = neededLabels.length > 0;
+        let note = '';
+        if (it.status === 'conditional') {
+          note = it.conditionText || '';
+          if (isBlocked) note += (note ? ' · ' : '') + 'Needs: ' + neededLabels.join(', ');
+        } else if (isBlocked) {
+          note = 'Needs: ' + neededLabels.join(', ');
+        }
+        const hasNote = !!note;
+
+        const isFocused = !isBlocked && it.code === focusedCode;
+        if (isFocused) {
+          currentLabel = it.label;
+          currentMissing = this.missingByStatus(it.status, note);
+        }
+        const missingItems = this.missingItemsByCode[it.code] || [];
+        const hasMetrics = it.completeness !== undefined && it.completeness !== null;
+        const hasConfidence = it.confidence !== undefined && it.confidence !== null;
+        const tier = hasConfidence ? this.confidenceTier(it.confidence) : null;
+        const donutOuterStyle = hasMetrics ? {
+          position: 'relative', width: '20px', height: '20px', borderRadius: '50%', flexShrink: 0,
+          background: `conic-gradient(#222222 0% ${it.completeness}%, #eeeeee ${it.completeness}% 100%)`
+        } : null;
+        const donutInnerStyle = (hasMetrics && hasConfidence) ? {
+          position: 'absolute', inset: '3px', borderRadius: '50%',
+          background: `conic-gradient(${tier.color} 0% ${it.confidence}%, #eeeeee ${it.confidence}% 100%)`
+        } : null;
+        return {
+          key: it.code,
+          isHeader: false,
+          isRow: true,
+          isFocused,
+          label: it.label,
+          isDone: it.status === 'done',
+          isDoneNoConf: it.status === 'done' && !hasMetrics,
+          isReady: it.status === 'ready',
+          isConditional: it.status === 'conditional',
+          isLocked: it.status === 'locked',
+          isReview: it.status === 'review',
+          isReviewNoConf: it.status === 'review' && !hasMetrics,
+          showReview: it.status === 'review',
+          hasNote,
+          note,
+          textWeight: it.status === 'progress' ? 600 : 400,
+          textColor: (it.status === 'locked' || it.status === 'conditional') ? '#929292' : '#222222',
+          wrapStyle: it.group ? { borderLeft: '2px solid #ebebeb', marginLeft: '8px', paddingLeft: '14px' } : {},
+          rowStyle: {
+            display: 'flex', alignItems: hasNote ? 'flex-start' : 'center',
+            justifyContent: it.status === 'review' ? 'space-between' : 'flex-start',
+            gap: '10px', padding: isFocused ? '9px 8px 9px 12px' : '9px 0',
+            margin: isFocused ? '0 -8px' : '0',
+            background: isFocused ? '#f5f5f5' : 'transparent',
+            borderLeft: isFocused ? '3px solid #222222' : '3px solid transparent',
+            borderRadius: '6px', cursor: isBlocked ? 'default' : 'pointer'
+          },
+          missingItems,
+          hasMissingItems: missingItems.length > 0,
+          noMissingItems: missingItems.length === 0,
+          hasMetrics,
+          completeness: it.completeness,
+          confidence: it.confidence,
+          tierLabel: hasConfidence ? tier.label : '',
+          tierColor: hasConfidence ? tier.color : '',
+          donutOuterStyle,
+          donutInnerStyle,
+          hasAnswer: !!it.answer,
+          answer: it.answer || '',
+          onView: (e) => this.openViewResult(it.code, e),
+          onClick: isBlocked ? undefined : (() => this.setFocus(it.code))
+        };
+      });
+      return { key: sec.id, title: sec.title, countLabel: `${sec.done} / ${sec.total}`, ringStyle, items };
+    });
+
+    const reviewModalOpen = this.state.reviewModalOpen !== null ? this.state.reviewModalOpen : (this.props.showReviewFlaggedModal ?? false);
+
+    const recomputed = this.state.recomputed;
+    const sectionTitleError = this.props.showSectionTitleError ?? this.state.sectionTitleError;
+    const newSection = this.state.newSection;
+    const singleOptStyle = {
+      padding: '7px 16px', borderRadius: '9999px', fontSize: '13px', cursor: 'pointer',
+      fontWeight: !newSection.hasChildren ? 600 : 500,
+      color: !newSection.hasChildren ? '#ffffff' : '#6a6a6a',
+      background: !newSection.hasChildren ? '#222222' : 'transparent'
+    };
+    const groupOptStyle = {
+      padding: '7px 16px', borderRadius: '9999px', fontSize: '13px', cursor: 'pointer',
+      fontWeight: newSection.hasChildren ? 600 : 500,
+      color: newSection.hasChildren ? '#ffffff' : '#6a6a6a',
+      background: newSection.hasChildren ? '#222222' : 'transparent'
+    };
+    const flaggedItems = this.flaggedItems.map(f => {
+      const missingItems = this.missingItemsByCode[f.code] || [];
+      return { ...f, missingItems, hasMissingItems: recomputed && missingItems.length > 0 };
+    });
+
+    return {
+      isCloud,
+      notCloud: !isCloud,
+      generateReady,
+      notGenerateReady: !generateReady,
+      sections,
+      currentLabel,
+      currentMissing,
+      isDefaultFocus: focusedCode === '3.2',
+      isNotDefaultFocus: focusedCode !== '3.2',
+      reviewModalOpen,
+      openReviewModal: () => this.openReviewModal(),
+      closeReviewModal: () => this.closeReviewModal(),
+      addSectionOpen: this.state.addSectionOpen !== null ? this.state.addSectionOpen : (this.props.showAddSectionModal ?? false),
+      openAddSection: () => this.openAddSection(),
+      closeAddSection: () => this.closeAddSection(),
+      sectionTitleError,
+      nestDropdownOpen: this.props.showNestDropdownOpen ?? this.state.nestDropdownOpen,
+      nestSelected: this.state.nestValue,
+      nestChevronStyle: { transform: (this.props.showNestDropdownOpen ?? this.state.nestDropdownOpen) ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform .15s' },
+      toggleNestDropdown: () => this.toggleNestDropdown(),
+      nestOptions: this.nestOptionsList.map(opt => ({
+        key: opt, label: opt, onSelect: () => this.selectNest(opt),
+        rowStyle: { padding: '10px 16px', fontSize: '14px', cursor: 'pointer', background: opt === this.state.nestValue ? '#f5f5f5' : '#ffffff', fontWeight: opt === this.state.nestValue ? 600 : 400 }
+      })),
+      sectionTitleInputStyle: {
+        height: '48px', background: '#ffffff', fontFamily: 'inherit',
+        border: sectionTitleError ? '1.5px solid #c13515' : '1px solid #dddddd',
+        borderRadius: '8px', padding: '0 16px', fontSize: '15px', color: '#222222'
+      },
+      flaggedItems,
+      customSections: this.state.customSections.map(cs => ({
+        key: cs.id,
+        title: cs.title,
+        hasChildren: cs.hasChildren,
+        isSingle: !cs.hasChildren,
+        onRemove: () => this.removeCustomSection(cs.id),
+        children: cs.children.map(c => ({ key: c.id, title: c.title, onRemove: () => this.removeCustomChild(cs.id, c.id) }))
+      })),
+      newSection,
+      structureHint: newSection.hasChildren ? 'Shown as a group header with its sub-sections listed underneath.' : 'Shown as a single row, like a regular checklist item.',
+      onTitleChange: (e) => this.setNewSectionField('title', e.target.value),
+      onPurposeChange: (e) => this.setNewSectionField('purpose', e.target.value),
+      onChildDraftChange: (e) => this.setNewSectionField('childDraft', e.target.value),
+      addChildDraft: () => this.addChildDraft(),
+      removeDraftChild: (id) => this.removeDraftChild(id),
+      setSingleStructure: () => this.setStructure(false),
+      setGroupStructure: () => this.setStructure(true),
+      singleOptStyle,
+      groupOptStyle,
+      newSectionChildren: newSection.children.map(c => ({ key: c.id, title: c.title, onRemove: () => this.removeDraftChild(c.id) })),
+      commitNewSection: () => this.commitNewSection(),
+      viewResultOpen: !!viewResultItem,
+      viewResultItem: viewResultItem || { label: '', answer: '', confidence: null, tierLabel: '', tierColor: '' },
+      closeViewResult: () => this.closeViewResult(),
+      recomputed,
+      toggleRecompute: () => this.toggleRecompute()
+    };
+  }
+}
+
+</script>
+</body>
+</html>

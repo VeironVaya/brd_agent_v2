@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;-webkit-font-smoothing:antialiased;}
+a{color:#222222;text-decoration:none;}
+a:hover{color:#e00b41;}
+::selection{background:rgba(255,56,92,.18);}
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#ff385c"/><rect x="60" y="60" width="80" height="80" rx="16" fill="#222"/><path d="M75 90a12 12 0 0 1 12-12h26a12 12 0 0 1 12 12v18a12 12 0 0 1-12 12H91l-8 8v-8a12 12 0 0 1-8-12z" fill="none" stroke="#fff" stroke-width="5"/></svg></template>
+
+<div id="screen-login-access-denied" style="width:100%;min-height:100vh;background:#ffffff;font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,Roboto,'Helvetica Neue',sans-serif;color:#222222;display:flex;align-items:center;justify-content:center;padding:24px;">
+
+<div style="width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center;">
+
+<div style="width:64px;height:64px;border-radius:50%;background:#fdecea;display:flex;align-items:center;justify-content:center;margin-bottom:24px;">
+<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c13515" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3"></path><path d="M12 15v2"></path></svg>
+</div>
+
+<div style="font-size:24px;font-weight:700;color:#222222;">Access denied</div>
+<div style="font-size:15px;color:#6a6a6a;margin-top:10px;line-height:1.5;">You signed in successfully, but your account isn't provisioned for BRD-Agent. Ask your workspace admin to add you, then try again.</div>
+
+<div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-top:28px;">
+<a href="#" style="display:flex;align-items:center;justify-content:center;background:#ff385c;color:#ffffff;border-radius:8px;height:48px;font-size:15px;font-weight:600;">Contact your workspace admin</a>
+<a href="#" style="display:flex;align-items:center;justify-content:center;background:#ffffff;color:#222222;border:1px solid #dddddd;border-radius:8px;height:48px;font-size:15px;font-weight:600;">Try a different account</a>
+</div>
+
+</div>
+</div>
+
+</x-dc>
+</body>
+</html>

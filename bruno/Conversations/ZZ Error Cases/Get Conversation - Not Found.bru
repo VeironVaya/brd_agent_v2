@@ -1,0 +1,24 @@
+meta {
+  name: Get Conversation - Not Found
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/conversations/00000000-0000-0000-0000-000000000000
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 404", function () {
+    expect(res.getStatus()).to.equal(404);
+  });
+  test("error code is not_found", function () {
+    expect(res.body.error).to.equal("not_found");
+  });
+}

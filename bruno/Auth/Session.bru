@@ -1,0 +1,24 @@
+meta {
+  name: Session
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/auth/session
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("returns the current user", function () {
+    expect(res.body).to.have.property("user");
+  });
+}

@@ -1,0 +1,40 @@
+meta {
+  name: Add Custom Section
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/custom-sections
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "target": { "kind": "template", "id": "3.3" },
+    "title": "Vendor Escalation Path",
+    "has_children": false,
+    "purpose": "How escalations get routed and who's paged if an SLA is missed."
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("customSectionId", res.body.id);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("returns an id and echoes purpose", function () {
+    expect(res.body).to.have.property("id");
+    expect(res.body.purpose).to.equal("How escalations get routed and who's paged if an SLA is missed.");
+  });
+}

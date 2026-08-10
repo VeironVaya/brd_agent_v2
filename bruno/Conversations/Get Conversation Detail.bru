@@ -1,0 +1,29 @@
+meta {
+  name: Get Conversation Detail
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("has the 6 core sections of the response shape", function () {
+    expect(res.body).to.have.property("answers");
+    expect(res.body).to.have.property("custom_sections");
+    expect(res.body).to.have.property("flagged_items");
+    expect(res.body).to.have.property("messages");
+    expect(res.body).to.have.property("answered_count");
+    expect(res.body).to.have.property("focused_field_id");
+  });
+}

@@ -1,0 +1,30 @@
+meta {
+  name: Generate Document - PDF
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "format": "pdf"
+  }
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("filename ends in .pdf (backend only ever returns markdown text; actual PDF conversion is client-side, see CLAUDE.md NFR-1)", function () {
+    expect(res.body.filename).to.match(/\.pdf$/);
+  });
+}

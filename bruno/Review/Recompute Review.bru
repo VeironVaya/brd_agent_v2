@@ -1,0 +1,25 @@
+meta {
+  name: Recompute Review
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/review/recompute
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("returns a flagged_items array", function () {
+    expect(res.body).to.have.property("flagged_items");
+    expect(res.body.flagged_items).to.be.an("array");
+  });
+}

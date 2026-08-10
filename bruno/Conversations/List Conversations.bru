@@ -1,0 +1,25 @@
+meta {
+  name: List Conversations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/conversations
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("returns a conversations array", function () {
+    expect(res.body).to.have.property("conversations");
+    expect(res.body.conversations).to.be.an("array");
+  });
+}

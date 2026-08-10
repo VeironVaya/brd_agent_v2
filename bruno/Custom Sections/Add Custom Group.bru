@@ -1,0 +1,38 @@
+meta {
+  name: Add Custom Group
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{conversationId}}/custom-sections
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "target": null,
+    "title": "Regional Rollout Notes",
+    "has_children": true
+  }
+}
+
+script:post-response {
+  if (res.body && res.body.id) {
+    bru.setEnvVar("customGroupId", res.body.id);
+  }
+}
+
+tests {
+  test("status is 201", function () {
+    expect(res.getStatus()).to.equal(201);
+  });
+  test("has_children is true", function () {
+    expect(res.body.has_children).to.equal(true);
+  });
+}
