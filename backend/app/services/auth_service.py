@@ -35,7 +35,7 @@ def _verify_password(password: str, password_hash: str) -> bool:
 
 
 def _issue_token(user: User) -> str:
-    expires_at = datetime.now(timezone.utc) + timedelta(days=settings.jwt_expiry_days)
+    expires_at = datetime.now(timezone.utc) + timedelta(hours=settings.jwt_expiry_hours)
     payload = {"sub": user.user_id, "exp": expires_at, "jti": new_id()}
     return jwt.encode(payload, settings.jwt_secret, algorithm=JWT_ALGORITHM)
 
