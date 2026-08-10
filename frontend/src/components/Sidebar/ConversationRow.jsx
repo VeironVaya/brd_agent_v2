@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import RenameModal from '../common/RenameModal.jsx'
 import ConfirmModal from '../common/ConfirmModal.jsx'
+import RoleBadge from '../common/RoleBadge.jsx'
 
-export default function ConversationRow({ conversation, onRename, onDelete }) {
+export default function ConversationRow({ conversation, onRename, onDelete, onShare }) {
   const navigate = useNavigate()
   const percent = Math.round((conversation.answeredCount / 26) * 100)
+  const isOwner = conversation.role === 'owner'
   const [menuOpen, setMenuOpen] = useState(false)
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
@@ -13,9 +15,14 @@ export default function ConversationRow({ conversation, onRename, onDelete }) {
   return (
     <div className="flex items-center justify-between gap-6 flex-wrap bg-white border border-border-light rounded-[14px] px-6 py-5">
       <div className="flex-1 min-w-55">
-        <div className="text-base font-semibold">{conversation.title}</div>
+        <div className="flex items-center gap-2">
+          <div className="text-base font-semibold">{conversation.title}</div>
+          {!isOwner && <RoleBadge role={conversation.role} />}
+        </div>
         <div className="text-sm text-text-secondary mt-1">
-          {conversation.timeLabel} · {conversation.answeredCount} of 26 answered
+          {isOwner
+            ? `${conversation.timeLabel} · ${conversation.answeredCount} of 26 answered`
+            : `Shared by ${conversation.ownerName} · ${conversation.answeredCount} of 26 answered`}
         </div>
       </div>
       <div className="flex flex-col gap-1.5 w-47.5 flex-shrink-0">
@@ -33,6 +40,7 @@ export default function ConversationRow({ conversation, onRename, onDelete }) {
           Open
         </button>
 
+        {isOwner && (
         <div className="relative">
           <button
             type="button"
@@ -51,6 +59,24 @@ export default function ConversationRow({ conversation, onRename, onDelete }) {
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
               <div className="absolute top-11 right-0 bg-white border border-border rounded-btn shadow-dropdown z-20 overflow-hidden w-40">
+                {onShare && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      onShare()
+                    }}
+                    className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-text-primary cursor-pointer bg-white hover:bg-bg-subtle text-left border-none"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3" />
+                      <circle cx="6" cy="12" r="3" />
+                      <circle cx="18" cy="19" r="3" />
+                      <path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9" />
+                    </svg>
+                    Share
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
@@ -84,6 +110,7 @@ export default function ConversationRow({ conversation, onRename, onDelete }) {
             </>
           )}
         </div>
+        )}
       </div>
 
       <RenameModal

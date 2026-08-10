@@ -79,3 +79,56 @@ async def test_logout_returns_no_content(client):
     session = await register_and_login(client)
     res = await client.post("/auth/logout", headers=session["headers"])
     assert res.status_code == 204
+
+
+async def test_logout_requires_a_token(client):
+    res = await client.post("/auth/logout")
+    assert res.status_code == 401
+
+
+async def test_logout_actually_revokes_the_token(client):
+    """The real bug this was built for: logging out used to be a no-op —
+    the same token kept authenticating successfully afterward. Proves the
+    token is dead the moment logout returns, not just eventually on its
+    natural expiry."""
+    session = await register_and_login(client)
+
+    before = await client.get("/auth/session", headers=session["headers"])
+    assert before.status_code == 200
+
+    logout_res = await client.post("/auth/logout", headers=session["headers"])
+    assert logout_res.status_code == 204
+
+    after = await client.get("/auth/session", headers=session["headers"])
+    assert after.status_code == 401
+
+    conversations = await client.get("/api/conversations", headers=session["headers"])
+    assert conversations.status_code == 401
+
+
+async def test_logout_is_idempotent(client):
+    session = await register_and_login(client)
+    first = await client.post("/auth/logout", headers=session["headers"])
+    assert first.status_code == 204
+    # Same (now-revoked) token again — must not 500 on a duplicate-key insert.
+    second = await client.post("/auth/logout", headers=session["headers"])
+    assert second.status_code == 204
+
+
+async def test_logout_does_not_revoke_other_sessions(client):
+    """Logging out on one device/token shouldn't kill a second, separately
+    issued token for the same user (e.g. logged in on two tabs)."""
+    session = await register_and_login(client)
+    second_login = await client.post(
+        "/auth/login", json={"email": session["email"], "password": "password123"}
+    )
+    assert second_login.status_code == 200
+    second_headers = {"Authorization": f"Bearer {second_login.json()['token']}"}
+
+    await client.post("/auth/logout", headers=session["headers"])
+
+    first_still_dead = await client.get("/auth/session", headers=session["headers"])
+    assert first_still_dead.status_code == 401
+
+    second_still_alive = await client.get("/auth/session", headers=second_headers)
+    assert second_still_alive.status_code == 200

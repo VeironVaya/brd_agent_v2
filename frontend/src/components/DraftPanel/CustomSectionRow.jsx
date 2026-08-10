@@ -48,7 +48,7 @@ function ReadyIcon() {
 }
 
 /** Recursively renders one custom section node and its children, at any depth. */
-export default function CustomSectionRow({ node, code, onRename, onRemove, answers, focusedFieldId, onFocus, onViewAnswer, indent = false }) {
+export default function CustomSectionRow({ node, code, onRename, onRemove, answers, focusedFieldId, onFocus, onViewAnswer, indent = false, canEdit = true }) {
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
@@ -76,14 +76,16 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
               {code} {node.title}
             </span>
           </div>
-          <div className="flex items-center gap-1">
-            <IconButton label="Rename section" hoverClass="hover:text-text-primary" onClick={() => setRenameOpen(true)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton label="Remove section" hoverClass="hover:text-confidence-low" onClick={() => setDeleteOpen(true)}>
-              <TrashIcon />
-            </IconButton>
-          </div>
+          {canEdit && (
+            <div className="flex items-center gap-1">
+              <IconButton label="Rename section" hoverClass="hover:text-text-primary" onClick={() => setRenameOpen(true)}>
+                <EditIcon />
+              </IconButton>
+              <IconButton label="Remove section" hoverClass="hover:text-confidence-low" onClick={() => setDeleteOpen(true)}>
+                <TrashIcon />
+              </IconButton>
+            </div>
+          )}
         </div>
         {node.children.map((child, i) => (
           <CustomSectionRow
@@ -97,6 +99,7 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
             onFocus={onFocus}
             onViewAnswer={onViewAnswer}
             indent
+            canEdit={canEdit}
           />
         ))}
         {renameModal}
@@ -169,14 +172,16 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
           )}
         </div>
 
-        <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          <IconButton label="Rename section" hoverClass="hover:text-text-primary" onClick={() => setRenameOpen(true)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton label="Remove section" hoverClass="hover:text-confidence-low" onClick={() => setDeleteOpen(true)}>
-            <TrashIcon />
-          </IconButton>
-        </div>
+        {canEdit && (
+          <div className="flex items-center gap-1 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+            <IconButton label="Rename section" hoverClass="hover:text-text-primary" onClick={() => setRenameOpen(true)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton label="Remove section" hoverClass="hover:text-confidence-low" onClick={() => setDeleteOpen(true)}>
+              <TrashIcon />
+            </IconButton>
+          </div>
+        )}
       </div>
 
       {isFocused && (

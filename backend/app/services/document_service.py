@@ -35,7 +35,9 @@ def _append_custom_node(lines: list[str], node: dict, code: str, codes: dict[str
 
 
 async def build_markdown(session: AsyncSession, *, conversation_id: str, user_id: str) -> str:
-    conversation = await conversation_service.get_owned(session, conversation_id, user_id)
+    conversation, _role = await conversation_service.get_accessible(
+        session, conversation_id, user_id, min_role="viewer"
+    )
     sections = await section_repository.list_by_conversation(session, conversation_id)
     answers = await answer_repository.list_by_conversation(session, conversation_id)
     answers_by_section = {a.section_id: a for a in answers}
@@ -94,7 +96,9 @@ async def build_markdown(session: AsyncSession, *, conversation_id: str, user_id
 
 
 async def generate(session: AsyncSession, *, conversation_id: str, user_id: str, format: str) -> dict:
-    conversation = await conversation_service.get_owned(session, conversation_id, user_id)
+    conversation, _role = await conversation_service.get_accessible(
+        session, conversation_id, user_id, min_role="viewer"
+    )
     markdown = await build_markdown(session, conversation_id=conversation_id, user_id=user_id)
     await conversation_repository.update_generation_metadata(session, conversation, DOCUMENT_VERSION)
 

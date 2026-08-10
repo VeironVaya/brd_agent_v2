@@ -1,0 +1,25 @@
+meta {
+  name: List Collaborators
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/collaborators
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 200", function () {
+    expect(res.getStatus()).to.equal(200);
+  });
+  test("returns both collaborators", function () {
+    expect(res.body.collaborators).to.be.an("array");
+    expect(res.body.collaborators.length).to.equal(2);
+  });
+}

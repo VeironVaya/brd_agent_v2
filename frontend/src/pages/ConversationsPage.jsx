@@ -7,6 +7,7 @@ import EmptyState from '../components/Sidebar/EmptyState.jsx'
 import NewConversationModal from '../components/Sidebar/NewConversationModal.jsx'
 import UserMenu from '../components/common/UserMenu.jsx'
 import ConfirmModal from '../components/common/ConfirmModal.jsx'
+import ShareModal from '../components/common/ShareModal.jsx'
 import * as api from '../services/api.js'
 
 export default function ConversationsPage() {
@@ -14,8 +15,10 @@ export default function ConversationsPage() {
   const [conversations, setConversations] = useState([])
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState('')
+  const [tab, setTab] = useState('owner') // 'owner' | 'shared'
   const [modalOpen, setModalOpen] = useState(false)
   const [logoutOpen, setLogoutOpen] = useState(false)
+  const [shareTargetId, setShareTargetId] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -30,10 +33,12 @@ export default function ConversationsPage() {
     }
   }, [])
 
-  const filtered = conversations.filter((c) =>
-    c.title.toLowerCase().includes(query.toLowerCase()),
-  )
+  const owned = conversations.filter((c) => c.role === 'owner')
+  const shared = conversations.filter((c) => c.role !== 'owner')
+  const activeList = tab === 'owner' ? owned : shared
+  const filtered = activeList.filter((c) => c.title.toLowerCase().includes(query.toLowerCase()))
   const isEmpty = !loading && conversations.length === 0
+  const isTabEmpty = !loading && !isEmpty && filtered.length === 0
 
   async function handleCreate({ title, context }) {
     const { id } = await api.createConversation({ title, context })
@@ -67,7 +72,7 @@ export default function ConversationsPage() {
             <div className="text-sm text-text-secondary mt-1 whitespace-nowrap overflow-hidden text-ellipsis">
               {isEmpty
                 ? 'No conversations yet'
-                : `${conversations.length} conversations · most recent first`}
+                : `${activeList.length} ${tab === 'owner' ? 'owned by you' : 'shared with you'} · most recent first`}
             </div>
           </div>
         </div>
@@ -97,16 +102,63 @@ export default function ConversationsPage() {
       {isEmpty ? (
         <EmptyState onNewConversation={() => setModalOpen(true)} />
       ) : (
-        <div className="px-10 pt-2 pb-10 flex flex-col gap-4">
-          {filtered.map((c) => (
-            <ConversationRow
-              key={c.id}
-              conversation={c}
-              onRename={handleRename}
-              onDelete={handleDelete}
+        <>
+          <div className="px-10 flex">
+            <div className="inline-flex bg-bg-subtlest rounded-pill p-1 gap-0.5">
+              <button
+                type="button"
+                onClick={() => setTab('owner')}
+                className={`px-4 py-1.75 rounded-pill text-sm cursor-pointer border-none transition-colors ${
+                  tab === 'owner' ? 'font-semibold text-white bg-text-primary' : 'font-medium text-text-secondary bg-transparent'
+                }`}
+              >
+                My BRDs ({owned.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setTab('shared')}
+                className={`px-4 py-1.75 rounded-pill text-sm cursor-pointer border-none transition-colors ${
+                  tab === 'shared' ? 'font-semibold text-white bg-text-primary' : 'font-medium text-text-secondary bg-transparent'
+                }`}
+              >
+                Shared with me ({shared.length})
+              </button>
+            </div>
+          </div>
+
+          {isTabEmpty ? (
+            <EmptyState
+              hideAction={tab === 'shared' || (tab === 'owner' && query.trim() !== '')}
+              onNewConversation={() => setModalOpen(true)}
+              title={
+                query.trim() !== ''
+                  ? 'No conversations match your search'
+                  : tab === 'owner'
+                    ? 'No conversations yet'
+                    : 'No BRDs shared with you yet'
+              }
+              description={
+                query.trim() !== ''
+                  ? 'Try a different search.'
+                  : tab === 'owner'
+                    ? 'Start your first BRD conversation and BRD-Agent will guide you section by section.'
+                    : "When someone shares a BRD with you, it'll show up here."
+              }
             />
-          ))}
-        </div>
+          ) : (
+            <div className="px-10 pt-4 pb-10 flex flex-col gap-4">
+              {filtered.map((c) => (
+                <ConversationRow
+                  key={c.id}
+                  conversation={c}
+                  onRename={handleRename}
+                  onDelete={handleDelete}
+                  onShare={c.role === 'owner' ? () => setShareTargetId(c.id) : undefined}
+                />
+              ))}
+            </div>
+          )}
+        </>
       )}
       </div>
 
@@ -114,6 +166,14 @@ export default function ConversationsPage() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onCreate={handleCreate}
+      />
+      <ShareModal
+        open={!!shareTargetId}
+        onClose={() => {
+          setShareTargetId(null)
+          refreshList()
+        }}
+        conversationId={shareTargetId}
       />
       <ConfirmModal
         open={logoutOpen}

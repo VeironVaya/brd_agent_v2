@@ -1,0 +1,21 @@
+meta {
+  name: Delete Sharing Conversation
+  type: http
+  seq: 17
+}
+
+delete {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("status is 204", function () {
+    expect(res.getStatus()).to.equal(204);
+  });
+}

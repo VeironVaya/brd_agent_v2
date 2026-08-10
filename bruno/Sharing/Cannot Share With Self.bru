@@ -1,0 +1,31 @@
+meta {
+  name: Cannot Share With Self
+  type: http
+  seq: 14
+}
+
+post {
+  url: {{baseUrl}}/api/conversations/{{sharingConversationId}}/collaborators
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "email": "{{registerEmail}}",
+    "role": "editor"
+  }
+}
+
+tests {
+  test("status is 400", function () {
+    expect(res.getStatus()).to.equal(400);
+  });
+  test("error code is cannot_share_with_self", function () {
+    expect(res.body.error).to.equal("cannot_share_with_self");
+  });
+}
