@@ -1,12 +1,23 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { useAuth } from './contexts/AuthContext.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import ConversationsPage from './pages/ConversationsPage.jsx'
 import DraftSessionPage from './pages/DraftSessionPage.jsx'
 import ExportPage from './pages/ExportPage.jsx'
-import { getToken } from './services/api.js'
 
+/**
+ * RequireAuth — validates auth against the server (via AuthContext) before
+ * rendering protected routes. Three states:
+ *   loading  → render nothing (blank) while GET /auth/session is in-flight.
+ *              Never redirect during this window — a valid token would
+ *              incorrectly bounce the user to /login on every hard refresh.
+ *   no user  → redirect to /login.
+ *   user ok  → render children.
+ */
 function RequireAuth({ children }) {
-  if (!getToken()) return <Navigate to="/login" replace />
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (!user) return <Navigate to="/login" replace />
   return children
 }
 
@@ -43,3 +54,4 @@ export default function App() {
     </Routes>
   )
 }
+

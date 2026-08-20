@@ -32,6 +32,21 @@ async function request(path, { method = 'GET', body } = {}) {
 
   if (res.status === 204) return null
 
+  // 401 mid-session: token expired or revoked server-side.
+  // Clear the stored token and notify AuthContext via a CustomEvent so
+  // it can redirect to /login. api.js stays React-free — no imports of
+  // navigate or context here.
+  if (res.status === 401) {
+    clearToken()
+    window.dispatchEvent(new CustomEvent('auth:expired'))
+    const data = await res.json().catch(() => null)
+    const message = data?.message || data?.detail || 'Your session has expired. Please sign in again.'
+    const err = new Error(message)
+    err.code = data?.error
+    err.status = 401
+    throw err
+  }
+
   const data = await res.json().catch(() => null)
   if (!res.ok) {
     const message = data?.message || data?.detail || 'Something went wrong. Please try again.'
