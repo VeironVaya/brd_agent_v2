@@ -4,7 +4,7 @@ explicit decision."""
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.exceptions import ForbiddenError, NotFoundError, TitleRequiredError
+from app.exceptions import ForbiddenError, InvalidChoiceDataError, NotFoundError, TitleRequiredError
 from app.models.conversation import Conversation
 from app.models.section import Section
 from app.models.section_dependency import SectionDependency
@@ -23,6 +23,17 @@ from app.utils.ids import new_id
 # Effective access levels, ranked low-to-high. "owner" is never a stored
 # Collaborator row — it's implicit from Conversation.user_id, see erd.md.
 ROLE_RANK = {"viewer": 0, "editor": 1, "owner": 2}
+
+DIRECTORATE_OPTIONS = {
+    "CEO Office",
+    "Marketing",
+    "Sales",
+    "Planning & Transformation (P&T)",
+    "Finance & Risk Management",
+    "Network",
+    "Information Technology (IT)",
+    "Human Capital Management (HCM)",
+}
 
 
 async def _seed_template_and_general(session: AsyncSession, conversation_id: str) -> None:
@@ -100,12 +111,30 @@ async def _seed_template_and_general(session: AsyncSession, conversation_id: str
         await section_dependency_repository.bulk_insert(session, deps)
 
 
-async def create(session: AsyncSession, *, user_id: str, title: str, context: str | None) -> Conversation:
+async def create(
+    session: AsyncSession,
+    *,
+    user_id: str,
+    title: str,
+    context: str | None,
+    requestor_directorate: str | None = None,
+    impacted_stakeholders: list[str] | None = None,
+) -> Conversation:
     trimmed = title.strip()
     if not trimmed:
         raise TitleRequiredError("Title is required — give this BRD a name.")
+    if requestor_directorate is not None and requestor_directorate not in DIRECTORATE_OPTIONS:
+        raise InvalidChoiceDataError("Invalid requestor directorate.")
+    if any(stakeholder not in DIRECTORATE_OPTIONS for stakeholder in (impacted_stakeholders or [])):
+        raise InvalidChoiceDataError("Invalid impacted stakeholder.")
 
-    conversation = Conversation(user_id=user_id, title=trimmed, context=context)
+    conversation = Conversation(
+        user_id=user_id,
+        title=trimmed,
+        context=context,
+        requestor_directorate=requestor_directorate,
+        impacted_stakeholders=impacted_stakeholders or [],
+    )
     await conversation_repository.insert(session, conversation)
     await _seed_template_and_general(session, conversation.conversation_id)
     return conversation
@@ -220,6 +249,7 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
             "answer": answer.answer_text,
             "missing": answer.missing_items or [],
             "flagged": True if answer.section_id in flagged_ids else None,
+            "choice_data": answer.choice_data,
         }
 
     messages_dict: dict[str, list[dict]] = {}
@@ -243,6 +273,8 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
     return {
         "id": conversation.conversation_id,
         "title": conversation.title,
+        "requestor_directorate": conversation.requestor_directorate,
+        "impacted_stakeholders": conversation.impacted_stakeholders or [],
         "updated_at": conversation.updated_at,
         "last_generated_at": conversation.last_generated_at,
         "last_generated_version": conversation.last_generated_version,

@@ -60,3 +60,8 @@ class AlreadySharedError(DomainError):
 class InvalidRoleError(DomainError):
     status_code = 400
     error = "invalid_role"
+
+
+class InvalidChoiceDataError(DomainError):
+    status_code = 400
+    error = "invalid_choice_data"

@@ -112,6 +112,8 @@ function mapConversationDetail(detail) {
   return {
     id: detail.id,
     title: detail.title,
+    requestorDirectorate: detail.requestor_directorate || null,
+    impactedStakeholders: detail.impacted_stakeholders || [],
     timeLabel: formatRelativeTime(detail.updated_at),
     docVersion: detail.last_generated_version || null,
     docGeneratedLabel: detail.last_generated_at ? `Generated ${formatGeneratedDate(detail.last_generated_at)}` : null,
@@ -121,7 +123,9 @@ function mapConversationDetail(detail) {
     // answers/messages values already use single-word keys matching the
     // frontend's expectations 1:1 (status, completeness, confidence,
     // answer, missing / id, role, text) — no key translation needed.
-    answers: detail.answers,
+    answers: Object.fromEntries(
+      Object.entries(detail.answers).map(([key, answer]) => [key, { ...answer, choiceData: answer.choice_data || null }]),
+    ),
     customSections: (detail.custom_sections || []).map(mapCustomSectionNode),
     flaggedItems: (detail.flagged_items || []).map(mapFlaggedItem),
     messages: detail.messages,
@@ -196,8 +200,16 @@ export async function getConversation(id) {
   return mapConversationDetail(data)
 }
 
-export async function createConversation({ title, context }) {
-  const data = await request('/api/conversations', { method: 'POST', body: { title, context } })
+export async function createConversation({ title, context, requestorDirectorate, impactedStakeholders }) {
+  const data = await request('/api/conversations', {
+    method: 'POST',
+    body: {
+      title,
+      context,
+      requestor_directorate: requestorDirectorate || null,
+      impacted_stakeholders: impactedStakeholders || [],
+    },
+  })
   return { id: data.id }
 }
 
@@ -250,6 +262,21 @@ export async function postMessage(conversationId, roomId, text) {
     body: { text },
   })
   return { messages: data.messages }
+}
+
+export async function saveChoices(conversationId, sectionId, choiceData) {
+  const data = await request(`/api/conversations/${conversationId}/sections/${sectionId}/choices`, {
+    method: 'PUT',
+    body: { choice_data: choiceData },
+  })
+  return {
+    status: data.status,
+    completeness: data.completeness,
+    confidence: data.confidence,
+    answer: data.answer,
+    missing: data.missing,
+    choiceData: data.choice_data,
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -59,6 +59,15 @@ async def build_markdown(session: AsyncSession, *, conversation_id: str, user_id
     lines.append("")
     lines.append(f"*Business Requirement Document — {DOCUMENT_VERSION} · Generated {generated_on}*")
     lines.append("")
+    lines.append("## Request Details")
+    lines.append("")
+    lines.append(f"**Requestor Directorate:** {conversation.requestor_directorate or '_Not specified._'}")
+    lines.append("")
+    lines.append("**Impacted Stakeholder:**")
+    lines.extend(
+        f"- {stakeholder}" for stakeholder in (conversation.impacted_stakeholders or ["_Not specified._"])
+    )
+    lines.append("")
 
     for top in template_service.SECTIONS:
         lines.append(f"## {top.id}. {top.title}")

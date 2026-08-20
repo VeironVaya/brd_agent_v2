@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, String, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db import Base
@@ -14,6 +15,8 @@ class Conversation(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False, index=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     context: Mapped[str | None] = mapped_column(String, nullable=True)
+    requestor_directorate: Mapped[str | None] = mapped_column(String, nullable=True)
+    impacted_stakeholders: Mapped[list[str] | None] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()

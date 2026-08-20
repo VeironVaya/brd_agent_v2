@@ -11,6 +11,7 @@ import {
 } from '../utils/draftFields.js'
 import { buildNote } from '../components/DraftPanel/SectionRow.jsx'
 import { findCustomNode, getCodeForNode } from '../utils/customSectionTree.js'
+import { isChoiceSection } from '../utils/choiceSections.js'
 
 import ChatHeader from '../components/Chat/ChatHeader.jsx'
 import FocusBar from '../components/Chat/FocusBar.jsx'
@@ -26,6 +27,7 @@ import ReviewFlaggedModal from '../components/DraftPanel/ReviewFlaggedModal.jsx'
 import AnswerDetailModal from '../components/DraftPanel/AnswerDetailModal.jsx'
 import ConfirmModal from '../components/common/ConfirmModal.jsx'
 import ShareModal from '../components/common/ShareModal.jsx'
+import ChoiceSectionModal from '../components/ChoiceSections/ChoiceSectionModal.jsx'
 
 export default function DraftSessionPage() {
   const { id } = useParams()
@@ -42,6 +44,7 @@ export default function DraftSessionPage() {
   const [viewAnswerFieldId, setViewAnswerFieldId] = useState(null)
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
+  const [choiceSectionId, setChoiceSectionId] = useState(null)
   // Optimistic send: the user's own message renders immediately, with a
   // "thinking" indicator in place of the agent's reply, rather than
   // blocking on the full round trip — matters once the AI stub is a real,
@@ -131,6 +134,17 @@ export default function DraftSessionPage() {
     return created
   }
 
+  function handleFocus(fieldId) {
+    setFocusedFieldId(fieldId)
+    setRoomTab('question')
+    if (canEdit && isChoiceSection(fieldId)) setChoiceSectionId(fieldId)
+  }
+
+  async function handleSaveChoices(choiceData) {
+    await api.saveChoices(id, choiceSectionId, choiceData)
+    await refreshDetail()
+  }
+
   async function handleRenameCustomNode(nodeId, title) {
     await api.renameCustomSectionNode(id, nodeId, title)
     await refreshDetail()
@@ -168,6 +182,9 @@ export default function DraftSessionPage() {
               focusedLabel={focusedLeaf ? `${focusedCode} ${focusedLeaf.title}` : '—'}
               roomTab={roomTab}
               onChangeRoomTab={setRoomTab}
+              onOpenChoices={focusedFieldId && canEdit && isChoiceSection(focusedFieldId)
+                ? () => setChoiceSectionId(focusedFieldId)
+                : null}
             />
           </div>
           <MessageThread messages={messages} placeholderText={placeholderText} thinking={isSending} />
@@ -188,8 +205,7 @@ export default function DraftSessionPage() {
               answers={answers}
               focusedFieldId={focusedFieldId}
               onFocus={(fieldId) => {
-                setFocusedFieldId(fieldId)
-                setRoomTab('question')
+                handleFocus(fieldId)
               }}
               onViewAnswer={setViewAnswerFieldId}
               customSections={conversation.customSections}
@@ -207,8 +223,7 @@ export default function DraftSessionPage() {
                 answers={answers}
                 focusedFieldId={focusedFieldId}
                 onFocus={(fieldId) => {
-                  setFocusedFieldId(fieldId)
-                  setRoomTab('question')
+                  handleFocus(fieldId)
                 }}
                 onViewAnswer={setViewAnswerFieldId}
                 canEdit={canEdit}
@@ -251,6 +266,17 @@ export default function DraftSessionPage() {
         confirmLabel="Log out"
       />
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} conversationId={id} />
+      <ChoiceSectionModal
+        open={!!choiceSectionId}
+        sectionId={choiceSectionId}
+        answer={choiceSectionId ? answers[choiceSectionId] : null}
+        onClose={() => setChoiceSectionId(null)}
+        onDiscuss={() => {
+          setChoiceSectionId(null)
+          setRoomTab('question')
+        }}
+        onSave={handleSaveChoices}
+      />
     </div>
   )
 }
