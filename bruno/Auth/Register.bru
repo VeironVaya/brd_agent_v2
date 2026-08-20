@@ -10,20 +10,20 @@ post {
   auth: none
 }
 
+body:json {
+  {
+    "email": "password@company.co.id",
+    "password": "password123",
+    "name": "Your Name"
+  }
+}
+
 script:pre-request {
   // Unique email per run so this collection stays repeatable against a
   // real, persistent database — a hardcoded address would 400 on every
   // run after the first (see Error Cases/Register - Duplicate Email,
   // which deliberately re-registers this same address afterward).
   bru.setEnvVar("registerEmail", `bruno-${Date.now()}@example.com`);
-}
-
-body:json {
-  {
-    "email": "{{registerEmail}}",
-    "password": "password123",
-    "name": "Your Name"
-  }
 }
 
 script:post-response {

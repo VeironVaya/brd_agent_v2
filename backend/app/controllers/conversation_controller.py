@@ -29,7 +29,12 @@ async def create_conversation(
     session: AsyncSession = Depends(get_db),
 ) -> CreateConversationResponse:
     conversation = await conversation_service.create(
-        session, user_id=current_user.user_id, title=body.title, context=body.context
+        session,
+        user_id=current_user.user_id,
+        title=body.title,
+        context=body.context,
+        requestor_directorate=body.requestor_directorate,
+        impacted_stakeholders=body.impacted_stakeholders,
     )
     await session.commit()
     return CreateConversationResponse(id=conversation.conversation_id)

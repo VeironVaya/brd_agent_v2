@@ -24,6 +24,8 @@ import litellm
 
 from app.config import settings
 
+DUMMY_AI_REPLY = "Got it — logged. (Dummy AI: Please set GEMINI_API_KEY or GROQ_API_KEY in .env)"
+
 
 @dataclass
 class AgentReply:
@@ -145,6 +147,11 @@ async def get_reply(
     current_answer: dict | None,
 ) -> AgentReply:
     """Real AI Integration: LiteLLM routing processing room data and outputting AgentReply."""
+    # if not settings.gemini_api_key and not settings.groq_api_key:
+    #     return AgentReply(
+    #         reply_text=DUMMY_AI_REPLY,
+
+    # ini kalo groq dulu baru gemini        
     if not settings.groq_api_key and not settings.gemini_api_key:
         return AgentReply(
             reply_text="Got it — logged. (Dummy AI: Please set GROQ_API_KEY or GEMINI_API_KEY in .env)",
@@ -180,8 +187,15 @@ async def get_reply(
 
     try:
         chat_completion = await litellm.acompletion(
+            # model="gemini/gemini-1.5-flash",
+            # fallbacks=["gemini/gemini-flash-latest"],
+
+            # ini kalo gemini dulu baru groq
             model="groq/llama-3.3-70b-versatile",
-            fallbacks=["gemini/gemini-flash-latest"],
+            fallbacks=[
+                "gemini/gemini-3.1-flash-lite",
+                "gemini/gemini-flash-latest",
+            ],
             messages=[
                 {
                     "role": "system",

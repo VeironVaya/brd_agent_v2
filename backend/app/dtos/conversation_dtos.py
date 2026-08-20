@@ -22,6 +22,8 @@ class ConversationListResponse(BaseModel):
 class CreateConversationRequest(BaseModel):
     title: str
     context: str | None = None
+    requestor_directorate: str | None = None
+    impacted_stakeholders: list[str] = []
 
 
 class CreateConversationResponse(BaseModel):
@@ -44,6 +46,7 @@ class AnswerDto(BaseModel):
     answer: str | None = None
     missing: list[str] = []
     flagged: bool | None = None
+    choice_data: dict | None = None
 
 
 class CustomSectionNodeDto(BaseModel):
@@ -71,6 +74,8 @@ class MessageDto(BaseModel):
 class ConversationDetailResponse(BaseModel):
     id: str
     title: str
+    requestor_directorate: str | None = None
+    impacted_stakeholders: list[str] = []
     updated_at: datetime
     last_generated_at: datetime | None = None
     last_generated_version: str | None = None

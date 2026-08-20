@@ -40,8 +40,8 @@ export default function ConversationsPage() {
   const isEmpty = !loading && conversations.length === 0
   const isTabEmpty = !loading && !isEmpty && filtered.length === 0
 
-  async function handleCreate({ title, context }) {
-    const { id } = await api.createConversation({ title, context })
+  async function handleCreate({ title, context, requestorDirectorate, impactedStakeholders }) {
+    const { id } = await api.createConversation({ title, context, requestorDirectorate, impactedStakeholders })
     navigate(`/conversations/${id}`)
   }
 
