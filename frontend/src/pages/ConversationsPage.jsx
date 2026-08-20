@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import Logo from '../components/common/Logo.jsx'
 import Button from '../components/common/Button.jsx'
 import ConversationRow from '../components/Sidebar/ConversationRow.jsx'
@@ -12,8 +13,10 @@ import * as api from '../services/api.js'
 
 export default function ConversationsPage() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const [conversations, setConversations] = useState([])
   const [loading, setLoading] = useState(true)
+  const [fetchError, setFetchError] = useState(false)
   const [query, setQuery] = useState('')
   const [tab, setTab] = useState('owner') // 'owner' | 'shared'
   const [modalOpen, setModalOpen] = useState(false)
@@ -22,12 +25,19 @@ export default function ConversationsPage() {
 
   useEffect(() => {
     let active = true
-    api.listConversations().then((list) => {
-      if (active) {
-        setConversations(list)
-        setLoading(false)
-      }
-    })
+    api.listConversations()
+      .then((list) => {
+        if (active) {
+          setConversations(list)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setFetchError(true)
+          setLoading(false)
+        }
+      })
     return () => {
       active = false
     }
@@ -99,7 +109,15 @@ export default function ConversationsPage() {
         </div>
       </div>
 
-      {isEmpty ? (
+      {fetchError ? (
+        <div className="flex flex-col items-center justify-center py-24 text-text-secondary text-sm gap-3">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4M12 16h.01" />
+          </svg>
+          <span>Couldn't load your conversations. Please try refreshing the page.</span>
+        </div>
+      ) : isEmpty ? (
         <EmptyState onNewConversation={() => setModalOpen(true)} />
       ) : (
         <>
@@ -178,9 +196,9 @@ export default function ConversationsPage() {
       <ConfirmModal
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
-        onConfirm={() => {
-          api.logout()
-          navigate('/login')
+        onConfirm={async () => {
+          setLogoutOpen(false)
+          await logout() // awaits server revocation + clears state + navigates to /login
         }}
         title="Log out?"
         description="You'll be signed out of BRD-Agent and returned to the sign-in screen."

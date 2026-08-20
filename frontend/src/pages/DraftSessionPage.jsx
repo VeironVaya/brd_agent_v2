@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/api.js'
 import {
   GENERAL_ROOM_ID,
@@ -31,7 +32,7 @@ import ChoiceSectionModal from '../components/ChoiceSections/ChoiceSectionModal.
 
 export default function DraftSessionPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const { logout } = useAuth()
   const [conversation, setConversation] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -257,9 +258,9 @@ export default function DraftSessionPage() {
       <ConfirmModal
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
-        onConfirm={() => {
-          api.logout()
-          navigate('/login')
+        onConfirm={async () => {
+          setLogoutOpen(false)
+          await logout() // awaits server revocation + clears state + navigates to /login
         }}
         title="Log out?"
         description="You'll be signed out of BRD-Agent and returned to the sign-in screen."

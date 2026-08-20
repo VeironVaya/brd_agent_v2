@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import Logo from '../components/common/Logo.jsx'
 import Button from '../components/common/Button.jsx'
 import * as api from '../services/api.js'
 
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [mode, setMode] = useState('login') // 'login' | 'register'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -26,11 +28,13 @@ export default function LoginPage() {
 
     setSubmitting(true)
     try {
+      let user
       if (mode === 'register') {
-        await api.register({ email: email.trim(), password, name: name.trim() })
+        user = await api.register({ email: email.trim(), password, name: name.trim() })
       } else {
-        await api.login({ email: email.trim(), password })
+        user = await api.login({ email: email.trim(), password })
       }
+      login(user) // sync AuthContext state before navigating
       navigate('/')
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')

@@ -1,7 +1,17 @@
 import { useState } from 'react'
+import { useAuth } from '../../contexts/AuthContext.jsx'
+
+/** Derive up-to-two-letter initials from a display name. */
+function initials(name) {
+  if (!name) return '?'
+  const parts = name.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0][0].toUpperCase()
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+}
 
 export default function UserMenu({ onLogout }) {
   const [open, setOpen] = useState(false)
+  const { user } = useAuth()
 
   return (
     <div className="relative flex-shrink-0">
@@ -9,18 +19,23 @@ export default function UserMenu({ onLogout }) {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Account menu"
-        className="w-10 h-10 rounded-full bg-text-primary text-white flex items-center justify-center cursor-pointer border-none"
+        title={user?.name || 'Account'}
+        className="w-10 h-10 rounded-full bg-text-primary text-white flex items-center justify-center cursor-pointer border-none text-sm font-semibold tracking-wide select-none"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20 21a8 8 0 0 0-16 0" />
-          <circle cx="12" cy="7" r="4" />
-        </svg>
+        {user ? initials(user.name) : '?'}
       </button>
 
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute top-12 right-0 bg-white border border-border rounded-btn shadow-dropdown z-20 overflow-hidden w-44">
+          <div className="absolute top-12 right-0 bg-white border border-border rounded-btn shadow-dropdown z-20 overflow-hidden w-52">
+            {/* User identity block */}
+            {user && (
+              <div className="px-4 py-3 border-b border-border">
+                <div className="text-sm font-semibold text-text-primary truncate">{user.name}</div>
+                <div className="text-xs text-text-tertiary truncate mt-0.5">{user.email}</div>
+              </div>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -42,3 +57,4 @@ export default function UserMenu({ onLogout }) {
     </div>
   )
 }
+
