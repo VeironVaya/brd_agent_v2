@@ -144,29 +144,41 @@ async def list_for_user(session: AsyncSession, user_id: str) -> list[dict]:
     owned = await conversation_repository.list_by_user(session, user_id)
     shared = await collaborator_repository.list_conversations_for_user(session, user_id)
 
+    # Batch-fetch all answered counts in a single GROUP BY query instead
+    # of one query per conversation (eliminates N+1).
+    all_ids = [c.conversation_id for c in owned] + [c.conversation_id for c, _ in shared]
+    counts = await conversation_repository.answered_counts_for_conversations(session, all_ids)
+
+    # Batch-fetch owner users for shared conversations (one query for all
+    # distinct owner_ids instead of one per shared conversation).
+    owner_ids = list({c.user_id for c, _ in shared})
+    owners_by_id: dict[str, object] = {}
+    if owner_ids:
+        from app.repositories import user_repository as _ur
+        for owner in await _ur.find_many_by_ids(session, owner_ids):
+            owners_by_id[owner.user_id] = owner
+
     items = []
     for c in owned:
-        count = await conversation_repository.answered_count(session, c.conversation_id)
         items.append(
             {
                 "id": c.conversation_id,
                 "title": c.title,
                 "updated_at": c.updated_at,
-                "answered_count": count,
+                "answered_count": counts.get(c.conversation_id, 0),
                 "role": "owner",
                 "owner_name": None,
                 "owner_email": None,
             }
         )
     for c, collab in shared:
-        count = await conversation_repository.answered_count(session, c.conversation_id)
-        owner = await user_repository.find_by_id(session, c.user_id)
+        owner = owners_by_id.get(c.user_id)
         items.append(
             {
                 "id": c.conversation_id,
                 "title": c.title,
                 "updated_at": c.updated_at,
-                "answered_count": count,
+                "answered_count": counts.get(c.conversation_id, 0),
                 "role": collab.role,
                 "owner_name": owner.name if owner else None,
                 "owner_email": owner.email if owner else None,
@@ -235,7 +247,14 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
     by_id = {s.section_id: s for s in sections}
     answers = await answer_repository.list_by_conversation(session, conversation_id)
     bubbles = await bubble_repository.list_by_conversation(session, conversation_id)
-    flagged_ids = await review_service.find_flagged_section_ids(session, conversation_id)
+    # recompute() runs the flagged detection query once — reuse its result.
+    # flagged_ids maps section_id (not wire key) for the answers_dict lookup below.
+    # We derive it by re-running find_flagged_section_ids... but that would be two
+    # queries again. Instead, build section_id→wire_key mapping and invert.
+    flagged_items = await review_service.recompute(session, conversation_id)
+    # Build flagged_section_ids from flagged_items by reverse-mapping field_id → section_id
+    wire_key_to_section_id = {_wire_key(s): s.section_id for s in sections}
+    flagged_ids = {wire_key_to_section_id[item["field_id"]] for item in flagged_items if item["field_id"] in wire_key_to_section_id}
 
     answers_dict: dict[str, dict] = {}
     for answer in answers:
@@ -264,7 +283,7 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
     messages_dict.setdefault(template_service.GENERAL_ROOM_ID, [])
 
     custom_sections = section_tree_service.build_custom_tree(sections)
-    flagged_items = await review_service.recompute(session, conversation_id)
+    # flagged_items already computed above — no second query needed
     answered_count = await conversation_repository.answered_count(session, conversation_id)
 
     focused_section = by_id.get(conversation.focused_section_id) if conversation.focused_section_id else None

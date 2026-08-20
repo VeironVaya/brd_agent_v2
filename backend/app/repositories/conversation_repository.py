@@ -76,3 +76,27 @@ async def answered_count(session: AsyncSession, conversation_id: str) -> int:
         )
     )
     return result.scalar_one()
+
+
+async def answered_counts_for_conversations(
+    session: AsyncSession, conversation_ids: list[str]
+) -> dict[str, int]:
+    """Batch version of answered_count — fetches done-answer counts for
+    multiple conversations in a single GROUP BY query instead of one query
+    per conversation (eliminates the N+1 in list_for_user)."""
+    if not conversation_ids:
+        return {}
+    result = await session.execute(
+        select(Section.conversation_id, func.count())
+        .select_from(Section)
+        .join(Answer, Answer.section_id == Section.section_id)
+        .where(
+            Section.conversation_id.in_(conversation_ids),
+            Section.is_custom.is_(False),
+            Section.is_leaf.is_(True),
+            Answer.status == "done",
+        )
+        .group_by(Section.conversation_id)
+    )
+    return {row[0]: row[1] for row in result.all()}
+
