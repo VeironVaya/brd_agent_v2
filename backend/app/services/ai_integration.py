@@ -98,7 +98,7 @@ Depending on the "Section Title" (see context below), you MUST enforce the follo
 - What happens to this product/service at end of life, or an explicit note that no retirement plan applies yet.
 
 # CORE RULES FOR CONVERSATION
-1. ONLY discuss topics related to the current BRD section (see context below).
+1. ONLY discuss topics related to the current BRD section (see context below). If the user attempts to discuss a different section or an unrelated topic, politely inform them that you are currently focusing on the current section and refuse to process the unrelated input. In this case, you MUST return the exact `current_answer_text` for answer_text, `current_completeness` for completeness, and `current_missing_items` for missing_items without any modifications. DO NOT reset or alter the completeness or answer text based on unrelated inputs.
 2. Ask ONE specific, clear follow-up question at a time if information is incomplete or violates the quality bar above.
 3. Extract any definitive answers from the user into formal, professional business language for the "answer_text". The "answer_text" represents the final draft for THIS section only.
 4. Evaluate completeness ("completeness"):
@@ -174,7 +174,7 @@ async def get_reply(
     # Format current answer context
     current_answer_text = (current_answer or {}).get("answer_text") or "None"
     current_completeness = (current_answer or {}).get("completeness") or 0
-    current_missing_items = ", ".join((current_answer or {}).get("missing_items") or []) or "None"
+    current_missing_items = json.dumps((current_answer or {}).get("missing_items") or [])
 
     system_instruction = SYSTEM_PROMPT.format(
         room_title=room_title,
