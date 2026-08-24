@@ -8,6 +8,7 @@ DEPENDENCY_RULES = {
     },
     "1.1.1": {
         "title": "Background",
+        "specific_rules": """Must state the actual trigger (the event, problem, or decision behind it), not a restated objective.""",
         "dependencies": [
             {
                 "to_id": "1.1",
@@ -20,6 +21,7 @@ DEPENDENCY_RULES = {
     },
     "1.1.2": {
         "title": "Business and Market Analysis",
+        "specific_rules": """Must cite something concrete (a named benchmark, a competitor behavior), not a general claim of importance.""",
         "dependencies": [
             {
                 "to_id": "1.1",
@@ -39,6 +41,7 @@ DEPENDENCY_RULES = {
     },
     "1.1.3": {
         "title": "Relevant Historical Data",
+        "specific_rules": """Must reference specific data, incidents, or metrics grounding the need. If none exist, say so explicitly and flag it as an assumption.""",
         "dependencies": [
             {
                 "to_id": "1.1.1",
@@ -51,6 +54,7 @@ DEPENDENCY_RULES = {
     },
     "1.2": {
         "title": "Business Objective",
+        "specific_rules": """The underlying business problem and why it matters now. Not a feature name — the actual goal.""",
         "dependencies": [
             {
                 "to_id": "1.1",
@@ -84,6 +88,7 @@ DEPENDENCY_RULES = {
     },
     "1.3": {
         "title": "Purpose of this Business Requirement",
+        "specific_rules": """What this specific document is meant to achieve or authorize.""",
         "dependencies": [
             {
                 "to_id": "1.2",
@@ -103,6 +108,7 @@ DEPENDENCY_RULES = {
     },
     "1.4": {
         "title": "Program Type",
+        "specific_rules": """A specific category: new product/service, enhancement, regulatory compliance, migration, retirement, etc. Not "a project."""",
         "dependencies": [
             {
                 "to_id": "1.1.1",
@@ -122,6 +128,7 @@ DEPENDENCY_RULES = {
     },
     "1.5": {
         "title": "Business Risk",
+        "specific_rules": """Concrete risks of doing this *and* of not doing it. Each risk names a specific cause and consequence.""",
         "dependencies": [
             {
                 "to_id": "1.2",
@@ -148,6 +155,7 @@ DEPENDENCY_RULES = {
     },
     "2.1": {
         "title": "Summary (Benefit Analysis)",
+        "specific_rules": """What improves, for whom, and by how much. A real figure is required. Never state units with no number and no explanation of why. If pending, state "pending baseline confirmation".""",
         "dependencies": [
             {
                 "to_id": "1.2",
@@ -174,6 +182,7 @@ DEPENDENCY_RULES = {
     },
     "2.2": {
         "title": "Assumption and Calculation",
+        "specific_rules": """The numbers and assumptions behind any benefit claim, with every assumption used in the calculation stated explicitly, not implied.""",
         "dependencies": [
             {
                 "to_id": "2.1",
@@ -193,6 +202,7 @@ DEPENDENCY_RULES = {
     },
     "3.1": {
         "title": "General Requirement",
+        "specific_rules": """A numbered list. Each item is a concrete, testable "the system shall ..." behavior.""",
         "dependencies": [
             {
                 "to_id": "1.2",
@@ -219,6 +229,7 @@ DEPENDENCY_RULES = {
     },
     "3.2": {
         "title": "Product / Service Specification",
+        "specific_rules": """The actual specification of what's being built or changed, not a summary of the objective.""",
         "dependencies": [
             {
                 "to_id": "3.1",
@@ -250,6 +261,7 @@ DEPENDENCY_RULES = {
     },
     "3.3.1": {
         "title": "Business process impact",
+        "specific_rules": """What existing processes change, and how.""",
         "dependencies": [
             {
                 "to_id": "3.3",
@@ -269,6 +281,7 @@ DEPENDENCY_RULES = {
     },
     "3.3.2": {
         "title": "Description",
+        "specific_rules": """Description of the new or changed process itself.""",
         "dependencies": [
             {
                 "to_id": "3.3",
@@ -288,6 +301,7 @@ DEPENDENCY_RULES = {
     },
     "3.3.3": {
         "title": "Security",
+        "specific_rules": """Concrete controls/requirements, not "it will be secure."""",
         "dependencies": [
             {
                 "to_id": "3.3.2",
@@ -307,6 +321,7 @@ DEPENDENCY_RULES = {
     },
     "3.3.4": {
         "title": "Organization and policy",
+        "specific_rules": """The specific org/policy implication: who owns what, what changes.""",
         "dependencies": [
             {
                 "to_id": "3.3.2",
@@ -326,6 +341,7 @@ DEPENDENCY_RULES = {
     },
     "3.3.5": {
         "title": "Service Delivery Plan (for new application)",
+        "specific_rules": """How the service is delivered operationally (Write "Not applicable" if not a new application).""",
         "dependencies": [
             {
                 "to_id": "3.3.2",
@@ -352,6 +368,7 @@ DEPENDENCY_RULES = {
     },
     "3.4": {
         "title": "Complain Handling",
+        "specific_rules": """The specific mechanism for handling related customer complaints.""",
         "dependencies": [
             {
                 "to_id": "3.2",
@@ -371,6 +388,7 @@ DEPENDENCY_RULES = {
     },
     "3.5": {
         "title": "Reporting",
+        "specific_rules": """What gets reported, to whom, and how often. Name mechanism, audience, and frequency — all three.""",
         "dependencies": [
             {
                 "to_id": "3.3.2",
@@ -390,6 +408,7 @@ DEPENDENCY_RULES = {
     },
     "3.6": {
         "title": "Monitoring (if required)",
+        "specific_rules": """What gets monitored, how, and who is alerted (Write "Not applicable" if not required).""",
         "dependencies": [
             {
                 "to_id": "3.5",
@@ -409,6 +428,7 @@ DEPENDENCY_RULES = {
     },
     "3.7": {
         "title": "Settlement Plan (if applicable)",
+        "specific_rules": """(Write "Not applicable" if no financial settlement is involved).""",
         "dependencies": [
             {
                 "to_id": "3.2",
@@ -428,6 +448,7 @@ DEPENDENCY_RULES = {
     },
     "3.8": {
         "title": "Assumptions and Dependencies",
+        "specific_rules": """Every value elsewhere in the document that wasn't explicitly confirmed goes here in plain language, along with other systems, teams, contracts, or approvals this relies on. Dependencies must be named specifically.""",
         "dependencies": [
             {
                 "to_id": "3.3",
@@ -454,6 +475,7 @@ DEPENDENCY_RULES = {
     },
     "4.1": {
         "title": "Target Ready for Service",
+        "specific_rules": """A concrete date or milestone, or an explicit reason it's still pending (e.g. "pending sprint planning") — never "soon" or "TBD" with no reason.""",
         "dependencies": [
             {
                 "to_id": "3.1",
@@ -480,6 +502,7 @@ DEPENDENCY_RULES = {
     },
     "4.2": {
         "title": "Commercial Launch",
+        "specific_rules": """Commercial launch plan and timing, same standard as 4.1.""",
         "dependencies": [
             {
                 "to_id": "4.1",
@@ -499,6 +522,7 @@ DEPENDENCY_RULES = {
     },
     "4.3": {
         "title": "Internal Socialization Plan (if applicable)",
+        "specific_rules": """How internal teams are informed/trained ahead of launch (or "Not applicable").""",
         "dependencies": [
             {
                 "to_id": "4.1",
@@ -518,6 +542,7 @@ DEPENDENCY_RULES = {
     },
     "4.4": {
         "title": "Rollout Scenario (if any)",
+        "specific_rules": """Phased, pilot, big-bang, or other rollout approach (or "Not applicable").""",
         "dependencies": [
             {
                 "to_id": "4.1",
@@ -580,6 +605,9 @@ def get_section_rules_prompt(section_id: str, context_answers: dict[str, str] = 
         return "No specific dependencies for this section."
     
     prompt = f"**{section_id} {rules['title']}**\n"
+    if rules.get("specific_rules"):
+        prompt += f"- **Specific Requirement for this section**: {rules['specific_rules']}\n\n"
+        
     if not rules["dependencies"]:
         prompt += "- This section has no prerequisite dependencies.\n"
     else:
