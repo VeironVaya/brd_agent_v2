@@ -28,6 +28,8 @@ async def upsert(
     status: str,
     completeness: int | None = None,
     confidence: int | None = None,
+    confidence_reason: str | None = None,
+    confidence_components: dict | None = None,
     answer_text: str | None = None,
     missing_items: list[str] | None = None,
     choice_data: dict | None = None,
@@ -43,6 +45,10 @@ async def upsert(
         answer.completeness = completeness
     if confidence is not None:
         answer.confidence = confidence
+    if confidence_reason is not None:
+        answer.confidence_reason = confidence_reason
+    if confidence_components is not None:
+        answer.confidence_components = confidence_components
     if answer_text is not None:
         answer.answer_text = answer_text
     if missing_items is not None:
@@ -54,3 +60,4 @@ async def upsert(
 
     await session.flush()
     return answer
+

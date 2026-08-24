@@ -43,10 +43,13 @@ class AnswerDto(BaseModel):
     status: str
     completeness: int | None = None
     confidence: int | None = None
+    confidence_reason: str | None = None
+    confidence_components: dict | None = None
     answer: str | None = None
     missing: list[str] = []
     flagged: bool | None = None
     choice_data: dict | None = None
+
 
 
 class CustomSectionNodeDto(BaseModel):

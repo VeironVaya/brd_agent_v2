@@ -16,7 +16,10 @@ class Answer(Base):
     status: Mapped[str] = mapped_column(String, nullable=False, default="ready")
     completeness: Mapped[int | None] = mapped_column(Integer, nullable=True)
     confidence: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    confidence_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    confidence_components: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     answer_text: Mapped[str | None] = mapped_column(String, nullable=True)
     missing_items: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
     choice_data: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     answered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+

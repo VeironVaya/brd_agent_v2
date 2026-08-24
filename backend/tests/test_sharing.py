@@ -1,4 +1,4 @@
-from tests.conftest import create_conversation, register_and_login
+from .helpers import create_conversation, register_and_login
 
 
 async def test_owner_shares_conversation_and_collaborator_sees_it(client):

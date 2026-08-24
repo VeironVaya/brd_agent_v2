@@ -79,12 +79,15 @@ async def post_message(
     user_bubble = Bubble(section_id=section.section_id, role="user", text=text, created_at=datetime.now(timezone.utc))
     await bubble_repository.insert(session, user_bubble)
 
+    field_id = section.template_key if (section.is_leaf and not section.is_custom and not section.is_general) else None
+
     reply = await ai_integration.get_reply(
         room_title=section.title,
         room_purpose=section.purpose,
         message_text=text,
         history=[{"role": b.role, "text": b.text} for b in history],
         current_answer=current_answer,
+        field_id=field_id,
     )
 
     agent_bubble = Bubble(
@@ -107,9 +110,12 @@ async def post_message(
             status=status,
             completeness=reply.completeness,
             confidence=reply.confidence,
+            confidence_reason=reply.confidence_reason,
+            confidence_components=reply.confidence_components,
             answer_text=reply.answer_text,
             missing_items=reply.missing_items,
         )
+
 
     if not section.is_general:
         conversation.focused_section_id = section.section_id

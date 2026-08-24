@@ -7,9 +7,10 @@ class Settings(BaseSettings):
     database_url: str
     jwt_secret: str
     jwt_expiry_hours: int = 168  # 7 days
-    cors_origins: str = "http://localhost:5173"
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     groq_api_key: str | None = None
     gemini_api_key: str | None = None
+    rag_database_url: str | None = None
 
     @property
     def cors_origin_list(self) -> list[str]:
