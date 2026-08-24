@@ -108,7 +108,7 @@ DEPENDENCY_RULES = {
     },
     "1.4": {
         "title": "Program Type",
-        "specific_rules": """A specific category: new product/service, enhancement, regulatory compliance, migration, retirement, etc. Not "a project."""",
+        "specific_rules": """A specific category: new product/service, enhancement, regulatory compliance, migration, retirement, etc. Not "a project." """,
         "dependencies": [
             {
                 "to_id": "1.1.1",
@@ -301,7 +301,7 @@ DEPENDENCY_RULES = {
     },
     "3.3.3": {
         "title": "Security",
-        "specific_rules": """Concrete controls/requirements, not "it will be secure."""",
+        "specific_rules": """Concrete controls/requirements, not "it will be secure." """,
         "dependencies": [
             {
                 "to_id": "3.3.2",
