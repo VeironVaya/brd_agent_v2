@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.revoked_token import RevokedToken
@@ -16,3 +16,14 @@ async def insert(session: AsyncSession, *, jti: str, user_id: str, expires_at: d
 async def is_revoked(session: AsyncSession, jti: str) -> bool:
     result = await session.execute(select(RevokedToken.jti).where(RevokedToken.jti == jti))
     return result.scalar_one_or_none() is not None
+
+
+async def delete_expired(session: AsyncSession) -> int:
+    """Delete all revoked token rows whose expiry has passed.
+    Safe to call at startup — returns the count of rows deleted."""
+    result = await session.execute(
+        delete(RevokedToken).where(RevokedToken.expires_at < datetime.now(timezone.utc))
+    )
+    await session.flush()
+    return result.rowcount
+

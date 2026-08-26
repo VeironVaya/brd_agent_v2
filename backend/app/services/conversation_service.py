@@ -13,6 +13,7 @@ from app.repositories import (
     bubble_repository,
     collaborator_repository,
     conversation_repository,
+    group_collaborator_repository,
     section_dependency_repository,
     section_repository,
     user_repository,
@@ -119,6 +120,7 @@ async def create(
     context: str | None,
     requestor_directorate: str | None = None,
     impacted_stakeholders: list[str] | None = None,
+    group_id: str | None = None,
 ) -> Conversation:
     trimmed = title.strip()
     if not trimmed:
@@ -134,6 +136,7 @@ async def create(
         context=context,
         requestor_directorate=requestor_directorate,
         impacted_stakeholders=impacted_stakeholders or [],
+        group_id=group_id,
     )
     await conversation_repository.insert(session, conversation)
     await _seed_template_and_general(session, conversation.conversation_id)
@@ -142,34 +145,84 @@ async def create(
 
 async def list_for_user(session: AsyncSession, user_id: str) -> list[dict]:
     owned = await conversation_repository.list_by_user(session, user_id)
+    # BRDs shared directly with this user (existing per-BRD collaborators)
     shared = await collaborator_repository.list_conversations_for_user(session, user_id)
+    # BRDs accessible via group membership
+    group_pairs = await group_collaborator_repository.list_groups_for_user(session, user_id)
+    group_ids_with_role = {gc.group_id: gc.role for _, gc in group_pairs}
+
+    from app.repositories import conversation_repository as _cr
+    group_shared_convs: list[Conversation] = []
+    if group_ids_with_role:
+        group_shared_convs = await _cr.list_by_group_ids(session, list(group_ids_with_role.keys()))
+    # Exclude BRDs the user owns (already in `owned`) from group-shared list
+    owned_ids = {c.conversation_id for c in owned}
+    # Also exclude BRDs already covered by direct sharing
+    direct_shared_ids = {c.conversation_id for c, _ in shared}
+    group_shared_convs = [
+        c for c in group_shared_convs
+        if c.conversation_id not in owned_ids and c.conversation_id not in direct_shared_ids
+    ]
+
+    # Batch-fetch answered counts
+    all_ids = (
+        [c.conversation_id for c in owned]
+        + [c.conversation_id for c, _ in shared]
+        + [c.conversation_id for c in group_shared_convs]
+    )
+    counts = await conversation_repository.answered_counts_for_conversations(session, all_ids)
+
+    # Batch-fetch owner users for shared + group-shared conversations
+    owner_ids = list(
+        {c.user_id for c, _ in shared} | {c.user_id for c in group_shared_convs}
+    )
+    owners_by_id: dict[str, object] = {}
+    if owner_ids:
+        for owner in await user_repository.find_many_by_ids(session, owner_ids):
+            owners_by_id[owner.user_id] = owner
 
     items = []
     for c in owned:
-        count = await conversation_repository.answered_count(session, c.conversation_id)
         items.append(
             {
                 "id": c.conversation_id,
                 "title": c.title,
                 "updated_at": c.updated_at,
-                "answered_count": count,
+                "answered_count": counts.get(c.conversation_id, 0),
                 "role": "owner",
                 "owner_name": None,
                 "owner_email": None,
+                "group_id": c.group_id,
             }
         )
     for c, collab in shared:
-        count = await conversation_repository.answered_count(session, c.conversation_id)
-        owner = await user_repository.find_by_id(session, c.user_id)
+        owner = owners_by_id.get(c.user_id)
         items.append(
             {
                 "id": c.conversation_id,
                 "title": c.title,
                 "updated_at": c.updated_at,
-                "answered_count": count,
+                "answered_count": counts.get(c.conversation_id, 0),
                 "role": collab.role,
                 "owner_name": owner.name if owner else None,
                 "owner_email": owner.email if owner else None,
+                "group_id": c.group_id,
+            }
+        )
+    for c in group_shared_convs:
+        owner = owners_by_id.get(c.user_id)
+        # The user's effective role on the BRD is the group's role
+        role = group_ids_with_role.get(c.group_id, "viewer")
+        items.append(
+            {
+                "id": c.conversation_id,
+                "title": c.title,
+                "updated_at": c.updated_at,
+                "answered_count": counts.get(c.conversation_id, 0),
+                "role": role,
+                "owner_name": owner.name if owner else None,
+                "owner_email": owner.email if owner else None,
+                "group_id": c.group_id,
             }
         )
     items.sort(key=lambda i: i["updated_at"], reverse=True)
@@ -189,9 +242,8 @@ async def get_owned(session: AsyncSession, conversation_id: str, user_id: str) -
 async def get_accessible(
     session: AsyncSession, conversation_id: str, user_id: str, *, min_role: str = "viewer"
 ) -> tuple[Conversation, str]:
-    """Owner-or-collaborator gate, with a minimum required role. Returns the
-    conversation plus the caller's effective role so callers (get_detail)
-    can surface it on the wire."""
+    """Owner-or-collaborator gate, with a minimum required role. Also checks
+    group-level access (Google Drive folder sharing semantics)."""
     conversation = await conversation_repository.find_by_id(session, conversation_id)
     if conversation is None:
         raise NotFoundError("Conversation not found.")
@@ -199,11 +251,21 @@ async def get_accessible(
     if conversation.user_id == user_id:
         role = "owner"
     else:
+        # Check direct BRD collaborator first
         collaborator = await collaborator_repository.find_by_conversation_and_user(session, conversation_id, user_id)
-        if collaborator is None:
-            # 404, not 403 — a non-collaborator shouldn't learn this conversation exists.
+        if collaborator is not None:
+            role = collaborator.role
+        elif conversation.group_id is not None:
+            # Fall back to group-level access
+            gc = await group_collaborator_repository.find_by_group_and_user(
+                session, conversation.group_id, user_id
+            )
+            if gc is not None:
+                role = gc.role
+            else:
+                raise NotFoundError("Conversation not found.")
+        else:
             raise NotFoundError("Conversation not found.")
-        role = collaborator.role
 
     if ROLE_RANK[role] < ROLE_RANK[min_role]:
         raise ForbiddenError("You don't have permission to do that.")
@@ -235,7 +297,14 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
     by_id = {s.section_id: s for s in sections}
     answers = await answer_repository.list_by_conversation(session, conversation_id)
     bubbles = await bubble_repository.list_by_conversation(session, conversation_id)
-    flagged_ids = await review_service.find_flagged_section_ids(session, conversation_id)
+    # recompute() runs the flagged detection query once — reuse its result.
+    # flagged_ids maps section_id (not wire key) for the answers_dict lookup below.
+    # We derive it by re-running find_flagged_section_ids... but that would be two
+    # queries again. Instead, build section_id→wire_key mapping and invert.
+    flagged_items = await review_service.recompute(session, conversation_id)
+    # Build flagged_section_ids from flagged_items by reverse-mapping field_id → section_id
+    wire_key_to_section_id = {_wire_key(s): s.section_id for s in sections}
+    flagged_ids = {wire_key_to_section_id[item["field_id"]] for item in flagged_items if item["field_id"] in wire_key_to_section_id}
 
     answers_dict: dict[str, dict] = {}
     for answer in answers:
@@ -250,6 +319,7 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
             "missing": answer.missing_items or [],
             "flagged": True if answer.section_id in flagged_ids else None,
             "choice_data": answer.choice_data,
+            "confidence_breakdown": answer.confidence_breakdown,
         }
 
     messages_dict: dict[str, list[dict]] = {}
@@ -264,7 +334,7 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
     messages_dict.setdefault(template_service.GENERAL_ROOM_ID, [])
 
     custom_sections = section_tree_service.build_custom_tree(sections)
-    flagged_items = await review_service.recompute(session, conversation_id)
+    # flagged_items already computed above — no second query needed
     answered_count = await conversation_repository.answered_count(session, conversation_id)
 
     focused_section = by_id.get(conversation.focused_section_id) if conversation.focused_section_id else None

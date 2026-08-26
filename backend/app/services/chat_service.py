@@ -121,6 +121,7 @@ async def post_message(
             confidence=reply.confidence,
             answer_text=reply.answer_text,
             missing_items=reply.missing_items,
+            confidence_breakdown=reply.confidence_breakdown,
         )
 
     if not section.is_general:

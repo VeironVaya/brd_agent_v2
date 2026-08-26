@@ -35,6 +35,7 @@ async def create_conversation(
         context=body.context,
         requestor_directorate=body.requestor_directorate,
         impacted_stakeholders=body.impacted_stakeholders,
+        group_id=body.group_id,
     )
     await session.commit()
     return CreateConversationResponse(id=conversation.conversation_id)

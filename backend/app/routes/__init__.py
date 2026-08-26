@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.routes import auth, chat, choices, conversations, custom_sections, documents, review, shares
+from app.routes import auth, brd_groups, chat, choices, conversations, custom_sections, documents, review, shares
 
 api_router = APIRouter()
 api_router.include_router(auth.router)
@@ -11,3 +11,4 @@ api_router.include_router(custom_sections.router)
 api_router.include_router(review.router)
 api_router.include_router(documents.router)
 api_router.include_router(shares.router)
+api_router.include_router(brd_groups.router)

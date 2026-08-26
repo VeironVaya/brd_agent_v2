@@ -35,7 +35,7 @@ export default function LoginPage() {
         user = await api.login({ email: email.trim(), password })
       }
       login(user) // sync AuthContext state before navigating
-      navigate('/')
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {

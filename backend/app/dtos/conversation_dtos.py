@@ -13,6 +13,7 @@ class ConversationListItem(BaseModel):
     role: str
     owner_name: str | None = None
     owner_email: str | None = None
+    group_id: str | None = None
 
 
 class ConversationListResponse(BaseModel):
@@ -24,6 +25,7 @@ class CreateConversationRequest(BaseModel):
     context: str | None = None
     requestor_directorate: str | None = None
     impacted_stakeholders: list[str] = []
+    group_id: str | None = None
 
 
 class CreateConversationResponse(BaseModel):
@@ -39,6 +41,19 @@ class RenameConversationResponse(BaseModel):
     title: str
 
 
+class ConfidenceDimensionDto(BaseModel):
+    score: int
+    reason: str
+
+
+class ConfidenceBreakdownDto(BaseModel):
+    grounding: ConfidenceDimensionDto | None = None
+    reference_context: ConfidenceDimensionDto | None = None
+    section_compliance: ConfidenceDimensionDto | None = None
+    testability: ConfidenceDimensionDto | None = None
+    consistency: ConfidenceDimensionDto | None = None
+
+
 class AnswerDto(BaseModel):
     status: str
     completeness: int | None = None
@@ -47,6 +62,7 @@ class AnswerDto(BaseModel):
     missing: list[str] = []
     flagged: bool | None = None
     choice_data: dict | None = None
+    confidence_breakdown: ConfidenceBreakdownDto | None = None
 
 
 class CustomSectionNodeDto(BaseModel):
