@@ -31,7 +31,7 @@ export default function ChatHeader({
             <path d="M19 12H5" />
             <path d="m12 19-7-7 7-7" />
           </svg>
-          Conversations
+          BRDs
         </button>
         <span className="w-px h-5.5 bg-border flex-shrink-0" />
         <div className="text-[21px] font-bold whitespace-nowrap overflow-hidden text-ellipsis min-w-0">

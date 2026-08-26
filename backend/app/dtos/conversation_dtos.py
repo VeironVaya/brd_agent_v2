@@ -13,6 +13,7 @@ class ConversationListItem(BaseModel):
     role: str
     owner_name: str | None = None
     owner_email: str | None = None
+    group_id: str | None = None
 
 
 class ConversationListResponse(BaseModel):
@@ -24,6 +25,7 @@ class CreateConversationRequest(BaseModel):
     context: str | None = None
     requestor_directorate: str | None = None
     impacted_stakeholders: list[str] = []
+    group_id: str | None = None
 
 
 class CreateConversationResponse(BaseModel):

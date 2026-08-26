@@ -21,10 +21,28 @@ function RequireAuth({ children }) {
   return children
 }
 
+/**
+ * RequireGuest — the inverse of RequireAuth. Protects the login page
+ * from authenticated users, instantly redirecting them to the dashboard.
+ */
+function RequireGuest({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (user) return <Navigate to="/" replace />
+  return children
+}
+
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<LoginPage />} />
+      <Route 
+        path="/login" 
+        element={
+          <RequireGuest>
+            <LoginPage />
+          </RequireGuest>
+        } 
+      />
       <Route
         path="/"
         element={

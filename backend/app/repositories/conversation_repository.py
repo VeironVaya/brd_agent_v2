@@ -100,3 +100,15 @@ async def answered_counts_for_conversations(
     )
     return {row[0]: row[1] for row in result.all()}
 
+
+async def list_by_group_ids(
+    session: AsyncSession, group_ids: list[str]
+) -> list[Conversation]:
+    """Fetch all conversations belonging to any of the given group ids."""
+    if not group_ids:
+        return []
+    result = await session.execute(
+        select(Conversation).where(Conversation.group_id.in_(group_ids))
+    )
+    return list(result.scalars().all())
+

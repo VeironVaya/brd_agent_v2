@@ -111,5 +111,5 @@ async def generate(session: AsyncSession, *, conversation_id: str, user_id: str,
     markdown = await build_markdown(session, conversation_id=conversation_id, user_id=user_id)
     await conversation_repository.update_generation_metadata(session, conversation, DOCUMENT_VERSION)
 
-    ext = "md" if format == "markdown" else "pdf"
+    ext = "md" if format == "markdown" else "docx" if format == "docx" else "pdf"
     return {"filename": f"{conversation.title}.{ext}", "markdown": markdown}

@@ -8,6 +8,7 @@ import Modal, { ModalHeader } from '../components/common/Modal.jsx'
 import UserMenu from '../components/common/UserMenu.jsx'
 import ConfirmModal from '../components/common/ConfirmModal.jsx'
 import { downloadMarkdown, downloadPdf } from '../utils/documentPdf.js'
+import { downloadDocx } from '../utils/documentDocx.js'
 
 export default function ExportPage() {
   const { id } = useParams()
@@ -56,6 +57,8 @@ export default function ExportPage() {
     if (!result) return
     if (format === 'markdown') {
       downloadMarkdown(result.markdown, result.filename)
+    } else if (format === 'docx') {
+      downloadDocx(result.markdown, result.filename)
     } else {
       downloadPdf(result.markdown, result.filename)
     }
@@ -178,6 +181,15 @@ export default function ExportPage() {
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                   }
                   secondIcon={<path d="M14 2v6h6" />}
+                />
+                <FormatOption
+                  active={format === 'docx'}
+                  onClick={() => setFormat('docx')}
+                  label="Word Document (.docx)"
+                  icon={
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  }
+                  secondIcon={<path d="M14 2v6h6M9.5 13l1.5 4 1.5-4 1.5 4 1.5-4" />}
                 />
                 <FormatOption
                   active={format === 'markdown'}

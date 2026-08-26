@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class GenerateDocumentRequest(BaseModel):
-    format: Literal["pdf", "markdown"]
+    format: Literal["pdf", "markdown", "docx"]
 
 
 class GenerateDocumentResponse(BaseModel):
