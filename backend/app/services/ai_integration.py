@@ -28,6 +28,16 @@ from app.services.brd_rules import get_section_rules_prompt
 DUMMY_AI_REPLY = "Got it — logged. (Dummy AI: Please set GEMINI_API_KEY or GROQ_API_KEY in .env)"
 
 
+# Hardcoded dummy breakdown — replaced by the AI team with real computed values.
+_DUMMY_CONFIDENCE_BREAKDOWN = {
+    "grounding": {"score": 72, "reason": "[Dummy] Most claims are grounded in provided user inputs, but some numerical targets lack cited sources."},
+    "reference_context": {"score": 85, "reason": "[Dummy] The answer aligns well with prior sections. Minor terminology drift detected."},
+    "section_compliance": {"score": 60, "reason": "[Dummy] Some required sub-fields per the section template are still missing or vague."},
+    "testability": {"score": 50, "reason": "[Dummy] The stated requirements lack measurable acceptance criteria in several places."},
+    "consistency": {"score": 90, "reason": "[Dummy] No logical contradictions detected across the current section content."},
+}
+
+
 @dataclass
 class AgentReply:
     reply_text: str
@@ -36,6 +46,10 @@ class AgentReply:
     confidence: int | None = None
     missing_items: list[str] = field(default_factory=list)
     is_assumption: bool = False
+    # AI team: populate this with the 5-dimension breakdown dict.
+    # Shape: {"grounding": {"score": int, "reason": str}, ...}
+    # Leave None if not yet computed — the frontend hides the panel gracefully.
+    confidence_breakdown: dict | None = None
 
 
 class LLMReplySchema(BaseModel):
@@ -45,6 +59,14 @@ class LLMReplySchema(BaseModel):
     confidence: int = Field(..., description="Confidence score 0-100")
     missing_items: list[str] = Field(default_factory=list, description="List of missing information")
     is_assumption: bool = Field(default=False, description="True if AI made assumptions")
+    confidence_breakdown: dict | None = Field(
+        None,
+        description=(
+            "Optional 5-dimension confidence breakdown. "
+            "Keys: grounding, reference_context, section_compliance, testability, consistency. "
+            "Each value: {score: int 0-100, reason: str}."
+        ),
+    )
 
 
 SYSTEM_PROMPT = """You are an expert, senior Business Analyst acting as a BRD (Business Requirement Document) Consultant.
@@ -130,6 +152,7 @@ async def get_reply(
             confidence=90,
             missing_items=["Missing API Key"],
             is_assumption=False,
+            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
         )
         
     # Inject API Keys into environment for LiteLLM
@@ -203,6 +226,9 @@ async def get_reply(
             confidence=llm_reply.confidence,
             missing_items=llm_reply.missing_items,
             is_assumption=llm_reply.is_assumption,
+            # AI team: llm_reply.confidence_breakdown is None until the model
+            # returns it. Fallback to dummy so the UI is always exercisable.
+            confidence_breakdown=llm_reply.confidence_breakdown or _DUMMY_CONFIDENCE_BREAKDOWN,
         )
         
     except Exception as e:
@@ -212,4 +238,5 @@ async def get_reply(
             answer_text=current_answer_text,
             completeness=current_completeness,
             missing_items=(current_answer or {}).get("missing_items") or [],
+            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
         )

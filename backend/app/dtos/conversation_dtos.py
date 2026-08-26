@@ -41,6 +41,19 @@ class RenameConversationResponse(BaseModel):
     title: str
 
 
+class ConfidenceDimensionDto(BaseModel):
+    score: int
+    reason: str
+
+
+class ConfidenceBreakdownDto(BaseModel):
+    grounding: ConfidenceDimensionDto | None = None
+    reference_context: ConfidenceDimensionDto | None = None
+    section_compliance: ConfidenceDimensionDto | None = None
+    testability: ConfidenceDimensionDto | None = None
+    consistency: ConfidenceDimensionDto | None = None
+
+
 class AnswerDto(BaseModel):
     status: str
     completeness: int | None = None
@@ -49,6 +62,7 @@ class AnswerDto(BaseModel):
     missing: list[str] = []
     flagged: bool | None = None
     choice_data: dict | None = None
+    confidence_breakdown: ConfidenceBreakdownDto | None = None
 
 
 class CustomSectionNodeDto(BaseModel):
