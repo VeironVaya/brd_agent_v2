@@ -79,12 +79,24 @@ async def post_message(
     user_bubble = Bubble(section_id=section.section_id, role="user", text=text, created_at=datetime.now(timezone.utc))
     await bubble_repository.insert(session, user_bubble)
 
+    # Build context answers mapping for true context forwarding
+    all_sections = await section_repository.list_by_conversation(session, conversation_id)
+    all_answers = await answer_repository.list_by_conversation(session, conversation_id)
+    context_answers = {}
+    for ans in all_answers:
+        ans_sec = next((s for s in all_sections if s.section_id == ans.section_id), None)
+        if ans_sec and ans.answer_text:
+            ans_room_id = ans_sec.template_key or ans_sec.section_id
+            context_answers[ans_room_id] = ans.answer_text
+
     reply = await ai_integration.get_reply(
+        room_id=section.template_key or section.section_id,
         room_title=section.title,
         room_purpose=section.purpose,
         message_text=text,
         history=[{"role": b.role, "text": b.text} for b in history],
         current_answer=current_answer,
+        context_answers=context_answers,
     )
 
     agent_bubble = Bubble(
