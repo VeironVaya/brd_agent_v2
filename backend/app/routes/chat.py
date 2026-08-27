@@ -11,3 +11,10 @@ router.add_api_route(
     methods=["POST"],
     response_model=PostMessageResponse,
 )
+
+router.add_api_route(
+    "/{conversation_id}/rooms/{room_id}/init",
+    chat_controller.init_chat_room,
+    methods=["POST"],
+    response_model=PostMessageResponse,
+)

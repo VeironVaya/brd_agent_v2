@@ -24,3 +24,19 @@ async def post_message(
     )
     await session.commit()
     return PostMessageResponse(messages=[MessageDto(**m) for m in messages])
+
+
+async def init_chat_room(
+    conversation_id: str,
+    room_id: str,
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_db),
+) -> PostMessageResponse:
+    message = await chat_service.init_chat_room(
+        session,
+        conversation_id=conversation_id,
+        user_id=current_user.user_id,
+        room_id=room_id,
+    )
+    await session.commit()
+    return PostMessageResponse(messages=[MessageDto(**message)])

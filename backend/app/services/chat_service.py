@@ -132,3 +132,61 @@ async def post_message(
         {"id": user_bubble.bubble_id, "role": user_bubble.role, "text": user_bubble.text},
         {"id": agent_bubble.bubble_id, "role": agent_bubble.role, "text": agent_bubble.text},
     ]
+
+
+async def init_chat_room(
+    session: AsyncSession, *, conversation_id: str, user_id: str, room_id: str
+) -> dict:
+    conversation, _role = await conversation_service.get_accessible(
+        session, conversation_id, user_id, min_role="editor"
+    )
+    section = await _resolve_room_section(session, conversation_id, room_id)
+
+    # Check if history exists; if so, we shouldn't init again
+    history = await bubble_repository.list_by_section(session, section.section_id)
+    if history:
+        return {"id": history[-1].bubble_id, "role": history[-1].role, "text": history[-1].text}
+
+    # Build context answers mapping for true context forwarding
+    all_sections = await section_repository.list_by_conversation(session, conversation_id)
+    all_answers = await answer_repository.list_by_conversation(session, conversation_id)
+    context_answers = {}
+    for ans in all_answers:
+        ans_sec = next((s for s in all_sections if s.section_id == ans.section_id), None)
+        if ans_sec and ans.answer_text:
+            ans_room_id = ans_sec.template_key or ans_sec.section_id
+            context_answers[ans_room_id] = ans.answer_text
+
+    reply = await ai_integration.get_greeting(
+        room_id=section.template_key or section.section_id,
+        room_title=section.title,
+        context_answers=context_answers,
+    )
+
+    agent_bubble = Bubble(
+        section_id=section.section_id,
+        role="agent",
+        text=reply.reply_text,
+        created_at=datetime.now(timezone.utc),
+    )
+    await bubble_repository.insert(session, agent_bubble)
+    
+    if section.is_leaf:
+        existing_answer = await answer_repository.find_by_section_id(session, section.section_id)
+        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
+        await answer_repository.upsert(
+            session,
+            section.section_id,
+            status=status,
+            completeness=reply.completeness,
+            confidence=reply.confidence,
+            answer_text=reply.answer_text,
+            missing_items=reply.missing_items,
+            confidence_breakdown=reply.confidence_breakdown,
+        )
+    
+    if not section.is_general:
+        conversation.focused_section_id = section.section_id
+    await conversation_repository.touch_updated_at(session, conversation)
+
+    return {"id": agent_bubble.bubble_id, "role": agent_bubble.role, "text": agent_bubble.text}
