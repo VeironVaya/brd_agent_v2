@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/api.js'
@@ -78,6 +78,45 @@ export default function DraftSessionPage() {
       active = false
     }
   }, [id])
+
+  const initRef = useRef(null)
+
+  // Auto-init empty chat rooms
+  useEffect(() => {
+    const roomId = roomTab === 'question' ? focusedFieldId : GENERAL_ROOM_ID
+    if (
+      conversation &&
+      roomId &&
+      roomId !== GENERAL_ROOM_ID &&
+      initRef.current !== roomId &&
+      (conversation.role === 'owner' || conversation.role === 'editor') &&
+      (!conversation.messages[roomId] || conversation.messages[roomId].length === 0)
+    ) {
+      const status = fieldState(roomId, conversation.answers)
+      if (status === 'ready' || status === 'progress') {
+        initRef.current = roomId
+        setPending({ roomId, text: '' })
+        
+        let isStale = false
+        api.initChatRoom(id, roomId)
+          .then(() => {
+            if (!isStale) refreshDetail()
+          })
+          .finally(() => {
+            if (!isStale) {
+              setPending(null)
+              initRef.current = null
+            }
+          })
+          
+        return () => {
+          isStale = true
+          // If unmounted or room changed, we still want to clear the lock eventually,
+          // but we won't update React state `pending` on an unmounted component.
+        }
+      }
+    }
+  }, [roomTab, focusedFieldId, conversation, id])
 
   if (loading || !conversation) {
     return <div className="w-full min-h-screen flex items-center justify-center text-text-secondary">Loading…</div>
