@@ -355,6 +355,13 @@ export async function postMessage(conversationId, roomId, text) {
   return { messages: data.messages }
 }
 
+export async function initChatRoom(conversationId, roomId) {
+  const data = await request(`/api/conversations/${conversationId}/rooms/${roomId}/init`, {
+    method: 'POST',
+  })
+  return { messages: data.messages }
+}
+
 export async function saveChoices(conversationId, sectionId, choiceData) {
   const data = await request(`/api/conversations/${conversationId}/sections/${sectionId}/choices`, {
     method: 'PUT',
