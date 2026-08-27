@@ -33,6 +33,7 @@ async def upsert(
     answer_text: str | None = None,
     missing_items: list[str] | None = None,
     choice_data: dict | None = None,
+    confidence_breakdown: dict | None = None,
     touch_answered_at: bool = True,
 ) -> Answer:
     answer = await find_by_section_id(session, section_id)
@@ -55,6 +56,8 @@ async def upsert(
         answer.missing_items = missing_items
     if choice_data is not None:
         answer.choice_data = choice_data
+    if confidence_breakdown is not None:
+        answer.confidence_breakdown = confidence_breakdown
     if touch_answered_at:
         answer.answered_at = datetime.now(timezone.utc)
 

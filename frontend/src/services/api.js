@@ -32,6 +32,21 @@ async function request(path, { method = 'GET', body } = {}) {
 
   if (res.status === 204) return null
 
+  // 401 mid-session: token expired or revoked server-side.
+  // Clear the stored token and notify AuthContext via a CustomEvent so
+  // it can redirect to /login. api.js stays React-free — no imports of
+  // navigate or context here.
+  if (res.status === 401) {
+    clearToken()
+    window.dispatchEvent(new CustomEvent('auth:expired'))
+    const data = await res.json().catch(() => null)
+    const message = data?.message || data?.detail || 'Your session has expired. Please sign in again.'
+    const err = new Error(message)
+    err.code = data?.error
+    err.status = 401
+    throw err
+  }
+
   const data = await res.json().catch(() => null)
   if (!res.ok) {
     const message = data?.message || data?.detail || 'Something went wrong. Please try again.'
@@ -105,6 +120,16 @@ function mapConversationListItem(item) {
     role: item.role,
     ownerName: item.owner_name ?? null,
     ownerEmail: item.owner_email ?? null,
+    groupId: item.group_id ?? null,
+  }
+}
+
+function mapGroup(item) {
+  return {
+    id: item.id,
+    title: item.title,
+    description: item.description ?? null,
+    role: item.role,
   }
 }
 
@@ -200,7 +225,7 @@ export async function getConversation(id) {
   return mapConversationDetail(data)
 }
 
-export async function createConversation({ title, context, requestorDirectorate, impactedStakeholders }) {
+export async function createConversation({ title, context, requestorDirectorate, impactedStakeholders, groupId }) {
   const data = await request('/api/conversations', {
     method: 'POST',
     body: {
@@ -208,6 +233,7 @@ export async function createConversation({ title, context, requestorDirectorate,
       context,
       requestor_directorate: requestorDirectorate || null,
       impacted_stakeholders: impactedStakeholders || [],
+      group_id: groupId || null,
     },
   })
   return { id: data.id }
@@ -220,6 +246,71 @@ export async function updateConversationTitle(conversationId, title) {
 
 export async function deleteConversation(conversationId) {
   await request(`/api/conversations/${conversationId}`, { method: 'DELETE' })
+}
+
+// ---------------------------------------------------------------------------
+// Groups — organise owned BRDs into named collections.
+// ---------------------------------------------------------------------------
+
+export async function listGroups() {
+  const data = await request('/api/groups')
+  return (data.groups || []).map(mapGroup)
+}
+
+export async function createGroup({ title, description }) {
+  const data = await request('/api/groups', {
+    method: 'POST',
+    body: { title, description: description || null },
+  })
+  return mapGroup(data)
+}
+
+export async function updateGroup(groupId, { title, description }) {
+  const data = await request(`/api/groups/${groupId}`, {
+    method: 'PATCH',
+    body: { title, description: description || null },
+  })
+  return mapGroup(data)
+}
+
+export async function deleteGroup(groupId) {
+  await request(`/api/groups/${groupId}`, { method: 'DELETE' })
+}
+
+export async function assignGroup(conversationId, groupId) {
+  await request(`/api/conversations/${conversationId}/group`, {
+    method: 'PATCH',
+    body: { group_id: groupId },
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Group Sharing
+// ---------------------------------------------------------------------------
+
+export async function addGroupCollaborator(groupId, { email, role }) {
+  const data = await request(`/api/groups/${groupId}/collaborators`, {
+    method: 'POST',
+    body: { email, role },
+  })
+  return mapCollaborator(data)
+}
+
+export async function listGroupCollaborators(groupId) {
+  const data = await request(`/api/groups/${groupId}/collaborators`)
+  return (data.collaborators || []).map(mapCollaborator)
+}
+
+export async function updateGroupCollaboratorRole(groupId, collaboratorId, role) {
+  const data = await request(`/api/groups/${groupId}/collaborators/${collaboratorId}`, {
+    method: 'PATCH',
+    body: { role },
+  })
+  return mapCollaborator(data)
+}
+
+export async function removeGroupCollaborator(groupId, collaboratorId) {
+  await request(`/api/groups/${groupId}/collaborators/${collaboratorId}`, { method: 'DELETE' })
 }
 
 // ---------------------------------------------------------------------------

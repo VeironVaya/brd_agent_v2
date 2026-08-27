@@ -30,3 +30,7 @@ class Conversation(Base):
     focused_section_id: Mapped[str | None] = mapped_column(
         ForeignKey("sections.section_id", ondelete="SET NULL"), nullable=True
     )
+    # Which group this BRD belongs to. NULL means ungrouped.
+    group_id: Mapped[str | None] = mapped_column(
+        ForeignKey("brd_groups.group_id", ondelete="SET NULL"), nullable=True, index=True
+    )

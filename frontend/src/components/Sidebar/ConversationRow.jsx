@@ -4,7 +4,7 @@ import RenameModal from '../common/RenameModal.jsx'
 import ConfirmModal from '../common/ConfirmModal.jsx'
 import RoleBadge from '../common/RoleBadge.jsx'
 
-export default function ConversationRow({ conversation, onRename, onDelete, onShare }) {
+export default function ConversationRow({ conversation, onRename, onDelete, onShare, onAssignGroup }) {
   const navigate = useNavigate()
   const percent = Math.round((conversation.answeredCount / 26) * 100)
   const isOwner = conversation.role === 'owner'
@@ -75,6 +75,21 @@ export default function ConversationRow({ conversation, onRename, onDelete, onSh
                       <path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9" />
                     </svg>
                     Share
+                  </button>
+                )}
+                {onAssignGroup && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      onAssignGroup()
+                    }}
+                    className="flex items-center gap-2.5 w-full px-4 py-3 text-sm text-text-primary cursor-pointer bg-white hover:bg-bg-subtle text-left border-none"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    </svg>
+                    Assign to group
                   </button>
                 )}
                 <button

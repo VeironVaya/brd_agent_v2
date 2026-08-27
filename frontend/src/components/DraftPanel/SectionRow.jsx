@@ -104,12 +104,16 @@ export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, onV
                   See details
                 </button>
               </div>
-              <div className="text-[13px] leading-relaxed">{answer.answer}</div>
+              <div className="text-[13px] leading-relaxed">
+                {answer.answer && answer.answer.length > 120
+                  ? answer.answer.slice(0, 120).trimEnd() + '…'
+                  : answer.answer}
+              </div>
             </div>
           )}
           <div className="text-[11px] font-bold uppercase tracking-wider mb-1.25">What's missing?</div>
           {missingItems.length > 0 ? (
-            <ul className="m-0 pl-4 flex flex-col gap-0.75">
+            <ul className="m-0 pl-4 list-disc flex flex-col gap-0.75">
               {missingItems.map((m) => (
                 <li key={m} className="text-[13px] leading-snug">
                   {m}

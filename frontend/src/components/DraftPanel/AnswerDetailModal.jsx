@@ -2,6 +2,7 @@ import Modal, { ModalHeader } from '../common/Modal.jsx'
 import { CONFIDENCE_COLOR_HEX } from '../../utils/confidenceColors.js'
 import { FIELD_META, confidenceTier } from '../../utils/draftFields.js'
 import { findCustomNode, getCodeForNode } from '../../utils/customSectionTree.js'
+import ConfidenceBreakdown from './ConfidenceBreakdown.jsx'
 
 export default function AnswerDetailModal({ open, onClose, fieldId, answers, customSections = [] }) {
   const templateLeaf = fieldId ? FIELD_META[fieldId] : null
@@ -24,6 +25,7 @@ export default function AnswerDetailModal({ open, onClose, fieldId, answers, cus
           {answer.confidence}% {tier} confidence
         </span>
       </div>
+      <ConfidenceBreakdown breakdown={answer.confidence_breakdown} />
       <div className="text-sm mt-3.5 leading-relaxed">{answer.answer}</div>
       {answer.confidence_reason && (
         <div className="mt-3.5 p-3 bg-bg-subtle rounded-md border border-border text-[12.5px] text-text-secondary leading-relaxed">

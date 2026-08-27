@@ -4,7 +4,7 @@ import Button from '../common/Button.jsx'
 import { TextField, TextAreaField } from '../common/FormField.jsx'
 import { DIRECTORATE_OPTIONS } from '../../utils/choiceSections.js'
 
-export default function NewConversationModal({ open, onClose, onCreate }) {
+export default function NewConversationModal({ open, onClose, onCreate, groupName }) {
   const [title, setTitle] = useState('')
   const [context, setContext] = useState('')
   const [requestorDirectorate, setRequestorDirectorate] = useState('')
@@ -37,9 +37,17 @@ export default function NewConversationModal({ open, onClose, onCreate }) {
 
   return (
     <Modal open={open} onClose={handleClose}>
-      <ModalHeader title="New Conversation" onClose={handleClose} />
+      <ModalHeader title="New BRD" onClose={handleClose} />
       <div className="text-sm text-text-secondary mt-1.5">
         Give it a name and short context — BRD-Agent will ask the rest.
+        {groupName && (
+          <div className="mt-1 flex items-center gap-1.5 text-accent font-medium">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            </svg>
+            Will be created in {groupName}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-4 mt-5.5">

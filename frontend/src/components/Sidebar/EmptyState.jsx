@@ -2,8 +2,8 @@ import Button from '../common/Button.jsx'
 
 export default function EmptyState({
   onNewConversation,
-  title = 'No conversations yet',
-  description = 'Start your first BRD conversation and BRD-Agent will guide you section by section.',
+  title = 'No BRDs yet',
+  description = 'Start your first BRD and BRD-Agent will guide you section by section.',
   hideAction = false,
 }) {
   return (
@@ -18,7 +18,7 @@ export default function EmptyState({
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             <path d="M12 5v14M5 12h14" />
           </svg>
-          New Conversation
+          New BRD
         </Button>
       )}
     </div>

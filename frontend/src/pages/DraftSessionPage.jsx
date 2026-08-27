@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import * as api from '../services/api.js'
 import {
   GENERAL_ROOM_ID,
   FIELD_META,
+  FIELD_ORDER,
   fieldState,
   missingByStatus,
   statusBuckets,
@@ -25,13 +27,14 @@ import CustomSectionsList from '../components/DraftPanel/CustomSectionsList.jsx'
 import AddCustomSectionModal from '../components/DraftPanel/AddCustomSectionModal.jsx'
 import ReviewFlaggedModal from '../components/DraftPanel/ReviewFlaggedModal.jsx'
 import AnswerDetailModal from '../components/DraftPanel/AnswerDetailModal.jsx'
+import SectionCompleteModal from '../components/DraftPanel/SectionCompleteModal.jsx'
 import ConfirmModal from '../components/common/ConfirmModal.jsx'
 import ShareModal from '../components/common/ShareModal.jsx'
 import ChoiceSectionModal from '../components/ChoiceSections/ChoiceSectionModal.jsx'
 
 export default function DraftSessionPage() {
   const { id } = useParams()
-  const navigate = useNavigate()
+  const { logout } = useAuth()
   const [conversation, setConversation] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -45,6 +48,10 @@ export default function DraftSessionPage() {
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [choiceSectionId, setChoiceSectionId] = useState(null)
+  // { completedTitle, nextFieldId, nextTitle } | null
+  // Populated after the AI marks the focused section as 'done' so the
+  // SectionCompleteModal can offer a one-click jump to the next section.
+  const [sectionCompleteData, setSectionCompleteData] = useState(null)
   // Optimistic send: the user's own message renders immediately, with a
   // "thinking" indicator in place of the agent's reply, rather than
   // blocking on the full round trip — matters once the AI stub is a real,
@@ -119,10 +126,41 @@ export default function DraftSessionPage() {
     // re-renders the disabled state, producing two user+agent pairs for
     // one send.
     if (isSending || !canEdit) return
+
+    // Capture the focused field's status before the round-trip so we can
+    // detect the moment the AI flips it to 'done'.
+    const prevStatus = focusedFieldId ? fieldState(focusedFieldId, conversation.answers) : null
+
     setPending({ roomId, text })
     try {
       await api.postMessage(id, roomId, text)
-      await refreshDetail()
+      const detail = await api.getConversation(id)
+      setConversation(detail)
+
+      // Show the section-complete modal only when:
+      //   • we were focused on a question room (not General)
+      //   • the section wasn't already 'done' before this send
+      //   • the AI just marked it 'done'
+      if (
+        roomTab === 'question' &&
+        focusedFieldId &&
+        prevStatus !== 'done' &&
+        fieldState(focusedFieldId, detail.answers) === 'done'
+      ) {
+        const completedMeta = FIELD_META[focusedFieldId]
+        const completedTitle = completedMeta?.title ?? focusedFieldId
+
+        // Find the next leaf that is not done and not locked.
+        const nextFieldId = FIELD_ORDER.find(
+          (fid) =>
+            fid !== focusedFieldId &&
+            fieldState(fid, detail.answers) !== 'done' &&
+            fieldState(fid, detail.answers) !== 'locked',
+        ) ?? null
+        const nextTitle = nextFieldId ? (FIELD_META[nextFieldId]?.title ?? nextFieldId) : null
+
+        setSectionCompleteData({ completedTitle, nextFieldId, nextTitle })
+      }
     } finally {
       setPending(null)
     }
@@ -257,15 +295,25 @@ export default function DraftSessionPage() {
       <ConfirmModal
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
-        onConfirm={() => {
-          api.logout()
-          navigate('/login')
+        onConfirm={async () => {
+          setLogoutOpen(false)
+          await logout() // awaits server revocation + clears state + navigates to /login
         }}
         title="Log out?"
         description="You'll be signed out of BRD-Agent and returned to the sign-in screen."
         confirmLabel="Log out"
       />
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} conversationId={id} />
+      <SectionCompleteModal
+        open={!!sectionCompleteData}
+        completedTitle={sectionCompleteData?.completedTitle ?? ''}
+        nextTitle={sectionCompleteData?.nextTitle ?? null}
+        onProceed={() => {
+          if (sectionCompleteData?.nextFieldId) handleFocus(sectionCompleteData.nextFieldId)
+          setSectionCompleteData(null)
+        }}
+        onStay={() => setSectionCompleteData(null)}
+      />
       <ChoiceSectionModal
         open={!!choiceSectionId}
         sectionId={choiceSectionId}

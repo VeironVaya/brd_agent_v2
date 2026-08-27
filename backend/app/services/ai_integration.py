@@ -31,6 +31,7 @@ except Exception:
     pass
 
 from app.config import settings
+<<<<<<< HEAD
 from app.rag import (
     CANONICAL_ANSWERABLE_FIELDS,
     CANONICAL_FIELDS_META,
@@ -43,8 +44,21 @@ from app.rag import (
 
 
 
+=======
+from app.services.brd_rules import get_section_rules_prompt
+>>>>>>> origin/master
 
 DUMMY_AI_REPLY = "Got it — logged. (Dummy AI: Please set GEMINI_API_KEY or GROQ_API_KEY in .env)"
+
+
+# Hardcoded dummy breakdown — replaced by the AI team with real computed values.
+_DUMMY_CONFIDENCE_BREAKDOWN = {
+    "grounding": {"score": 72, "reason": "[Dummy] Most claims are grounded in provided user inputs, but some numerical targets lack cited sources."},
+    "reference_context": {"score": 85, "reason": "[Dummy] The answer aligns well with prior sections. Minor terminology drift detected."},
+    "section_compliance": {"score": 60, "reason": "[Dummy] Some required sub-fields per the section template are still missing or vague."},
+    "testability": {"score": 50, "reason": "[Dummy] The stated requirements lack measurable acceptance criteria in several places."},
+    "consistency": {"score": 90, "reason": "[Dummy] No logical contradictions detected across the current section content."},
+}
 
 
 @dataclass
@@ -57,6 +71,10 @@ class AgentReply:
     confidence_components: dict | None = None
     missing_items: list[str] = field(default_factory=list)
     is_assumption: bool = False
+    # AI team: populate this with the 5-dimension breakdown dict.
+    # Shape: {"grounding": {"score": int, "reason": str}, ...}
+    # Leave None if not yet computed — the frontend hides the panel gracefully.
+    confidence_breakdown: dict | None = None
 
 
 class LLMReplySchema(BaseModel):
@@ -66,6 +84,14 @@ class LLMReplySchema(BaseModel):
     confidence: int = Field(..., description="Confidence score 0-100")
     missing_items: list[str] = Field(default_factory=list, description="List of missing information")
     is_assumption: bool = Field(default=False, description="True if AI made assumptions")
+    confidence_breakdown: dict | None = Field(
+        None,
+        description=(
+            "Optional 5-dimension confidence breakdown. "
+            "Keys: grounding, reference_context, section_compliance, testability, consistency. "
+            "Each value: {score: int 0-100, reason: str}."
+        ),
+    )
 
 
 SYSTEM_PROMPT = """You are an expert, senior Business Analyst acting as a BRD (Business Requirement Document) Consultant.
@@ -81,53 +107,20 @@ Your task is to guide the user to complete the current BRD section through a con
 - You are in GROUNDED mode: Never invent plausible-sounding statistics, datasets, or sources. If a number is needed, ask the user.
 
 # SECTION-SPECIFIC RULES
-Depending on the "Section Title" (see context below), you MUST enforce the following specific rules for that section when generating "answer_text" and asking follow-ups:
-
-**1. Introduction**
-- **1.1.1 Background**: Must state the actual trigger (the event, problem, or decision behind it), not a restated objective.
-- **1.1.2 Business and Market Analysis**: Must cite something concrete (a named benchmark, a competitor behavior), not a general claim of importance.
-- **1.1.3 Relevant Historical Data**: Must reference specific data, incidents, or metrics grounding the need. If none exist, say so explicitly and flag it as an assumption.
-- **1.2 Business Objective**: The underlying business problem and why it matters now. Not a feature name — the actual goal.
-- **1.3 Purpose of this Business Requirement**: What this specific document is meant to achieve or authorize.
-- **1.4 Program Type**: A specific category: new product/service, enhancement, regulatory compliance, migration, retirement, etc. Not "a project."
-- **1.5 Business Risk**: Concrete risks of doing this *and* of not doing it. Each risk names a specific cause and consequence.
-
-**2. Benefit Analysis**
-- **2.1 Summary**: What improves, for whom, and by how much. A real figure is required. Never state units with no number and no explanation of why. If pending, state "pending baseline confirmation".
-- **2.2 Assumption and Calculation**: The numbers and assumptions behind any benefit claim, with every assumption used in the calculation stated explicitly, not implied.
-
-**3. Service Description**
-- **3.1 General Requirement**: A numbered list. Each item is a concrete, testable "the system shall ..." behavior.
-- **3.2 Product / Service Specification**: The actual specification of what's being built or changed, not a summary of the objective.
-- **3.3.1 Business process impact**: What existing processes change, and how.
-- **3.3.2 Description**: Description of the new or changed process itself.
-- **3.3.3 Security**: Concrete controls/requirements, not "it will be secure."
-- **3.3.4 Organization and policy**: The specific org/policy implication: who owns what, what changes.
-- **3.3.5 Service Delivery Plan**: How the service is delivered operationally (Write "Not applicable" if not a new application).
-- **3.4 Complain Handling**: The specific mechanism for handling related customer complaints.
-- **3.5 Reporting**: What gets reported, to whom, and how often. Name mechanism, audience, and frequency — all three.
-- **3.6 Monitoring**: What gets monitored, how, and who is alerted (Write "Not applicable" if not required).
-- **3.7 Settlement Plan**: (Write "Not applicable" if no financial settlement is involved).
-- **3.8 Assumptions and Dependencies**: Every value elsewhere in the document that wasn't explicitly confirmed goes here in plain language, along with other systems, teams, contracts, or approvals this relies on. Dependencies must be named specifically.
-
-**4. Release Plan**
-- **4.1 Target Ready for Service**: A concrete date or milestone, or an explicit reason it's still pending (e.g. "pending sprint planning") — never "soon" or "TBD" with no reason.
-- **4.2 Commercial Launch**: Commercial launch plan and timing, same standard as 4.1.
-- **4.3 Internal Socialization Plan**: How internal teams are informed/trained ahead of launch (or "Not applicable").
-- **4.4 Rollout Scenario**: Phased, pilot, big-bang, or other rollout approach (or "Not applicable").
-
-**5. Product/Service Retirement Plan**
-- What happens to this product/service at end of life, or an explicit note that no retirement plan applies yet.
+{section_rules_prompt}
 
 # CORE RULES FOR CONVERSATION
-1. ONLY discuss topics related to the current BRD section (see context below).
-2. Ask ONE specific, clear follow-up question at a time if information is incomplete or violates the quality bar above.
-3. Extract any definitive answers from the user into formal, professional business language for the "answer_text". The "answer_text" represents the final draft for THIS section only.
-4. Evaluate completeness ("completeness"):
+1. ONLY discuss topics related to the current BRD section (see context below). If the user attempts to discuss a different section, politely inform them that you are currently focusing on the current section and refuse to process the unrelated input. 
+2. NEVER offer to transition to or discuss another section. You do not have the ability to change the active section. If the current section is complete, tell the user they must click on the next section in the sidebar menu to proceed.
+3. If the user provides input for a different section, you MUST return the exact `current_answer_text` for answer_text, `current_completeness` for completeness, and `current_missing_items` for missing_items without any modifications. DO NOT reset or alter the completeness or answer text based on unrelated inputs.
+4. Ask ONE specific, clear follow-up question at a time if information is incomplete or violates the quality bar above.
+5. Extract any definitive answers from the user into formal, professional business language for the "answer_text". The "answer_text" represents the final draft for THIS section only.
+6. Evaluate completeness ("completeness"):
    - 0-30: Vague or barely relevant information, or uses unmeasurable language. Ask follow up.
    - 40-70: Good start, but missing key details or concrete numbers. Document them in "missing_items".
    - 80-100: Comprehensive, testable, grounded, and actionable. Acknowledge and move on.
-5. If you must make assumptions to format the text, set "is_assumption" to true. CRITICAL: Set "is_assumption" to FALSE if you are simply asking a clarifying question or asking for more information.
+7. If you must make assumptions to format the text, set "is_assumption" to true. CRITICAL: Set "is_assumption" to FALSE if you are simply asking a clarifying question or asking for more information.
+8. EXPLICIT CONTEXT CITATION: When you reject an input or ask for clarification based on a prerequisite dependency (listed in SECTION-SPECIFIC RULES), you MUST explicitly cite the name of that prerequisite section and explicitly quote or summarize its drafted text in your `reply_text`. For example: "Based on the draft of 1.2 Business Objective where you stated 'X', your current input contradicts this because..."
 
 # CURRENT SECTION CONTEXT
 - Section Title: {room_title}
@@ -162,12 +155,17 @@ Example Output:
 
 async def get_reply(
     *,
+    room_id: str,
     room_title: str,
     room_purpose: str | None,
     message_text: str,
     history: list[dict],
     current_answer: dict | None,
+<<<<<<< HEAD
     field_id: str | None = None,
+=======
+    context_answers: dict[str, str] | None = None,
+>>>>>>> origin/master
 ) -> AgentReply:
     """Official AI Integration: LiteLLM generation followed by Anti-Hallucination & Post-Generation RAG Validation."""
     if not settings.groq_api_key and not settings.gemini_api_key:
@@ -188,6 +186,7 @@ async def get_reply(
             confidence_components=None,
             missing_items=missing_items,
             is_assumption=False,
+            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
         )
 
 
@@ -205,9 +204,10 @@ async def get_reply(
     # Format current answer context
     current_answer_text = (current_answer or {}).get("answer_text") or "None"
     current_completeness = (current_answer or {}).get("completeness") or 0
-    current_missing_items = ", ".join((current_answer or {}).get("missing_items") or []) or "None"
+    current_missing_items = json.dumps((current_answer or {}).get("missing_items") or [])
 
     system_instruction = SYSTEM_PROMPT.format(
+        section_rules_prompt=get_section_rules_prompt(room_id, context_answers or {}),
         room_title=room_title,
         room_purpose=room_purpose or "Not specified",
         current_answer_text=current_answer_text,
@@ -327,6 +327,9 @@ async def get_reply(
             confidence_components=confidence_components,
             missing_items=llm_reply.missing_items,
             is_assumption=llm_reply.is_assumption,
+            # AI team: llm_reply.confidence_breakdown is None until the model
+            # returns it. Fallback to dummy so the UI is always exercisable.
+            confidence_breakdown=llm_reply.confidence_breakdown or _DUMMY_CONFIDENCE_BREAKDOWN,
         )
 
     except Exception as e:
@@ -339,6 +342,7 @@ async def get_reply(
             confidence_reason=None,
             confidence_components=None,
             missing_items=(current_answer or {}).get("missing_items") or [],
+            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
         )
 
 
