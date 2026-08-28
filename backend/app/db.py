@@ -1,18 +1,19 @@
-from collections.abc import AsyncGenerator
+"""Backward-compatibility re-export for app.core.db."""
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase
+from app.core.db import (
+    Base,
+    SessionLocal,
+    async_sessionmaker,
+    create_async_engine,
+    engine,
+    get_db,
+)
 
-from app.config import settings
-
-engine = create_async_engine(settings.database_url, pool_pre_ping=True)
-SessionLocal = async_sessionmaker(engine, expire_on_commit=False)
-
-
-class Base(DeclarativeBase):
-    pass
-
-
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    async with SessionLocal() as session:
-        yield session
+__all__ = [
+    "Base",
+    "SessionLocal",
+    "async_sessionmaker",
+    "create_async_engine",
+    "engine",
+    "get_db",
+]

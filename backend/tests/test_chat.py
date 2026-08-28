@@ -1,6 +1,6 @@
 import pytest
-from app.config import settings
-from app.services.ai_integration import DUMMY_AI_REPLY
+from app.core.config import settings
+from app.ai.drafter import DUMMY_AI_REPLY
 from .helpers import create_conversation, register_and_login
 
 

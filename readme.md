@@ -9,77 +9,124 @@ question they depended on changes, letting the owner share a BRD with
 other users as an editor or viewer, and generating a final PDF/Markdown
 document at the end.
 
-AI responses are currently a fixed placeholder (see [AI integration](#ai-integration)
-below) — everything else (auth with real server-side logout revocation,
-the 26-question tree, custom sections, review/flagging, sharing,
-document export) is real, running against a real PostgreSQL database.
-
-## Project structure
+### Project structure
 
 ```
-brd_agent_v2/
+brd-app/
 ├── docker-compose.yml       # postgres + app + frontend services for local dev
 │
 ├── backend/                 # FastAPI — controllers → services → repositories
 │   ├── app/
 │   │   ├── main.py          # app entrypoint, mounts routers + middleware
-│   │   ├── config.py        # env-driven settings (DATABASE_URL, JWT_SECRET, ...)
-│   │   ├── db.py            # SQLAlchemy async engine/session
-│   │   ├── exceptions.py    # domain exceptions -> {error, message} JSON shape
+│   │   │
+│   │   ├── core/            # core infrastructure
+│   │   │   ├── config.py    # env-driven settings (DATABASE_URL, JWT_SECRET, ...)
+│   │   │   ├── db.py        # SQLAlchemy async engine/session
+│   │   │   └── exceptions.py# domain exceptions -> {error, message} JSON shape
+│   │   │
 │   │   ├── routes/          # APIRouters — path + verb -> controller, no logic
-│   │   ├── controllers/     # thin: parse request, call one service, return
-│   │   ├── dtos/             # Pydantic request/response shapes (the wire contract)
-│   │   ├── models/           # SQLAlchemy ORM — one per brainstorming/erd.md entity
-│   │   ├── repositories/     # DB queries only, no business rules
-│   │   ├── services/         # the actual logic:
-│   │   │   ├── conversation_service.py    # CRUD + template seeding
-│   │   │   ├── section_tree_service.py    # recursive CustomSection tree + codes
-│   │   │   ├── template_service.py        # static 26-leaf template config
-│   │   │   ├── chat_service.py            # message posting, focus tracking
-│   │   │   ├── custom_section_service.py  # add/rename/remove, arbitrary nesting
-│   │   │   ├── review_service.py          # flagged-item detection
-│   │   │   ├── document_service.py        # Markdown/PDF export
-│   │   │   ├── share_service.py           # owner-only collaborator management
-│   │   │   └── ai_integration.py          # <- DUMMY AI, see below
-│   │   ├── middleware/       # auth (JWT), CORS, logging, error handling
-│   │   └── utils/            # id generation, etc.
+│   │   ├── controllers/     # thin: parse request, call one service, commit & return
+│   │   ├── dtos/            # Pydantic request/response shapes (the wire contract)
+│   │   ├── models/          # SQLAlchemy ORM entities (User, Conversation, Answer, ...)
+│   │   ├── repositories/    # DB queries only, no business rules
+│   │   │
+│   │   ├── services/        # normal backend business logic & orchestration:
+│   │   │   ├── chat_service.py / chat.py               # message posting, focus tracking
+│   │   │   ├── conversation_service.py / conversation.py # CRUD + template seeding
+│   │   │   ├── document_service.py / document.py       # Markdown/PDF export
+│   │   │   ├── template_service.py / template.py       # static 26-leaf template config
+│   │   │   ├── section_tree_service.py / section_tree.py # recursive CustomSection tree
+│   │   │   ├── brd_rules.py                            # BRD dependency matrix
+│   │   │   ├── brd_group_service.py
+│   │   │   ├── choice_section_service.py
+│   │   │   ├── custom_section_service.py
+│   │   │   ├── review_service.py
+│   │   │   └── share_service.py
+│   │   │
+│   │   ├── ai/              # AI subsystem (modular separation of responsibilities)
+│   │   │   ├── drafter/     # AGENT 1: Conversational BRD Drafter
+│   │   │   │   ├── service.py   # generation & revision logic (get_reply)
+│   │   │   │   ├── prompt.py    # official SYSTEM_PROMPT
+│   │   │   │   └── schema.py    # AgentReply, LLMReplySchema
+│   │   │   │
+│   │   │   ├── judge/       # AGENT 2: Senior BA Reviewer / Judge
+│   │   │   │   ├── service.py   # 2-stage evaluation orchestration (evaluate_section)
+│   │   │   │   ├── scoring.py   # deterministic confidence scoring & rubric mapping
+│   │   │   │   ├── prompt.py    # Stage A (Verifier/Grader) & Stage B (Critic) prompts
+│   │   │   │   ├── rubrics.py   # 4 global rubrics + 26 field-specific rubrics
+│   │   │   │   └── schema.py    # structured Judge I/O schemas
+│   │   │   │
+│   │   │   ├── validator.py # HARD VALIDATOR: anti-hallucination fact checking
+│   │   │   │
+│   │   │   └── rag/         # RAG & Knowledge Base Subsystem
+│   │   │       ├── embeddings.py       # vector embeddings generator
+│   │   │       ├── retrieval.py        # pgvector semantic reference search
+│   │   │       ├── models.py           # RAG data models (SearchResult, etc.)
+│   │   │       ├── legacy_confidence.py# legacy 50/30/20 confidence utilities
+│   │   │       ├── config/             # canonical fields & reference corpus JSON
+│   │   │       └── ingest/             # reference document ingestion pipeline
+│   │   │
+│   │   ├── middleware/      # auth (JWT), CORS, logging, error handling
+│   │   └── utils/           # id generation, etc.
+│   │
 │   ├── migrations/          # Alembic schema history
-│   ├── tests/                # pytest — real Postgres, real HTTP requests
+│   ├── tests/               # pytest — real Postgres, real HTTP requests
 │   └── implementation_1.md  # the original build plan (historical record)
 │
-├── frontend/                 # React + Vite
-│   ├── Dockerfile            # dev-mode container (runs `npm run dev`), bind-mounted
-│   │                         # for hot reload — see docker-compose.yml's frontend service
+├── frontend/                # React + Vite
+│   ├── Dockerfile           # dev-mode container (runs `npm run dev`), bind-mounted
 │   └── src/
-│       ├── pages/            # LoginPage, ConversationsPage, DraftSessionPage, ExportPage
+│       ├── pages/           # LoginPage, ConversationsPage, DraftSessionPage, ExportPage
 │       ├── components/
-│       │   ├── Chat/         # message thread, room tabs
-│       │   ├── DraftPanel/   # section tree, progress, custom-section modals
-│       │   ├── Sidebar/      # conversation list pieces
-│       │   └── common/       # buttons, modals, form fields
-│       ├── services/api.js   # the ONLY file that talks to the backend
-│       └── utils/            # draftFields.js (template config, mirrors
-│                              # template_service.py), customSectionTree.js
-│                              # (mirrors section_tree_service.py), documentPdf.js
+│       │   ├── Chat/        # message thread, room tabs
+│       │   ├── DraftPanel/  # section tree, progress, custom-section modals
+│       │   ├── Sidebar/     # conversation list pieces
+│       │   └── common/      # buttons, modals, form fields
+│       ├── services/api.js  # the ONLY file that talks to the backend
+│       └── utils/           # draftFields.js, customSectionTree.js, documentPdf.js
 │
-├── bruno/                    # API collection — testing + runnable docs, see its README
-│
-└── brainstorming/            # gitignored — erd.md, api_contract.md (the contract,
-                               # kept current), integration_1.md (how the backend
-                               # build actually went, bugs found, decisions made)
+├── bruno/                   # API collection — testing + runnable docs
+└── brainstorming/           # erd.md, api_contract.md, integration_1.md
 ```
 
-## AI integration
+## Runtime Flow
 
-Every chat reply right now comes from a deterministic placeholder,
-deliberately centralized in `backend/app/services/ai_integration.py`
-(search the codebase for `DUMMY_AI`) — zero real intelligence, but
-structured enough to genuinely drive completeness/confidence/`Answer`
-updates end to end, so the rest of the app can be built and verified
-against real behavior before a real model is wired in. Nothing else in
-the backend contains model/prompt logic — that file is the one seam a
-real AI integration plugs into later without anything else needing to
-change.
+```text
+User
+  │ (Chat input)
+  ▼
+API Layer (routes → controllers)
+  │
+  ▼
+Chat Service (app/services/chat_service.py)
+  │
+  ▼
+Agent 1 Drafter (app/ai/drafter/service.py)
+  │ [Generates/revises section draft, answer_text, completeness]
+  ▼
+Hard Validator (app/ai/validator.py)
+  │ [Checks unconfirmed numbers, metrics, SLAs against confirmed user evidence]
+  ▼
+RAG References (app/ai/rag/retrieval.py)
+  │ [Retrieves top reference BRD chunks as benchmark context]
+  ▼
+Agent 2 Stage A: Verifier & Grader (app/ai/judge/service.py)
+  │ [Labels rubric criteria: MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A]
+  ▼
+Deterministic Judge Scoring (app/ai/judge/scoring.py)
+  │ [Averages components, renormalizes N_A weights, computes final confidence 0-100]
+  ▼
+Agent 2 Stage B: Critic (app/ai/judge/service.py)
+  │ [Generates qualitative critique, strengths, issues, suggestions]
+  ▼
+Repositories (app/repositories/)
+  │ [Persists answer, bubbles, confidence breakdown]
+  ▼
+Database (PostgreSQL)
+  │
+  ▼
+Frontend (React Live Draft Panel & Chat UI)
+```
 
 ## Running it locally
 

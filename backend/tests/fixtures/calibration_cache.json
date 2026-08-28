@@ -1,0 +1,796 @@
+{
+  "1.1.1_GOOD": {
+    "sample_id": "1.1.1_GOOD",
+    "field_id": "1.1.1",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 100,
+    "reference_score": 100,
+    "section_compliance_score": 100,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The Background section is well-grounded, clear, and effectively articulates the business problem with quantifiable metrics. It meets all compliance and clarity standards, requiring only minor clarifications on scope boundaries and specific data points to enhance downstream analysis.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.67
+  },
+  "1.1.1_POOR": {
+    "sample_id": "1.1.1_POOR",
+    "field_id": "1.1.1",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 40,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 100,
+    "section_compliance_score": 0,
+    "testability_score": 0,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Introduces blockchain technology as a security solution without any supporting evidence.",
+        "excerpt": "with blockchain technology for security"
+      },
+      {
+        "type": "MATERIAL_SCOPE_LEAK",
+        "reason": "The paragraph proposes specific technical solutions, which belong in a solution/design section, not in the Background.",
+        "excerpt": "We need to implement a modern digital transformation solution using AI and machine learning ... with blockchain technology"
+      }
+    ],
+    "stage_b_summary": "The section is rejected because it prescribes unverified technical solutions (blockchain, AI) instead of neutrally describing the current business problem, current state, and root causes. It lacks grounding in evidence and fails to articulate the business opportunity with measurable criteria.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 5.54
+  },
+  "1.1.1_MEDIUM": {
+    "sample_id": "1.1.1_MEDIUM",
+    "field_id": "1.1.1",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 83,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 50,
+    "reference_score": 100,
+    "section_compliance_score": 75,
+    "testability_score": 88,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section effectively states the business need but lacks the specific current-state details and root-cause analysis required for a robust Background section. It needs quantitative data and a clearer distinction between symptoms and underlying causes.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 5.77
+  },
+  "1.1.2_GOOD": {
+    "sample_id": "1.1.2_GOOD",
+    "field_id": "1.1.2",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 100,
+    "reference_score": 100,
+    "section_compliance_score": 100,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section is fully grounded in provided evidence and clearly articulates the business driver and risk. It passes all compliance checks but could be strengthened by adding forward-looking targets and specific feature drivers for the identified customer preference.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 13.06
+  },
+  "1.1.2_POOR": {
+    "sample_id": "1.1.2_POOR",
+    "field_id": "1.1.2",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 20,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 0,
+    "section_compliance_score": 0,
+    "testability_score": 0,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Global fintech market size $312B is not in evidence",
+        "excerpt": "$312 billion"
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Growth rate 23.4% CAGR is not in evidence",
+        "excerpt": "23.4% CAGR"
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Indonesia rank 3rd in ASEAN digital adoption is not in evidence",
+        "excerpt": "Indonesia ranks 3rd in ASEAN for digital adoption"
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Competitor market share 45% is not in evidence",
+        "excerpt": "Our main competitor captured 45% market share last year"
+      }
+    ],
+    "stage_b_summary": "The section is rejected because it relies entirely on fabricated or unsourced quantitative data and lacks a clear, evidence-based link between market analysis and project objectives.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 29.92
+  },
+  "1.1.2_MEDIUM": {
+    "sample_id": "1.1.2_MEDIUM",
+    "field_id": "1.1.2",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 52,
+    "confidence_level": "LOW",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 33,
+    "reference_score": 100,
+    "section_compliance_score": 25,
+    "testability_score": 0,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section is conceptually appropriate but fails to ground its claims in the specific evidence, resulting in vague, non‑actionable content that does not meet the BRD’s business driver and market analysis requirements.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 54.08
+  },
+  "1.1.3_GOOD": {
+    "sample_id": "1.1.3_GOOD",
+    "field_id": "1.1.3",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 100,
+    "reference_score": 100,
+    "section_compliance_score": 100,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section satisfies all compliance, clarity, and grounding criteria; minor enhancements can improve contextual depth and linkage to business objectives.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 2.79
+  },
+  "1.1.3_MEDIUM": {
+    "sample_id": "1.1.3_MEDIUM",
+    "field_id": "1.1.3",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 57,
+    "confidence_level": "LOW",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 50,
+    "reference_score": 100,
+    "section_compliance_score": 33,
+    "testability_score": 0,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section is currently non-compliant due to a lack of specificity; it fails to ground its assertions in the confirmed historical data points (FY2021-FY2023 volumes and 14-day processing baseline), making the business case weak and unverifiable.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.75
+  },
+  "1.1.3_POOR": {
+    "sample_id": "1.1.3_POOR",
+    "field_id": "1.1.3",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 30,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 50,
+    "section_compliance_score": 0,
+    "testability_score": 0,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Percentages of cost reduction and satisfaction improvement are not supported by project evidence.",
+        "excerpt": "67% reduction in costs and 89% improvement in customer satisfaction"
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "The speculative statement about future performance lacks evidential basis.",
+        "excerpt": "Our data will likely follow the same trend."
+      }
+    ],
+    "stage_b_summary": "The section lacks grounding, testability, and alignment with project data, resulting in low compliance and requiring substantial revision.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.54
+  },
+  "1.2_GOOD": {
+    "sample_id": "1.2_GOOD",
+    "field_id": "1.2",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 97,
+    "confidence_level": "HIGH",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 83,
+    "reference_score": 100,
+    "section_compliance_score": 100,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The generated content states the re-submission rate target is 'within the first year', but the confirmed evidence explicitly states the target is 'within 3 months'. This is a material deviation from the confirmed business objective.",
+        "excerpt": "Reduce the application re-submission rate from 23% to below 5% within the first year."
+      }
+    ],
+    "stage_b_summary": "The section demonstrates strong clarity and measurability but requires alignment with confirmed timelines and explicit financial impact to fully satisfy business justification and evidence grounding.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.69
+  },
+  "1.2_MEDIUM": {
+    "sample_id": "1.2_MEDIUM",
+    "field_id": "1.2",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 91,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 100,
+    "reference_score": 100,
+    "section_compliance_score": 83,
+    "testability_score": 81,
+    "consistency_score": null,
+    "critical_flags": [],
+    "stage_b_summary": "Section evaluated with HIGH confidence (91%).",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 5.6
+  },
+  "1.2_POOR": {
+    "sample_id": "1.2_POOR",
+    "field_id": "1.2",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 53,
+    "confidence_level": "LOW",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 75,
+    "section_compliance_score": 17,
+    "testability_score": 75,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section fails to meet core business objective standards by describing a technical activity rather than a measurable business outcome, lacking linkage to specific project problems, and including unnecessary technology constraints.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 12.45
+  },
+  "1.3_GOOD": {
+    "sample_id": "1.3_GOOD",
+    "field_id": "1.3",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 86,
+    "confidence_level": "HIGH",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 50,
+    "reference_score": 100,
+    "section_compliance_score": 92,
+    "testability_score": 88,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "INVENTED_BUSINESS_RULE",
+        "reason": "Out‑of‑scope items \"customer onboarding (KYC)\" and \"post‑disbursement loan servicing\" are not present in the confirmed project evidence.",
+        "excerpt": "Out of scope: ... customer onboarding (KYC), and post-disbursement loan servicing."
+      },
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The statement that the document covers \"credit scoring integration workflow\" conflicts with confirmed evidence that automated credit scoring is out of scope.",
+        "excerpt": "It covers ... credit scoring integration workflow."
+      }
+    ],
+    "stage_b_summary": "The section provides a clear structural framework for purpose and scope but contains critical factual errors regarding scope boundaries (credit scoring) and unsupported exclusions (KYC/servicing) that conflict with project evidence.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 7.71
+  },
+  "1.3_MEDIUM": {
+    "sample_id": "1.3_MEDIUM",
+    "field_id": "1.3",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 84,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 100,
+    "reference_score": 100,
+    "section_compliance_score": 58,
+    "testability_score": 62,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "Section evaluated with MEDIUM confidence (84%).",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 12.8
+  },
+  "1.3_POOR": {
+    "sample_id": "1.3_POOR",
+    "field_id": "1.3",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 20,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 0,
+    "section_compliance_score": 0,
+    "testability_score": 0,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Numeric facts (25 years, 50,000 customers) are not supported by evidence",
+        "excerpt": "50,000 customers"
+      },
+      {
+        "type": "INVENTED_ROLE_OR_OWNER",
+        "reason": "Roles (IT department, Operations) are not confirmed in the evidence",
+        "excerpt": "IT department"
+      }
+    ],
+    "stage_b_summary": "The section is critically deficient as it invents unverified facts and roles while failing to define the document's purpose or align with business objectives, resulting in a low confidence score and a requirement for full revision.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 11.43
+  },
+  "1.4_GOOD": {
+    "sample_id": "1.4_GOOD",
+    "field_id": "1.4",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 90,
+    "confidence_level": "HIGH",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 75,
+    "reference_score": 100,
+    "section_compliance_score": 75,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The statement \"credit scoring integration\" contradicts the confirmed out‑of‑scope fact that automated credit scoring algorithm is excluded.",
+        "excerpt": "credit scoring integration"
+      }
+    ],
+    "stage_b_summary": "Section evaluated with HIGH confidence (90%).",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 5.81
+  },
+  "1.4_MEDIUM": {
+    "sample_id": "1.4_MEDIUM",
+    "field_id": "1.4",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 87,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 67,
+    "reference_score": 100,
+    "section_compliance_score": 80,
+    "testability_score": 88,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section is clear and aligns with the project purpose, but it needs to be more precise and traceable to the confirmed classification to meet grounding and compliance expectations.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.14
+  },
+  "1.4_POOR": {
+    "sample_id": "1.4_POOR",
+    "field_id": "1.4",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 44,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 75,
+    "section_compliance_score": 0,
+    "testability_score": 100,
+    "consistency_score": null,
+    "critical_flags": [
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Introduces AWS and Kubernetes as platforms without any supporting evidence.",
+        "excerpt": "greenfield microservices platform development using cloud-native architecture on AWS with Kubernetes orchestration"
+      },
+      {
+        "type": "MATERIAL_SCOPE_LEAK",
+        "reason": "Content describes technical architecture, which belongs to an Architecture/Technical Design section, not the Program Type classification.",
+        "excerpt": "greenfield microservices platform development using cloud-native architecture on AWS with Kubernetes orchestration"
+      }
+    ],
+    "stage_b_summary": "The section fails to meet the program type classification requirement and lacks evidence grounding, requiring revision to align with BRD standards.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.8
+  },
+  "1.5_GOOD": {
+    "sample_id": "1.5_GOOD",
+    "field_id": "1.5",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 84,
+    "confidence_level": "MEDIUM",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 33,
+    "reference_score": 100,
+    "section_compliance_score": 93,
+    "testability_score": 94,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "The specific delay of '2–3 months' is not found in the confirmed project evidence.",
+        "excerpt": "causing adoption delays of 2–3 months post-go-live"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "The 'external credit bureau API' is not mentioned in the confirmed evidence. The scope explicitly excludes automated credit scoring and only mentions the internal BI Checking API.",
+        "excerpt": "The external credit bureau API may not meet the required response SLA"
+      }
+    ],
+    "stage_b_summary": "The section demonstrates strong structure and clarity but contains unsupported details that could mislead stakeholders; correcting these will enhance accuracy and alignment with project evidence.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 13.02
+  },
+  "1.5_MEDIUM": {
+    "sample_id": "1.5_MEDIUM",
+    "field_id": "1.5",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 70,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 50,
+    "reference_score": 100,
+    "section_compliance_score": 50,
+    "testability_score": 50,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "Section evaluated with MEDIUM confidence (70%).",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.76
+  },
+  "1.5_POOR": {
+    "sample_id": "1.5_POOR",
+    "field_id": "1.5",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 38,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 100,
+    "section_compliance_score": 50,
+    "testability_score": 0,
+    "consistency_score": null,
+    "critical_flags": [
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Vendor/tool mentioned without evidence",
+        "excerpt": "use Jira for tracking"
+      }
+    ],
+    "stage_b_summary": "The section fails due to vague, untestable risk statements and unsupported vendor references. It requires specific, evidence-based risks with clear business impacts and quantified, actionable mitigations.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 11.08
+  },
+  "2.1_GOOD": {
+    "sample_id": "2.1_GOOD",
+    "field_id": "2.1",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 89,
+    "confidence_level": "HIGH",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 50,
+    "reference_score": 100,
+    "section_compliance_score": 93,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "The 12% dropout rate is cited as 'per user data' but is not present in the provided Confirmed Project/User Evidence block. The evidence lists re-submission rates (23%) and market growth, but not a specific dropout rate during approval.",
+        "excerpt": "current dropout: 12% per user data"
+      }
+    ],
+    "stage_b_summary": "The section is well‑structured and aligns with objectives, but the unsupported 12% dropout metric undermines grounding; supplying evidence or qualifying the figure will resolve the critical flag.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 5.45
+  },
+  "2.1_MEDIUM": {
+    "sample_id": "2.1_MEDIUM",
+    "field_id": "2.1",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 94,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 100,
+    "reference_score": 100,
+    "section_compliance_score": 93,
+    "testability_score": 75,
+    "consistency_score": 100,
+    "critical_flags": [],
+    "stage_b_summary": "The section satisfies basic compliance but needs clearer alignment with objectives and measurable criteria to support effective benefit tracking.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 7.33
+  },
+  "2.1_POOR": {
+    "sample_id": "2.1_POOR",
+    "field_id": "2.1",
+    "expected_quality": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 50,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 0,
+    "reference_score": 100,
+    "section_compliance_score": 0,
+    "testability_score": 50,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Numeric claim not supported by evidence",
+        "excerpt": "Expected ROI: 340% in the first year."
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Numeric claim not supported by evidence",
+        "excerpt": "Cost savings: Rp 8.5 billion annually."
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Numeric claim not supported by evidence",
+        "excerpt": "Revenue increase: Rp 12 billion."
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Numeric claim not supported by evidence",
+        "excerpt": "Productivity improvement: 78%."
+      }
+    ],
+    "stage_b_summary": "The section fails on evidence grounding and section compliance because all quantitative benefits are unsupported by data or calculation. While the structure is clear, the lack of traceability renders the claims untestable and potentially misleading.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 2.69
+  },
+  "2.2_GOOD": {
+    "sample_id": "2.2_GOOD",
+    "field_id": "2.2",
+    "expected_quality": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 92,
+    "confidence_level": "HIGH",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 67,
+    "reference_score": 100,
+    "section_compliance_score": 94,
+    "testability_score": 100,
+    "consistency_score": 100,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "The values 'Rp 250 juta' (Average loan size) and '72%' (Approval rate) are cited as 'user-confirmed' but do not appear in the provided 'Confirmed Project / User Evidence' list. While flagged as assumptions in the text, the specific claim of user confirmation for these exact numbers is not supported by the provided evidence context.",
+        "excerpt": "Assumption [A1]: Average loan size remains at Rp 250 juta (based on FY2023 average, user-confirmed)\nAssumption [A2]: Approval rate remains at 72% (FY2023 average, user-confirmed)"
+      }
+    ],
+    "stage_b_summary": "The section demonstrates strong calculation logic and clarity, but the unsupported user‑confirmed claims for key assumptions and lack of sensitivity analysis need to be addressed to meet evidence‑based standards.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 13.9
+  },
+  "2.2_MEDIUM": {
+    "sample_id": "2.2_MEDIUM",
+    "field_id": "2.2",
+    "expected_quality": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 38,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "grounding_score": 50,
+    "reference_score": 100,
+    "section_compliance_score": 0,
+    "testability_score": 0,
+    "consistency_score": null,
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Average loan amount of Rp 200-300 million is not present in the confirmed project evidence.",
+        "excerpt": "average loan of around Rp 200-300 million"
+      }
+    ],
+    "stage_b_summary": "The section lacks precise, evidence‑based calculations and testable metrics, resulting in low confidence and requiring revision.",
+    "stage_a_judgments": {
+      "grounding": [],
+      "reference": [],
+      "section_compliance": [],
+      "clarity": [],
+      "consistency": []
+    },
+    "elapsed_seconds": 4.44
+  }
+}

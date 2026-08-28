@@ -10,13 +10,13 @@ from pathlib import Path
 from unittest.mock import MagicMock
 import pytest
 
-from app.rag.models import LoadedBlock, LoadedDocument, ParsedDocument, ParsedField
-from app.rag.ingest.loader import load_document
-from app.rag.ingest.parser import parse_document, match_heading, FIELD_TITLE_MAP
-from app.rag.ingest.chunker import create_chunks
-from app.rag.ingest.validator import validate_ingest
-from app.rag.ingest.repository import ReferenceRepository
-from app.rag.cli import load_corpus, find_source_file
+from app.ai.rag.models import LoadedBlock, LoadedDocument, ParsedDocument, ParsedField
+from app.ai.rag.ingest.loader import load_document
+from app.ai.rag.ingest.parser import parse_document, match_heading, FIELD_TITLE_MAP
+from app.ai.rag.ingest.chunker import create_chunks
+from app.ai.rag.ingest.validator import validate_ingest
+from app.ai.rag.ingest.repository import ReferenceRepository
+from app.ai.rag.cli import load_corpus, find_source_file
 
 
 def test_canonical_field_contract_loaded():
@@ -87,7 +87,7 @@ def test_chunker_respects_single_field_boundary():
 
 
 def test_validator_detects_empty_chunks():
-    from app.rag.models import ReferenceChunk
+    from app.ai.rag.models import ReferenceChunk
     parsed = ParsedDocument()
     bad_chunks = [
         ReferenceChunk(

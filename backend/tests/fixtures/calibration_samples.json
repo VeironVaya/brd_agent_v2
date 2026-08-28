@@ -1,0 +1,782 @@
+[
+  {
+    "field_id": "1.1.1",
+    "title": "Background",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Background addresses operational challenges identified in initial stakeholder discovery. Specifically, What exists today. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Background addresses operational challenges identified in initial stakeholder discovery. Specifically, What exists today. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.1.1",
+    "title": "Background",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Background is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.1.1",
+    "title": "Background",
+    "quality_tier": "POOR",
+    "draft_text": "Background: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "1.1.2",
+    "title": "Business and Market Analysis",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Business and Market Analysis addresses operational challenges identified in initial stakeholder discovery. Specifically, What are competitors doing. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Business and Market Analysis addresses operational challenges identified in initial stakeholder discovery. Specifically, What are competitors doing. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.1.2",
+    "title": "Business and Market Analysis",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Business and Market Analysis is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.1.2",
+    "title": "Business and Market Analysis",
+    "quality_tier": "POOR",
+    "draft_text": "Business and Market Analysis: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "1.1.3",
+    "title": "Relevant Historical Data",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Relevant Historical Data addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the relevant past metrics, volumes, costs, or incidents. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Relevant Historical Data addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the relevant past metrics, volumes, costs, or incidents. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.1.3",
+    "title": "Relevant Historical Data",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Relevant Historical Data is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.1.3",
+    "title": "Relevant Historical Data",
+    "quality_tier": "POOR",
+    "draft_text": "Relevant Historical Data: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "1.2",
+    "title": "Business Objective",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Business Objective addresses operational challenges identified in initial stakeholder discovery. Specifically, What measurable outcomes are expected. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Business Objective addresses operational challenges identified in initial stakeholder discovery. Specifically, What measurable outcomes are expected. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.2",
+    "title": "Business Objective",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Business Objective is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.2",
+    "title": "Business Objective",
+    "quality_tier": "POOR",
+    "draft_text": "Business Objective: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "1.3",
+    "title": "Purpose of this Business Requirement",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Purpose of this Business Requirement addresses operational challenges identified in initial stakeholder discovery. Specifically, What approval or decision is this document driving. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Purpose of this Business Requirement addresses operational challenges identified in initial stakeholder discovery. Specifically, What approval or decision is this document driving. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.3",
+    "title": "Purpose of this Business Requirement",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Purpose of this Business Requirement is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.3",
+    "title": "Purpose of this Business Requirement",
+    "quality_tier": "POOR",
+    "draft_text": "Purpose of this Business Requirement: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "1.4",
+    "title": "Program Type",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Program Type addresses operational challenges identified in initial stakeholder discovery. Specifically, Is this a new build, enhancement, compliance mandate, migration, or process improvement. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Program Type addresses operational challenges identified in initial stakeholder discovery. Specifically, Is this a new build, enhancement, compliance mandate, migration, or process improvement. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.4",
+    "title": "Program Type",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Program Type is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.4",
+    "title": "Program Type",
+    "quality_tier": "POOR",
+    "draft_text": "Program Type: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "1.5",
+    "title": "Business Risk",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Business Risk addresses operational challenges identified in initial stakeholder discovery. Specifically, What operational, financial, compliance, technical, or reputational risks exist. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Business Risk addresses operational challenges identified in initial stakeholder discovery. Specifically, What operational, financial, compliance, technical, or reputational risks exist. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "1.5",
+    "title": "Business Risk",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Business Risk is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "1.5",
+    "title": "Business Risk",
+    "quality_tier": "POOR",
+    "draft_text": "Business Risk: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "2.1",
+    "title": "Summary (Benefit Analysis)",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Summary (Benefit Analysis) addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the expected financial and non-financial benefits. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Summary (Benefit Analysis) addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the expected financial and non-financial benefits. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "2.1",
+    "title": "Summary (Benefit Analysis)",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Summary (Benefit Analysis) is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "2.1",
+    "title": "Summary (Benefit Analysis)",
+    "quality_tier": "POOR",
+    "draft_text": "Summary (Benefit Analysis): The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "2.2",
+    "title": "Assumption and Calculation",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Assumption and Calculation addresses operational challenges identified in initial stakeholder discovery. Specifically, What assumptions underlie the numbers, such as volumes, costs, or rates. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Assumption and Calculation addresses operational challenges identified in initial stakeholder discovery. Specifically, What assumptions underlie the numbers, such as volumes, costs, or rates. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "2.2",
+    "title": "Assumption and Calculation",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Assumption and Calculation is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "2.2",
+    "title": "Assumption and Calculation",
+    "quality_tier": "POOR",
+    "draft_text": "Assumption and Calculation: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.1",
+    "title": "General Requirement",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for General Requirement addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the must-have capabilities. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for General Requirement addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the must-have capabilities. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.1",
+    "title": "General Requirement",
+    "quality_tier": "MEDIUM",
+    "draft_text": "General Requirement is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.1",
+    "title": "General Requirement",
+    "quality_tier": "POOR",
+    "draft_text": "General Requirement: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.2",
+    "title": "Product / Service Specification",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Product / Service Specification addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the detailed features or functions. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Product / Service Specification addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the detailed features or functions. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.2",
+    "title": "Product / Service Specification",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Product / Service Specification is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.2",
+    "title": "Product / Service Specification",
+    "quality_tier": "POOR",
+    "draft_text": "Product / Service Specification: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.3.1",
+    "title": "Business process impact",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Business process impact addresses operational challenges identified in initial stakeholder discovery. Specifically, What processes are being replaced, modified, or newly introduced. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Business process impact addresses operational challenges identified in initial stakeholder discovery. Specifically, What processes are being replaced, modified, or newly introduced. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.3.1",
+    "title": "Business process impact",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Business process impact is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.3.1",
+    "title": "Business process impact",
+    "quality_tier": "POOR",
+    "draft_text": "Business process impact: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.3.2",
+    "title": "Description",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Description addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the detailed steps, inputs, outputs, and handoffs in the process. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Description addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the detailed steps, inputs, outputs, and handoffs in the process. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.3.2",
+    "title": "Description",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Description is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.3.2",
+    "title": "Description",
+    "quality_tier": "POOR",
+    "draft_text": "Description: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.3.3",
+    "title": "Security",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Security addresses operational challenges identified in initial stakeholder discovery. Specifically, What data is sensitive. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Security addresses operational challenges identified in initial stakeholder discovery. Specifically, What data is sensitive. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.3.3",
+    "title": "Security",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Security is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.3.3",
+    "title": "Security",
+    "quality_tier": "POOR",
+    "draft_text": "Security: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.3.4",
+    "title": "Organization and policy",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Organization and policy addresses operational challenges identified in initial stakeholder discovery. Specifically, Which teams or roles are responsible. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Organization and policy addresses operational challenges identified in initial stakeholder discovery. Specifically, Which teams or roles are responsible. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.3.4",
+    "title": "Organization and policy",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Organization and policy is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.3.4",
+    "title": "Organization and policy",
+    "quality_tier": "POOR",
+    "draft_text": "Organization and policy: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.3.5",
+    "title": "Service Delivery Plan (for new application)",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Service Delivery Plan (for new application) addresses operational challenges identified in initial stakeholder discovery. Specifically, What is the delivery or support model. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Service Delivery Plan (for new application) addresses operational challenges identified in initial stakeholder discovery. Specifically, What is the delivery or support model. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.3.5",
+    "title": "Service Delivery Plan (for new application)",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Service Delivery Plan (for new application) is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.3.5",
+    "title": "Service Delivery Plan (for new application)",
+    "quality_tier": "POOR",
+    "draft_text": "Service Delivery Plan (for new application): The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.4",
+    "title": "Complain Handling",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Complain Handling addresses operational challenges identified in initial stakeholder discovery. Specifically, What channels exist for complaints. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Complain Handling addresses operational challenges identified in initial stakeholder discovery. Specifically, What channels exist for complaints. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.4",
+    "title": "Complain Handling",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Complain Handling is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.4",
+    "title": "Complain Handling",
+    "quality_tier": "POOR",
+    "draft_text": "Complain Handling: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.5",
+    "title": "Reporting",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Reporting addresses operational challenges identified in initial stakeholder discovery. Specifically, What KPIs or metrics matter. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Reporting addresses operational challenges identified in initial stakeholder discovery. Specifically, What KPIs or metrics matter. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.5",
+    "title": "Reporting",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Reporting is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.5",
+    "title": "Reporting",
+    "quality_tier": "POOR",
+    "draft_text": "Reporting: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.6",
+    "title": "Monitoring (if required)",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Monitoring (if required) addresses operational challenges identified in initial stakeholder discovery. Specifically, What thresholds or alerts trigger action. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Monitoring (if required) addresses operational challenges identified in initial stakeholder discovery. Specifically, What thresholds or alerts trigger action. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.6",
+    "title": "Monitoring (if required)",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Monitoring (if required) is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.6",
+    "title": "Monitoring (if required)",
+    "quality_tier": "POOR",
+    "draft_text": "Monitoring (if required): The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.7",
+    "title": "Settlement Plan (if applicable)",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Settlement Plan (if applicable) addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the settlement terms, parties involved, and timing. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Settlement Plan (if applicable) addresses operational challenges identified in initial stakeholder discovery. Specifically, What are the settlement terms, parties involved, and timing. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.7",
+    "title": "Settlement Plan (if applicable)",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Settlement Plan (if applicable) is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.7",
+    "title": "Settlement Plan (if applicable)",
+    "quality_tier": "POOR",
+    "draft_text": "Settlement Plan (if applicable): The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "3.8",
+    "title": "Assumptions and Dependencies",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Assumptions and Dependencies addresses operational challenges identified in initial stakeholder discovery. Specifically, What are we assuming about systems, teams, timing, or budget. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Assumptions and Dependencies addresses operational challenges identified in initial stakeholder discovery. Specifically, What are we assuming about systems, teams, timing, or budget. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "3.8",
+    "title": "Assumptions and Dependencies",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Assumptions and Dependencies is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "3.8",
+    "title": "Assumptions and Dependencies",
+    "quality_tier": "POOR",
+    "draft_text": "Assumptions and Dependencies: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "4.1",
+    "title": "Target Ready for Service",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Target Ready for Service addresses operational challenges identified in initial stakeholder discovery. Specifically, What's the target completion date. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Target Ready for Service addresses operational challenges identified in initial stakeholder discovery. Specifically, What's the target completion date. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "4.1",
+    "title": "Target Ready for Service",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Target Ready for Service is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "4.1",
+    "title": "Target Ready for Service",
+    "quality_tier": "POOR",
+    "draft_text": "Target Ready for Service: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "4.2",
+    "title": "Commercial Launch",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Commercial Launch addresses operational challenges identified in initial stakeholder discovery. Specifically, What's the launch date and go-to-market approach. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Commercial Launch addresses operational challenges identified in initial stakeholder discovery. Specifically, What's the launch date and go-to-market approach. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "4.2",
+    "title": "Commercial Launch",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Commercial Launch is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "4.2",
+    "title": "Commercial Launch",
+    "quality_tier": "POOR",
+    "draft_text": "Commercial Launch: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "4.3",
+    "title": "Internal Socialization Plan (if applicable)",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Internal Socialization Plan (if applicable) addresses operational challenges identified in initial stakeholder discovery. Specifically, Who needs to be briefed internally. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Internal Socialization Plan (if applicable) addresses operational challenges identified in initial stakeholder discovery. Specifically, Who needs to be briefed internally. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "4.3",
+    "title": "Internal Socialization Plan (if applicable)",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Internal Socialization Plan (if applicable) is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "4.3",
+    "title": "Internal Socialization Plan (if applicable)",
+    "quality_tier": "POOR",
+    "draft_text": "Internal Socialization Plan (if applicable): The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "4.4",
+    "title": "Rollout Scenario (if any)",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Rollout Scenario (if any) addresses operational challenges identified in initial stakeholder discovery. Specifically, Is this a pilot, phased, or big-bang rollout. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Rollout Scenario (if any) addresses operational challenges identified in initial stakeholder discovery. Specifically, Is this a pilot, phased, or big-bang rollout. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "4.4",
+    "title": "Rollout Scenario (if any)",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Rollout Scenario (if any) is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "4.4",
+    "title": "Rollout Scenario (if any)",
+    "quality_tier": "POOR",
+    "draft_text": "Rollout Scenario (if any): The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  },
+  {
+    "field_id": "5.1",
+    "title": "Product/Service Retirement Plan",
+    "quality_tier": "GOOD",
+    "draft_text": "The initiative for Product/Service Retirement Plan addresses operational challenges identified in initial stakeholder discovery. Specifically, What triggers retirement. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "confirmed_evidence": "The initiative for Product/Service Retirement Plan addresses operational challenges identified in initial stakeholder discovery. Specifically, What triggers retirement. The proposed approach aligns strictly with approved business goals and standard operational boundaries, ensuring full stakeholder visibility and governance adherence.",
+    "expected_level": "high",
+    "expected_review_status": "PASS",
+    "notes": "Substantively satisfies all section criteria without unconfirmed claims."
+  },
+  {
+    "field_id": "5.1",
+    "title": "Product/Service Retirement Plan",
+    "quality_tier": "MEDIUM",
+    "draft_text": "Product/Service Retirement Plan is needed because current processes are manual and cause delays. We plan to improve this in the upcoming phase, but detailed operational metrics and timelines will be defined during further stakeholder workshops.",
+    "confirmed_evidence": "Current processes are manual and cause delays.",
+    "expected_level": "medium",
+    "expected_review_status": "PASS",
+    "notes": "Partially satisfies criteria, leaves some required details for future clarification."
+  },
+  {
+    "field_id": "5.1",
+    "title": "Product/Service Retirement Plan",
+    "quality_tier": "POOR",
+    "draft_text": "Product/Service Retirement Plan: The system must guarantee a strict 99.999% uptime with an SLA of 15 minutes, deploying Oracle Cloud Infrastructure across 12 countries to reduce operational OPEX by ,500,000 annually in compliance with ISO 27001 and POJK regulations by Q3 2027.",
+    "confirmed_evidence": "We want to look into improving our system.",
+    "expected_level": "low",
+    "expected_review_status": "REVIEW_REQUIRED",
+    "notes": "Contains multiple ungrounded numbers, invented SLAs, vendors, and unconfirmed regulations."
+  }
+]
