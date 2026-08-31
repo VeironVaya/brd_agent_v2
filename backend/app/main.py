@@ -3,7 +3,6 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.core.db import SessionLocal
 from app.middleware.cors import register_cors
 from app.middleware.error_handler import register_error_handlers
 from app.middleware.logging import register_logging

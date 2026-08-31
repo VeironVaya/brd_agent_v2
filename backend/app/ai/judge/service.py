@@ -50,7 +50,7 @@ from app.ai.judge.rubrics import (
     get_field_rubric,
 )
 from app.ai.judge.prompt import build_stage_a_context, build_stage_b_context
-from app.core.config import settings
+from app.config import settings
 
 
 # ---------------------------------------------------------------------------
