@@ -42,16 +42,33 @@ class RenameConversationResponse(BaseModel):
 
 
 class ConfidenceDimensionDto(BaseModel):
-    score: int
+    score: int | None = None
+    reason: str | None = None
+
+
+class CriticalFlagDto(BaseModel):
+    type: str
     reason: str
+    excerpt: str | None = None
 
 
 class ConfidenceBreakdownDto(BaseModel):
+    final_confidence: int | None = None
+    confidence_level: str | None = None
     grounding: ConfidenceDimensionDto | None = None
     reference_context: ConfidenceDimensionDto | None = None
     section_compliance: ConfidenceDimensionDto | None = None
     testability: ConfidenceDimensionDto | None = None
     consistency: ConfidenceDimensionDto | None = None
+    review_status: str | None = None
+    dependency_status: str | None = None
+    critical_flags: list[CriticalFlagDto] | None = None
+    critique_strengths: list[str] | None = None
+    critique_issues: list[str] | None = None
+    critique_suggestions: list[str] | None = None
+    critique_summary: str | None = None
+    judge_model: str | None = None
+    evaluated_at: str | None = None
 
 
 class AnswerDto(BaseModel):
