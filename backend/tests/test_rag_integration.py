@@ -216,6 +216,7 @@ async def test_safe_canonical_section_orchestrates_rag_and_agent2_confidence(cli
             "critique_issues": [],
             "critique_suggestions": ["Specify retry intervals if possible."],
             "critique_summary": "Evaluated with HIGH confidence (85%). Strong grounding in user requirements.",
+            "judge_model": "gemini/gemini-2.5-flash",
             "judge_model": "gemini/gemini-2.0-flash",
             "evaluated_at": "2026-08-28T12:00:00Z",
         },
@@ -341,6 +342,7 @@ async def test_unsupported_fact_passes_findings_to_agent2_and_persists_review_re
             "critique_issues": ["2-hour SLA contradicts user requirement."],
             "critique_suggestions": ["Align SLA with user-specified 1 hour requirement."],
             "critique_summary": "SLA contradicts user requirement of 1 hour.",
+            "judge_model": "gemini/gemini-2.5-flash",
             "judge_model": "gemini/gemini-2.0-flash",
             "evaluated_at": "2026-08-28T12:00:00Z",
         },
@@ -476,6 +478,7 @@ def test_confidence_breakdown_dto_full_critique_fields_survive_serialization():
         "critique_issues": ["Contradicts upstream"],
         "critique_suggestions": ["Align with 3.1"],
         "critique_summary": "Review required due to contradiction.",
+        "judge_model": "gemini/gemini-2.5-flash",
         "judge_model": "gemini/gemini-2.0-flash",
         "evaluated_at": "2026-08-28T14:00:00Z",
     }
@@ -490,6 +493,7 @@ def test_confidence_breakdown_dto_full_critique_fields_survive_serialization():
     assert dto.critique_issues == ["Contradicts upstream"]
     assert dto.critique_suggestions == ["Align with 3.1"]
     assert dto.critique_summary == "Review required due to contradiction."
+    assert dto.judge_model == "gemini/gemini-2.5-flash"
     assert dto.judge_model == "gemini/gemini-2.0-flash"
     assert dto.evaluated_at == "2026-08-28T14:00:00Z"
 

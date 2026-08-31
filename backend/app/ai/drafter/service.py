@@ -23,6 +23,7 @@ except Exception:
 
 from app.core.config import settings
 from app.services.brd_rules import get_section_rules_prompt
+from app.ai.drafter.prompt import SYSTEM_PROMPT
 from app.ai.drafter.prompt import GREETING_PROMPT, SYSTEM_PROMPT
 from app.ai.drafter.schema import AgentReply, DUMMY_AI_REPLY, LLMReplySchema
 
