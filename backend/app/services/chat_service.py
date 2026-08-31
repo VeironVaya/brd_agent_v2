@@ -23,8 +23,6 @@ from app.models.section import Section
 from app.repositories import answer_repository, bubble_repository, conversation_repository, section_repository
 from app.ai.rag import CANONICAL_ANSWERABLE_FIELDS, ReferenceCitation, search_references
 from app.ai.validator import validate_project_facts
-from app.services import conversation_service, template_service
-from app.ai import drafter as ai_integration
 from app.services import ai_integration, conversation_service, template_service
 from app.ai import judge
 
@@ -272,3 +270,5 @@ async def init_chat_room(
     await conversation_repository.touch_updated_at(session, conversation)
 
     return {"id": agent_bubble.bubble_id, "role": agent_bubble.role, "text": agent_bubble.text}
+
+
