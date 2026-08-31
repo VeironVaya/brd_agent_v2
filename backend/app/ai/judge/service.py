@@ -431,16 +431,20 @@ async def evaluate_section(
     def _score_entry(score: int | None, judgments: list) -> dict[str, Any]:
         reason_parts = [
             f"{j.label}: {j.rationale}"
+        rationales = [
+            j.rationale.strip()
             for j in judgments
             if j.label != JudgmentLabel.N_A
+            if j.label != JudgmentLabel.N_A and j.rationale and j.rationale.strip()
         ]
         reason = "; ".join(reason_parts[:3]) if reason_parts else "No applicable criteria."
-        reason_parts = []
-        for j in judgments:
-            if j.label != JudgmentLabel.N_A:
-                lbl = j.label.value if hasattr(j.label, "value") else str(j.label).replace("JudgmentLabel.", "")
-                reason_parts.append(f"[{lbl}] {j.rationale}")
-        reason = " • ".join(reason_parts[:3]) if reason_parts else "No applicable criteria."
+        if not rationales:
+            return {"score": score, "reason": "No applicable criteria."}
+        cleaned = []
+        for r in rationales[:3]:
+            r_str = r.rstrip(".; ")
+            cleaned.append(f"{r_str}.")
+        reason = " ".join(cleaned)
         return {"score": score, "reason": reason}
 
     critical_flags_list = [
