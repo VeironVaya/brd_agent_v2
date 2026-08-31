@@ -32,10 +32,6 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 from app.config import settings
-from app.rag import CANONICAL_FIELDS_META, calculate_component_score, calculate_final_confidence, determine_confidence_level
-from app.services.judge import _calculate_component_scores
-from app.services.judge_prompt import build_stage_a_context, build_stage_b_context
-from app.services.judge_rubrics import (
 from app.ai.rag import CANONICAL_FIELDS_META
 from app.ai.judge import (
     GLOBAL_CLARITY_CRITERIA,
@@ -53,7 +49,6 @@ from app.ai.judge import (
     determine_confidence_level,
     get_field_rubric,
 )
-from app.services.judge_schema import JudgeStageAOutput, JudgeStageBOutput
 from tests.fixtures.judge_calibration_fixtures import CALIBRATION_FIXTURES
 
 # Default locked model for Groq
@@ -308,9 +303,6 @@ async def call_stage_b(
     confidence_level: str,
     review_status: str,
 ) -> tuple[JudgeStageBOutput, float]:
-    """Execute Stage B Critic evaluation."""
-    from app.services.judge import _build_stage_a_summary
-
     stage_a_summary = _build_stage_a_summary(stage_a)
     prompt = build_stage_b_context(
         field_id=field_id,

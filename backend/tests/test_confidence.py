@@ -20,14 +20,9 @@ from __future__ import annotations
 import json
 import pytest
 
-from app.rag import (
 from app.ai.rag.legacy_confidence import (
     HIGH_CONFIDENCE_THRESHOLD,
     MEDIUM_CONFIDENCE_THRESHOLD,
-    ConfidenceAssessment,
-    ConfidenceComponents,
-    ReferenceCitation,
-    SearchResult,
     assess_confidence,
     calculate_canonical_coverage,
     calculate_field_alignment,
@@ -35,10 +30,7 @@ from app.ai.rag.legacy_confidence import (
     cosine_similarity,
     determine_confidence_level,
     generate_confidence_explanation,
-    generate_section,
 )
-from app.rag.generator import UnsafeGenerationError
-from app.rag.llm_client import FakeLLMClient
 from app.ai.rag.models import (
     ConfidenceAssessment,
     ConfidenceComponents,
@@ -73,7 +65,6 @@ def _create_mock_citation(
 # 1. Cosine similarity unit test
 # ---------------------------------------------------------------------------
 def test_cosine_similarity_basic():
-    from app.rag.confidence import cosine_similarity
     vec_a = [1.0, 0.0, 0.0]
     vec_b = [1.0, 0.0, 0.0]
     assert cosine_similarity(vec_a, vec_b) == pytest.approx(1.0)
