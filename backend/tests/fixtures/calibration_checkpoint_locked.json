@@ -4003,5 +4003,3422 @@
         }
       ]
     }
+  },
+  "3.3.3_POOR": {
+    "sample_id": "3.3.3_POOR",
+    "field_id": "3.3.3",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 58,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 75,
+      "section_compliance": 21,
+      "testability": 94,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Certification deadline of 6 months is not supported by any user evidence.",
+        "excerpt": "achieve ISO 27001 certification within 6 months of launch"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Specifies Cloudflare as the WAF provider without evidence.",
+        "excerpt": "WAF (Web Application Firewall) from Cloudflare"
+      },
+      {
+        "type": "INVENTED_POLICY_OR_REGULATION",
+        "reason": "References ISO 27001 certification, which was not cited in the confirmed regulatory requirements.",
+        "excerpt": "ISO 27001 certification"
+      },
+      {
+        "type": "INVENTED_BUSINESS_RULE",
+        "reason": "Mandates AES\u2011256 encryption and OAuth 2.0 with JWT tokens, which were not required by the user evidence.",
+        "excerpt": "AES-256 encryption, OAuth 2.0 with JWT tokens"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:04:40.475852+00:00",
+    "elapsed_seconds": 7.78,
+    "notes": "Prescribes specific technology (Cloudflare, AES-256). ISO 27001 timeline invented. No protected asset, no access boundary.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims are traceable to confirmed user/project evidence",
+          "label": "NOT_MET",
+          "rationale": "The requirement cites specific technologies (AES-256, OAuth 2.0 with JWT, Cloudflare WAF) and a certification timeline (ISO 27001 within 6 months) that are not mentioned in the confirmed evidence."
+        },
+        {
+          "criterion": "No values are invented or inferred where project evidence is absent",
+          "label": "NOT_MET",
+          "rationale": "The statement invents a 6\u2011month certification deadline, a specific vendor (Cloudflare), and specific algorithms that were not provided by the user."
+        },
+        {
+          "criterion": "Key assertions are supported by user\u2011stated context, not assumed from general knowledge",
+          "label": "NOT_MET",
+          "rationale": "The requirement introduces controls (encryption algorithm, authentication method, WAF) without any supporting user evidence; the user only demanded encryption in transit and RBAC."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No specific number, SLA, role, rule, or vendor from a reference BRD is copied verbatim without project evidence",
+          "label": "MET",
+          "rationale": "No reference BRDs were used; the content is not copied from any benchmark."
+        },
+        {
+          "criterion": "The section makes business sense compared with similar projects",
+          "label": "PARTIALLY_MET",
+          "rationale": "While encryption and access controls are sensible, the choice of specific technologies and certification timeline are not justified by the project\u2019s regulatory or business needs."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Protected concern, data type, or asset is identified",
+          "label": "NOT_MET",
+          "rationale": "The requirement does not mention applicant personal data, KTP, NPWP, or credit assessment records."
+        },
+        {
+          "criterion": "Access boundaries or authorization requirements are described",
+          "label": "NOT_MET",
+          "rationale": "No mention of role\u2011based access, branch\u2011staff limits, or applicant\u2011only view rights."
+        },
+        {
+          "criterion": "Required security controls are stated",
+          "label": "PARTIALLY_MET",
+          "rationale": "Encryption, OAuth, and WAF are listed, but mandatory controls from evidence (RBAC, OJK Regulation compliance) are missing."
+        },
+        {
+          "criterion": "Security requirements are related to a confirmed business or regulatory need",
+          "label": "PARTIALLY_MET",
+          "rationale": "Encryption aligns with the need for data in transit, but ISO 27001 certification and specific vendor choices are not tied to the cited OJK regulation."
+        },
+        {
+          "criterion": "No invented compliance standards or regulations are cited without project evidence",
+          "label": "NOT_MET",
+          "rationale": "ISO 27001 certification is introduced without any evidence that the project requires it."
+        },
+        {
+          "criterion": "No specific vendor or architecture solution is prescribed",
+          "label": "NOT_MET",
+          "rationale": "The requirement explicitly mandates a Cloudflare WAF, which is a vendor\u2011specific solution not evidenced."
+        },
+        {
+          "criterion": "Security requirements are consistent with the overall process design",
+          "label": "PARTIALLY_MET",
+          "rationale": "General intent aligns with security, but the specifics conflict with the evidence\u2011based controls (e.g., missing RBAC)."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Requirements are clearly and unambiguously stated",
+          "label": "MET",
+          "rationale": "The statements are concise and specify exact technologies and a certification deadline."
+        },
+        {
+          "criterion": "Content is verifiable or testable where appropriate",
+          "label": "MET",
+          "rationale": "Implementation of AES\u2011256, OAuth 2.0/JWT, and Cloudflare WAF can be verified; ISO 27001 certification can be audited."
+        },
+        {
+          "criterion": "Requirements are actionable",
+          "label": "MET",
+          "rationale": "A development team can act on the listed technologies and certification goal."
+        },
+        {
+          "criterion": "No unnecessary jargon or vacuous claims",
+          "label": "MOSTLY_MET",
+          "rationale": "While the language is clear, the inclusion of unsupported specifics adds unnecessary detail."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internally consistent with no self\u2011contradictions",
+          "label": "MET",
+          "rationale": "The statements do not contradict each other."
+        },
+        {
+          "criterion": "Logically consistent with other completed prerequisite sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed, so consistency cannot be fully assessed."
+        },
+        {
+          "criterion": "Dependencies are properly reflected and no conflict exists with prerequisite content",
+          "label": "N_A",
+          "rationale": "Prerequisite sections are absent."
+        }
+      ]
+    }
+  },
+  "3.3.4_GOOD": {
+    "sample_id": "3.3.4_GOOD",
+    "field_id": "3.3.4",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:04:43.588138+00:00",
+    "elapsed_seconds": 3.1,
+    "notes": "Org units named, role changes described, policy impact specific, evidence-backed ownership, no invented roles.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual statements are traceable to confirmed user evidence",
+          "label": "MET",
+          "rationale": "Every organization, role change, policy impact, and governance detail matches the confirmed project evidence provided."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference material copied; aligns with business context",
+          "label": "MET",
+          "rationale": "The section does not import any numbers, roles, or policies from external reference BRDs and presents a reasonable business approach."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Affected organization identified",
+          "label": "MET",
+          "rationale": "Branch Operations, Credit Analysis, and Compliance departments are explicitly listed."
+        },
+        {
+          "criterion": "Role changes described",
+          "label": "MET",
+          "rationale": "Specific changes for Branch Teller and Credit Analyst are detailed."
+        },
+        {
+          "criterion": "Policy impacts addressed",
+          "label": "MET",
+          "rationale": "Impacted SOP and document retention policy are named and linked to the digital workflow."
+        },
+        {
+          "criterion": "Ownership supported by evidence",
+          "label": "MET",
+          "rationale": "Head of Credit Operations is cited as owner, matching user\u2011confirmed evidence."
+        },
+        {
+          "criterion": "No invented roles or policies",
+          "label": "MET",
+          "rationale": "All roles and policies mentioned are present in the confirmed evidence."
+        },
+        {
+          "criterion": "Organizational changes aligned with process description",
+          "label": "MET",
+          "rationale": "The described shifts from physical to digital handling logically follow the stated process change."
+        },
+        {
+          "criterion": "Governance responsibilities identified with evidence",
+          "label": "MET",
+          "rationale": "Governance responsibility is clearly assigned and corroborated by the evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Content is clear, testable and actionable",
+          "label": "MET",
+          "rationale": "Statements are concise, unambiguous, and prescribe concrete actions (e.g., update job description, revise SOP)."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internally consistent and no contradictions with completed sections",
+          "label": "MET",
+          "rationale": "No self\u2011contradictions and no other completed sections exist to conflict with."
+        }
+      ]
+    }
+  },
+  "3.3.4_MEDIUM": {
+    "sample_id": "3.3.4_MEDIUM",
+    "field_id": "3.3.4",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 30,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 50,
+      "section_compliance": 0,
+      "testability": 0,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "Generated organizational units contradict the confirmed evidence about affected departments.",
+        "excerpt": "The project will affect HR, IT, and Operations departments."
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:05:09.027173+00:00",
+    "elapsed_seconds": 25.43,
+    "notes": "Departments mentioned but no role changes, no specific policies, no ownership, speculative.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "NOT_MET",
+          "rationale": "The generated statements cite HR, IT, and Operations departments, staff training, and vague policy updates, none of which are supported by the confirmed evidence which specifies Branch Operations, Credit Analysis, and Compliance departments, specific role changes, and concrete policy impacts."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "PARTIALLY_MET",
+          "rationale": "No reference BRD content is copied, and the statements are generic enough not to conflict with any benchmark, but they fail to reflect the actual business context of the project, reducing relevance."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-specific compliance",
+          "label": "NOT_MET",
+          "rationale": "The section does not identify the correct affected organizational units, omits the required role and responsibility changes, does not specify the impacted policies (Loan Application Intake SOP, document retention), and lacks the governance owner (Head of Credit Operations) required by the evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "NOT_MET",
+          "rationale": "Statements are vague (e.g., \"Staff will need training\", \"Some policies may need to be updated\") and not actionable or testable; no measurable criteria are provided."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & dependency integrity",
+          "label": "MET",
+          "rationale": "The content is internally consistent and there are no completed prerequisite sections to conflict with, so consistency is satisfied."
+        }
+      ]
+    }
+  },
+  "3.3.4_POOR": {
+    "sample_id": "3.3.4_POOR",
+    "field_id": "3.3.4",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 50,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 75,
+      "section_compliance": 0,
+      "testability": 75,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "A deadline of \"within 3 months\" is introduced without any user\u2011provided evidence.",
+        "excerpt": "within 3 months"
+      },
+      {
+        "type": "INVENTED_ROLE_OR_OWNER",
+        "reason": "The role \"Chief Digital Officer\" and the org \"Digital Transformation Office (DTO)\" are not mentioned in the confirmed evidence.",
+        "excerpt": "Chief Digital Officer"
+      },
+      {
+        "type": "INVENTED_ROLE_OR_OWNER",
+        "reason": "The org \"Digital Transformation Office (DTO)\" is not supported by the project facts.",
+        "excerpt": "Digital Transformation Office (DTO)"
+      },
+      {
+        "type": "INVENTED_POLICY_OR_REGULATION",
+        "reason": "A \"company\u2011wide digital policy framework\" is asserted without any evidence of its existence or requirement.",
+        "excerpt": "company-wide digital policy framework"
+      },
+      {
+        "type": "MATERIAL_SCOPE_LEAK",
+        "reason": "The statement that \"All existing departments must report to the DTO\" extends scope beyond the confirmed affected units (Branch Operations, Credit Analysis, Compliance).",
+        "excerpt": "All existing departments must report to the DTO"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:05:33.903753+00:00",
+    "elapsed_seconds": 24.86,
+    "notes": "Invented organizational restructuring with no evidence. Material scope leak. Invented role (CDO, DTO).",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "NOT_MET",
+          "rationale": "All statements (creation of DTO, appointment of Chief Digital Officer, reporting of all departments, 3\u2011month deadline) lack any supporting user\u2011confirmed evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "MOSTLY_MET",
+          "rationale": "No reference BRD content is copied; the idea of a digital office is plausible, but the section is not anchored in the project's confirmed facts."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "NOT_MET",
+          "rationale": "The affected units, role changes, policy impacts, and ownership are not identified or aligned with the confirmed evidence; invented org and role are introduced."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "MOSTLY_MET",
+          "rationale": "The statements are clear and actionable, but the lack of evidence and overly broad scope reduce their practical testability."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "MET",
+          "rationale": "No internal contradictions and no completed prerequisite sections exist, so consistency cannot be violated."
+        }
+      ]
+    }
+  },
+  "3.3.5_GOOD": {
+    "sample_id": "3.3.5_GOOD",
+    "field_id": "3.3.5",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:05:59.652843+00:00",
+    "elapsed_seconds": 25.74,
+    "notes": "Readiness activities listed, sequence/prerequisites stated, confirmed owners only, handover criteria, delivery vs launch distinction, no invented dates.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All claims about activities, owners, and prerequisites are traceable to confirmed user evidence",
+          "label": "MET",
+          "rationale": "The generated list exactly matches the confirmed project evidence; no invented facts or numbers are present."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference BRD content is copied; business approach is reasonable for a service delivery plan",
+          "label": "MET",
+          "rationale": "The section contains only project\u2011specific items and aligns with typical enterprise digital rollout practices without borrowing specific numbers or rules."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Relevant service delivery readiness activities are described",
+          "label": "MET",
+          "rationale": "Five concrete readiness activities (training, integration testing, UAT, SOP update, handover checklist) are listed."
+        },
+        {
+          "criterion": "Logical sequence or prerequisites for delivery activities are stated",
+          "label": "MET",
+          "rationale": "Prerequisite that policy updates (3.3.4) must precede staff training is explicitly noted."
+        },
+        {
+          "criterion": "Responsible parties are only named where evidence confirms ownership",
+          "label": "MET",
+          "rationale": "Each activity cites an owner (Branch Operations, IT Operations, Regional Director, Credit Operations) that appears in the confirmed evidence."
+        },
+        {
+          "criterion": "Operational handover or readiness criteria are addressed",
+          "label": "MET",
+          "rationale": "An operational handover checklist completion before cutover is included."
+        },
+        {
+          "criterion": "Timing or milestone references are only included where evidence supports them",
+          "label": "MET",
+          "rationale": "The only timing note is that no go\u2011live date is confirmed, which matches the evidence."
+        },
+        {
+          "criterion": "Service delivery is distinguished from commercial product launch",
+          "label": "MET",
+          "rationale": "The focus is on readiness activities for the new application\u2019s service delivery, not on marketing or sales launch."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Content is clear, unambiguous, testable and actionable",
+          "label": "MET",
+          "rationale": "Each listed activity is specific, can be verified (e.g., training completed, integration test passed) and provides a clear action for responsible owners."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency and alignment with dependencies",
+          "label": "MET",
+          "rationale": "The prerequisite reference to section 3.3.4 is consistent; no contradictions exist within the section."
+        }
+      ]
+    }
+  },
+  "3.3.5_MEDIUM": {
+    "sample_id": "3.3.5_MEDIUM",
+    "field_id": "3.3.5",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 56,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 0,
+      "testability": 75,
+      "consistency": null
+    },
+    "critical_flags": [
+      {
+        "type": "INVENTED_ROLE_OR_OWNER",
+        "reason": "The IT team role for technical deployment is introduced without supporting evidence from the confirmed user facts.",
+        "excerpt": "An IT team will handle the technical deployment"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:06:24.752624+00:00",
+    "elapsed_seconds": 25.09,
+    "notes": "Activities present but minimal. No sequence, no confirmed owners, no handover criteria.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statement about staff training aligns with confirmed evidence, but the claim that an IT team will handle technical deployment is not supported by any provided user evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "MET",
+          "rationale": "No reference material is copied; the content is generally reasonable for a service delivery plan."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "NOT_MET",
+          "rationale": "The section omits several required readiness activities (UAT, SOP update, handover checklist), does not state prerequisite sequencing, introduces an unsupported owner for deployment, and does not address operational handover criteria."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "MOSTLY_MET",
+          "rationale": "The sentences are clear and actionable at a high level, but lack sufficient detail to be fully testable or verifiable."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "N_A",
+          "rationale": "Prerequisite section 3.3.4 is not yet completed, so consistency with that dependency cannot be fully assessed, though no direct contradictions are present."
+        }
+      ]
+    }
+  },
+  "3.3.5_POOR": {
+    "sample_id": "3.3.5_POOR",
+    "field_id": "3.3.5",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 50,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 100,
+      "section_compliance": 0,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Go-live date not confirmed in evidence",
+        "excerpt": "The system will go live on March 1, 2025."
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Number of branches not confirmed in evidence",
+        "excerpt": "All 50 branches will be onboarded simultaneously."
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Training duration per branch not confirmed in evidence",
+        "excerpt": "Training will take 2 days per branch."
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Vendor not identified in evidence",
+        "excerpt": "Vendor ABC will provide 24/7 support."
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:06:47.832608+00:00",
+    "elapsed_seconds": 23.07,
+    "notes": "Specific date invented. Vendor named without evidence. Simultaneous 50-branch rollout stated as plan without evidence.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "NOT_MET",
+          "rationale": "All factual statements (go-live date, number of branches, vendor, training duration) are not supported by the confirmed project evidence; no such data was provided."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "MET",
+          "rationale": "The content does not copy any specifics from reference BRDs and the overall business approach (go-live, onboarding, support, training) is reasonable for a typical enterprise rollout."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "NOT_MET",
+          "rationale": "The section omits required readiness activities (staff training coordination, integration testing, UAT, SOP update, handover checklist) and introduces unsupported details; responsible parties are not aligned with evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "Statements are clear and actionable in form, but they reference unsupported numbers and dates, making them non\u2011testable and not verifiable against project facts."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "MET",
+          "rationale": "The content is internally consistent and does not conflict with any completed prerequisite sections; dependencies cannot yet be verified."
+        }
+      ]
+    }
+  },
+  "3.4_GOOD": {
+    "sample_id": "3.4_GOOD",
+    "field_id": "3.4",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:07:14.329642+00:00",
+    "elapsed_seconds": 26.48,
+    "notes": "Complaint types defined, channel confirmed by user, owner confirmed, escalation path described, SLA caveat honest, aligned with process.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims traceable to evidence",
+          "label": "MET",
+          "rationale": "All stated facts (complaint types, channel, owner, escalation timeframe) are directly present in the confirmed user evidence."
+        },
+        {
+          "criterion": "No invented values or assumptions",
+          "label": "MET",
+          "rationale": "The section does not introduce any numbers, dates, or roles beyond what the evidence provides."
+        },
+        {
+          "criterion": "Key assertions supported by user context",
+          "label": "MET",
+          "rationale": "Each assertion aligns with the confirmed user requirement."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No inappropriate use of reference BRDs",
+          "label": "MET",
+          "rationale": "The content does not copy any reference BRD specifics; it relies solely on project evidence."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Complaint type described",
+          "label": "MET",
+          "rationale": "The three complaint types are listed and match evidence."
+        },
+        {
+          "criterion": "Complaint channel identified",
+          "label": "MET",
+          "rationale": "Channels (branch desk and OJK portal) are stated and confirmed."
+        },
+        {
+          "criterion": "Owner identified",
+          "label": "MET",
+          "rationale": "Branch Operations Manager is named as owner per evidence."
+        },
+        {
+          "criterion": "Resolution/escalation path described",
+          "label": "MET",
+          "rationale": "Escalation after 3 business days to Regional Credit Operations is provided."
+        },
+        {
+          "criterion": "SLA only where confirmed",
+          "label": "MET",
+          "rationale": "No SLA is asserted beyond the 3\u2011day escalation, which is evidence\u2011based."
+        },
+        {
+          "criterion": "Alignment with overall process",
+          "label": "MET",
+          "rationale": "Alignment to workflow 3.3.2 is explicitly mentioned."
+        },
+        {
+          "criterion": "No invented workflow/tool",
+          "label": "MET",
+          "rationale": "No specific ticketing system or tool is introduced without evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clear and unambiguous language",
+          "label": "MET",
+          "rationale": "Statements are concise and directly state the required information."
+        },
+        {
+          "criterion": "Testable/Verifiable",
+          "label": "MET",
+          "rationale": "Each element can be checked against the project evidence and future implementation."
+        },
+        {
+          "criterion": "Actionable",
+          "label": "MET",
+          "rationale": "Stakeholders can act on the defined owner and escalation path."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency",
+          "label": "MET",
+          "rationale": "No contradictions within the section."
+        },
+        {
+          "criterion": "Consistency with completed dependencies",
+          "label": "N_A",
+          "rationale": "No prerequisite sections have been completed yet, so consistency cannot be fully assessed."
+        }
+      ]
+    }
+  },
+  "3.4_MEDIUM": {
+    "sample_id": "3.4_MEDIUM",
+    "field_id": "3.4",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 70,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 50,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:07:33.299030+00:00",
+    "elapsed_seconds": 18.96,
+    "notes": "Complaint handling acknowledged but no types, no specific channel, no owner, no escalation, no SLA context.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statement that customers can complain via the customer service team aligns with the confirmed channel (branch complaint desk). However, the claim that complaints will be \"resolved as quickly as possible\" is not supported by any confirmed SLA or timing evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied; the generic description is reasonable and does not conflict with any known business context."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-specific compliance (type, channel, owner, escalation, SLA, alignment, workflow)",
+          "label": "PARTIALLY_MET",
+          "rationale": "Channel is identified (customer service team) and matches evidence. The complaint type, owner, and explicit escalation path are missing, and no SLA is provided (which is appropriate given lack of evidence). The content does not introduce invented workflows."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The sentences are clear but the resolution claim is vague and not testable; no actionable detail is provided beyond the generic statement."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & dependency integrity",
+          "label": "MET",
+          "rationale": "The content is internally consistent and does not contradict any existing sections (none are completed yet)."
+        }
+      ]
+    }
+  },
+  "3.4_POOR": {
+    "sample_id": "3.4_POOR",
+    "field_id": "3.4",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 45,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 75,
+      "section_compliance": 0,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "SLA values (2h, 4h, 24h) are not present in confirmed evidence",
+        "excerpt": "SLA of 2 hours for P1 complaints, 4 hours for P2, and 24 hours for P3"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Salesforce Service Cloud ticketing system is not confirmed",
+        "excerpt": "Implement a Salesforce Service Cloud ticketing system"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "WhatsApp Business API integration is not confirmed",
+        "excerpt": "Integrate with WhatsApp Business API for customer communication"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:07:58.748525+00:00",
+    "elapsed_seconds": 25.44,
+    "notes": "Invented vendor (Salesforce), invented SLA tiers with no evidence, invented integration. Design prescription, not business requirement.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual claims (SLA values, system, vendor, channel) are supported by confirmed user evidence",
+          "label": "NOT_MET",
+          "rationale": "The section invents SLA targets (2h, 4h, 24h), a Salesforce Service Cloud ticketing system, and WhatsApp Business API integration, none of which are present in the confirmed evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference BRD content is copied verbatim and the proposed approach is reasonable for a digital complaint handling project",
+          "label": "MOSTLY_MET",
+          "rationale": "The content does not duplicate any benchmark numbers or vendor names, and using a ticketing system and messaging channel is a plausible business approach, but the lack of evidence makes the alignment only partially satisfactory."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Complaint type or trigger is described",
+          "label": "NOT_MET",
+          "rationale": "The generated text does not mention the specific complaint types (application submission failures, document upload errors, delayed status updates) confirmed in the evidence."
+        },
+        {
+          "criterion": "Complaint channel is identified where evidence confirms it",
+          "label": "NOT_MET",
+          "rationale": "The section cites WhatsApp Business API, which is not a confirmed channel; the evidence only mentions the branch complaint desk and OJK portal."
+        },
+        {
+          "criterion": "Owner or responsible party for complaint handling is identified where confirmed",
+          "label": "NOT_MET",
+          "rationale": "No owner is named; the evidence specifies the Branch Operations Manager as the first\u2011line owner."
+        },
+        {
+          "criterion": "Resolution or escalation path is described",
+          "label": "NOT_MET",
+          "rationale": "The text provides no escalation path; evidence states escalation to Regional Credit Operations after 3 business days."
+        },
+        {
+          "criterion": "SLA targets are only included where confirmed by project evidence",
+          "label": "NOT_MET",
+          "rationale": "SLA values are introduced without any confirmed evidence."
+        },
+        {
+          "criterion": "Complaint handling is aligned with overall service or process design",
+          "label": "NOT_MET",
+          "rationale": "Alignment cannot be verified because the section introduces unrelated tools and channels not tied to the documented workflow."
+        },
+        {
+          "criterion": "No invented support workflow or ticketing tool is stated as confirmed",
+          "label": "NOT_MET",
+          "rationale": "The section invents a Salesforce Service Cloud ticketing system, which is not confirmed by the user evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Requirements are clearly stated, testable, and actionable",
+          "label": "PARTIALLY_MET",
+          "rationale": "The language is clear and actionable (implement system, integrate API), but the lack of supporting evidence makes the statements untestable and not verifiable."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency of the section",
+          "label": "MET",
+          "rationale": "The statements do not contradict each other."
+        },
+        {
+          "criterion": "Consistency with completed prerequisite sections",
+          "label": "N_A",
+          "rationale": "No prerequisite sections have been completed yet, so consistency cannot be verified."
+        }
+      ]
+    }
+  },
+  "3.5_GOOD": {
+    "sample_id": "3.5_GOOD",
+    "field_id": "3.5",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:08:31.873789+00:00",
+    "elapsed_seconds": 33.11,
+    "notes": "Report subject, content, recipient, purpose, and frequency defined with evidence. Aligned with business objectives.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "MET",
+          "rationale": "All report details (type, content, recipient, purpose, frequency) exactly match the confirmed user evidence; no values or roles are invented."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "MET",
+          "rationale": "No reference BRD data is copied; the reporting purpose aligns with typical enterprise credit operations and is reasonable for the project."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-specific compliance (field 3.5)",
+          "label": "MET",
+          "rationale": "Each report clearly identifies its type, key data elements, intended recipients, purpose, and frequency as confirmed; no invented metrics are presented."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "MET",
+          "rationale": "The descriptions are concise, unambiguous, and testable (e.g., count of applications, average processing time); they provide actionable information for stakeholders."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & dependency integrity",
+          "label": "MET",
+          "rationale": "The section is internally consistent and does not conflict with any completed prerequisite sections; dependencies are not applicable at this stage."
+        }
+      ]
+    }
+  },
+  "3.5_MEDIUM": {
+    "sample_id": "3.5_MEDIUM",
+    "field_id": "3.5",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 65,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 36,
+      "testability": 38,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:08:57.166457+00:00",
+    "elapsed_seconds": 25.28,
+    "notes": "Reporting present but no report content, no specific recipients, no frequency definition, no purpose.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The claim that reports on application status will be provided to management is supported by the confirmed Report 1. However, the statement that reports will be \"generated regularly\" is not backed by any specific frequency evidence; the evidence specifies real\u2011time on\u2011demand and a monthly schedule for a different report."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied. Providing management\u2011focused status reports is a reasonable business practice for this type of loan\u2011processing system."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Report subject identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "The section mentions \"reports on application status\" but does not name the specific report (e.g., Application Status Dashboard)."
+        },
+        {
+          "criterion": "Report content described",
+          "label": "NOT_MET",
+          "rationale": "No key data elements (e.g., counts by status) are described."
+        },
+        {
+          "criterion": "Report recipient identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "Recipients are generically described as \"management\" rather than the confirmed roles (Branch Manager, Regional Credit Head)."
+        },
+        {
+          "criterion": "Report purpose stated",
+          "label": "NOT_MET",
+          "rationale": "The purpose of the reports is not articulated."
+        },
+        {
+          "criterion": "Report frequency stated",
+          "label": "NOT_MET",
+          "rationale": "The vague term \"regularly\" is not tied to the confirmed frequencies (real\u2011time on demand, monthly)."
+        },
+        {
+          "criterion": "Alignment with business process needs",
+          "label": "PARTIALLY_MET",
+          "rationale": "Providing status reports aligns with operational monitoring, but the lack of detail makes the alignment only implicit."
+        },
+        {
+          "criterion": "No invented metrics",
+          "label": "MET",
+          "rationale": "The section does not introduce any specific metrics or numbers that are not in the evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity",
+          "label": "PARTIALLY_MET",
+          "rationale": "The wording is understandable but overly generic; it lacks the specificity present in the confirmed requirements."
+        },
+        {
+          "criterion": "Testability",
+          "label": "NOT_MET",
+          "rationale": "Without concrete frequency or content details, the requirement cannot be objectively verified."
+        },
+        {
+          "criterion": "Actionability",
+          "label": "NOT_MET",
+          "rationale": "Stakeholders cannot act on the statement because it does not specify what reports, to whom, or when."
+        },
+        {
+          "criterion": "Absence of unnecessary jargon",
+          "label": "MET",
+          "rationale": "The language is simple and free of superfluous technical jargon."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency",
+          "label": "MET",
+          "rationale": "The statement does not contradict itself."
+        },
+        {
+          "criterion": "Logical consistency with other sections",
+          "label": "MET",
+          "rationale": "No other sections exist yet; thus no contradictions are present."
+        }
+      ]
+    }
+  },
+  "3.5_POOR": {
+    "sample_id": "3.5_POOR",
+    "field_id": "3.5",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 30,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 50,
+      "section_compliance": 0,
+      "testability": 0,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Number of reports (47) is introduced without any user\u2011provided evidence",
+        "excerpt": "Generate 47 different reports"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Specifies Power BI as the reporting platform without evidence that this tool is approved or required",
+        "excerpt": "using Power BI with real-time dashboards"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:53:33.052892+00:00",
+    "elapsed_seconds": 3.51,
+    "notes": "Fabricated report count (47), massive scope expansion, technology prescription (Power BI), no business purpose.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "NOT_MET",
+          "rationale": "The statement invents a specific number of reports (47) and mentions coverage areas and a tool (Power BI) that are not supported by any confirmed user evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "PARTIALLY_MET",
+          "rationale": "No reference BRD content is copied, but the claim of 47 reports across many domains lacks project evidence and may be unreasonable for the project's scope."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-specific compliance (report identification, content, recipient, purpose, frequency)",
+          "label": "NOT_MET",
+          "rationale": "The generated text does not identify individual reports, their data elements, intended recipients, purpose, or timing; it only provides a vague, generic statement."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "NOT_MET",
+          "rationale": "The requirement is vague, non\u2011testable, and not actionable; it lacks concrete details that could be verified or implemented."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency and dependency integrity",
+          "label": "MET",
+          "rationale": "The statement does not contradict any existing sections and there are no completed prerequisite sections to conflict with."
+        }
+      ]
+    }
+  },
+  "3.6_GOOD": {
+    "sample_id": "3.6_GOOD",
+    "field_id": "3.6",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 99,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 96,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-28T08:53:36.512781+00:00",
+    "elapsed_seconds": 3.45,
+    "notes": "Subject and purpose clear, indicators from evidence, threshold honestly deferred, monitoring vs reporting distinguished, no tool mandate.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual statements are traceable to confirmed user evidence",
+          "label": "MET",
+          "rationale": "The monitoring subject, business purpose, indicators, and lack of thresholds are directly quoted from the confirmed evidence."
+        },
+        {
+          "criterion": "No values or thresholds are invented without evidence",
+          "label": "MET",
+          "rationale": "The section explicitly states that no specific uptime percentage threshold has been confirmed."
+        },
+        {
+          "criterion": "Key assertions are supported by user\u2011stated context",
+          "label": "MET",
+          "rationale": "Every claim (e.g., trigger action, alert mechanism) mirrors the user\u2011provided facts."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No inappropriate copying of numbers, roles, vendors, or policies from reference BRDs",
+          "label": "MET",
+          "rationale": "No reference BRDs were used; all content originates from project evidence."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Subject of monitoring is clearly identified",
+          "label": "MET",
+          "rationale": "The section names the digital loan portal and BI Checking API as the monitoring subjects."
+        },
+        {
+          "criterion": "Business purpose of monitoring is stated",
+          "label": "MET",
+          "rationale": "Purpose to keep branch operations running without unplanned interruptions is explicitly described."
+        },
+        {
+          "criterion": "Indicators/metrics are identified and evidence\u2011confirmed",
+          "label": "MET",
+          "rationale": "Three indicators match the user\u2011confirmed list."
+        },
+        {
+          "criterion": "Threshold values are only stated when supported by evidence",
+          "label": "MET",
+          "rationale": "No threshold numbers are provided; the section notes that none are confirmed yet."
+        },
+        {
+          "criterion": "Trigger action or response to an alert is described",
+          "label": "MET",
+          "rationale": "Operational team notification upon system unavailability is specified."
+        },
+        {
+          "criterion": "Monitoring is distinguished from reporting",
+          "label": "MOSTLY_MET",
+          "rationale": "The content focuses on operational monitoring but does not explicitly contrast it with reporting; however, no conflation occurs."
+        },
+        {
+          "criterion": "Requirements remain at business level without mandating specific tools",
+          "label": "MET",
+          "rationale": "No specific technology or vendor is mandated."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Content is clear, unambiguous, and actionable",
+          "label": "MET",
+          "rationale": "Statements are concise, testable (uptime, API success rate, backlog), and define a clear notification action."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency of the section",
+          "label": "MET",
+          "rationale": "No contradictory statements within the monitoring description."
+        },
+        {
+          "criterion": "Consistency with completed prerequisite sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed yet, so consistency cannot be fully assessed."
+        }
+      ]
+    }
+  },
+  "3.6_MEDIUM": {
+    "sample_id": "3.6_MEDIUM",
+    "field_id": "3.6",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 65,
+    "confidence_level": "MEDIUM",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 36,
+      "testability": 38,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "INVENTED_ROLE_OR_OWNER",
+        "reason": "Specifies IT as the issue recipient without evidence; the confirmed evidence mentions the operational team.",
+        "excerpt": "Any issues should be reported to IT immediately."
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:06:32.003679+00:00",
+    "elapsed_seconds": 4.94,
+    "notes": "Monitoring intent present but no subject, no indicators, no threshold, not distinguished from reporting.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims about facts, numbers, dates, SLA, roles, or vendors are traceable to confirmed user/project evidence",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statement that the system should be monitored aligns with the need for monitoring, but specifying reporting to IT is not supported by the provided evidence (operational team is the indicated owner)."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No specific numbers, SLA, role, rule, or vendor from a reference BRD is copied verbatim without project evidence",
+          "label": "MET",
+          "rationale": "The content does not reference any external BRD and contains no copied numbers or roles."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Subject of monitoring is clearly identified",
+          "label": "NOT_MET",
+          "rationale": "The requirement refers only to \"the system\" without naming the digital loan portal or BI Checking API as indicated in the evidence."
+        },
+        {
+          "criterion": "Business purpose of monitoring is stated",
+          "label": "NOT_MET",
+          "rationale": "Purpose is vague ('ensure it works properly') and does not reflect the business goal of uninterrupted branch processing during business hours."
+        },
+        {
+          "criterion": "Indicators or metrics are identified where evidence confirms them",
+          "label": "NOT_MET",
+          "rationale": "No metrics such as portal uptime, API success rate, or queue backlog are mentioned."
+        },
+        {
+          "criterion": "Threshold values or alert levels are only stated where project evidence supports them",
+          "label": "MET",
+          "rationale": "No thresholds or alert levels are provided, avoiding unsupported statements."
+        },
+        {
+          "criterion": "Trigger action or response to a monitoring alert is described where available",
+          "label": "PARTIALLY_MET",
+          "rationale": "An action ('report to IT immediately') is described, but the responsible party (IT) is not supported by evidence (operational team)."
+        },
+        {
+          "criterion": "Monitoring is distinguished from reporting",
+          "label": "NOT_MET",
+          "rationale": "The text does not differentiate operational monitoring from informational reporting."
+        },
+        {
+          "criterion": "Requirements remain at business level \u2014 no specific tooling is mandated without evidence",
+          "label": "MET",
+          "rationale": "The statement does not prescribe any specific tools or technologies."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Requirements or descriptions are clearly and unambiguously stated",
+          "label": "NOT_MET",
+          "rationale": "Phrases like \"ensure it works properly\" are vague and lack concrete meaning."
+        },
+        {
+          "criterion": "Content is verifiable or testable where the section type naturally warrants it",
+          "label": "NOT_MET",
+          "rationale": "Without defined indicators or thresholds, the requirement cannot be objectively tested."
+        },
+        {
+          "criterion": "Requirements or statements are actionable",
+          "label": "PARTIALLY_MET",
+          "rationale": "The directive to report issues to IT is actionable, but the stakeholder assignment is unsupported."
+        },
+        {
+          "criterion": "No unnecessary jargon or vacuous claims that add no verifiable meaning",
+          "label": "MET",
+          "rationale": "The language is simple and free of jargon."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "The section is internally consistent with no self-contradictions",
+          "label": "MET",
+          "rationale": "All statements are consistent with each other."
+        }
+      ]
+    }
+  },
+  "3.6_POOR": {
+    "sample_id": "3.6_POOR",
+    "field_id": "3.6",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 41,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 0,
+      "section_compliance": 7,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Uptime SLA of 99.99% and alert latency <100ms are not supported by any confirmed evidence.",
+        "excerpt": "99.99% uptime SLA, alert latency < 100ms"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Datadog APM, PagerDuty, and Prometheus are introduced without any evidence that they are required for this project.",
+        "excerpt": "Implement Datadog APM ... automated PagerDuty escalation ... All microservices must have Prometheus metrics"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:06:37.268543+00:00",
+    "elapsed_seconds": 5.25,
+    "notes": "Invented SLA (99.99%), multiple vendor prescriptions (Datadog, PagerDuty, Prometheus), no business monitoring purpose.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims about facts, numbers, dates, SLA, roles, or vendors are traceable to confirmed user/project evidence",
+          "label": "NOT_MET",
+          "rationale": "The section asserts a 99.99% uptime SLA, <100ms alert latency, and specific tools (Datadog, PagerDuty, Prometheus) that are not mentioned in the confirmed evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No specific number, SLA, role, rule, or vendor from a reference BRD is copied verbatim without project evidence",
+          "label": "NOT_MET",
+          "rationale": "The content introduces vendor/system names (Datadog, PagerDuty, Prometheus) and quantitative targets without any supporting evidence, violating the alignment rule."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Subject of monitoring is clearly identified",
+          "label": "NOT_MET",
+          "rationale": "The generated text does not mention the Digital loan application portal or BI Checking API as the monitoring subject."
+        },
+        {
+          "criterion": "Business purpose of monitoring is stated",
+          "label": "NOT_MET",
+          "rationale": "No business purpose (e.g., ensuring branch operations continuity) is articulated."
+        },
+        {
+          "criterion": "Indicators or metrics are identified where evidence confirms them",
+          "label": "NOT_MET",
+          "rationale": "Indicators such as portal uptime, API success rate, and queue backlog are not referenced; instead unrelated metrics are introduced."
+        },
+        {
+          "criterion": "Threshold values or alert levels are only stated where project evidence supports them",
+          "label": "NOT_MET",
+          "rationale": "Thresholds (99.99% SLA, <100ms latency) are invented; the evidence provides no such numbers."
+        },
+        {
+          "criterion": "Trigger action or response to a monitoring alert is described where available",
+          "label": "PARTIALLY_MET",
+          "rationale": "The section mentions PagerDuty escalation for P0 incidents, but the confirmed evidence only specifies a generic operational team notification; the specific escalation flow is not supported."
+        },
+        {
+          "criterion": "Monitoring is distinguished from reporting",
+          "label": "NOT_MET",
+          "rationale": "No distinction between operational monitoring and informational reporting is made."
+        },
+        {
+          "criterion": "Requirements remain at business level \u2014 no specific tooling mandated without evidence",
+          "label": "NOT_MET",
+          "rationale": "Specific tools (Datadog APM, Prometheus, PagerDuty) are mandated despite no evidence that they are required."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Requirements are clearly and unambiguously stated",
+          "label": "MET",
+          "rationale": "The sentences are concise and understandable."
+        },
+        {
+          "criterion": "Content is verifiable or testable where appropriate",
+          "label": "MET",
+          "rationale": "Quantitative targets (99.99% SLA, <100ms latency) are testable, even though they lack grounding."
+        },
+        {
+          "criterion": "Requirements are actionable",
+          "label": "MET",
+          "rationale": "The text specifies concrete actions (implement Datadog, set up PagerDuty escalation)."
+        },
+        {
+          "criterion": "No unnecessary jargon or vacuous claims",
+          "label": "MET",
+          "rationale": "The language is technical but purposeful; no empty filler."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency with no self-contradictions",
+          "label": "MET",
+          "rationale": "All statements are mutually consistent."
+        },
+        {
+          "criterion": "Logical consistency with other completed BRD sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed to compare against."
+        }
+      ]
+    }
+  },
+  "3.7_GOOD": {
+    "sample_id": "3.7_GOOD",
+    "field_id": "3.7",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 97,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 83,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:07:07.566868+00:00",
+    "elapsed_seconds": 3.63,
+    "notes": "Honest N/A with scope boundary. No invented settlement rules. Clear dependency flagged.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "MET",
+          "rationale": "All statements are verbatim from the confirmed user evidence; no facts are invented or inferred."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied; the section aligns with the project's own evidence and does not introduce external numbers or rules."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Settlement scope or subject clearly identified",
+          "label": "MET",
+          "rationale": "The section explicitly states that no new settlement obligations are introduced and that existing processes remain in scope."
+        },
+        {
+          "criterion": "Relevant parties to the settlement identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "The core banking system is mentioned, but specific stakeholder roles (e.g., finance, loan operations) are not identified."
+        },
+        {
+          "criterion": "Settlement or reconciliation process described",
+          "label": "PARTIALLY_MET",
+          "rationale": "It notes that the existing process stays unchanged, but provides no detail of the process steps or flow."
+        },
+        {
+          "criterion": "Calculation logic internally consistent with section 2.2",
+          "label": "N_A",
+          "rationale": "Section 2.2 is not provided; cannot assess consistency."
+        },
+        {
+          "criterion": "Timing or SLA for settlement stated only where evidence confirms it",
+          "label": "MET",
+          "rationale": "No timing or SLA is asserted, avoiding unsupported claims."
+        },
+        {
+          "criterion": "Exception or dispute handling addressed where relevant",
+          "label": "MET",
+          "rationale": "No exceptions are mentioned, which is acceptable given the out\u2011of\u2011scope nature."
+        },
+        {
+          "criterion": "No invented financial rules or settlement obligations stated",
+          "label": "MET",
+          "rationale": "All obligations are described as existing; no new rules are invented."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "MET",
+          "rationale": "The statements are concise, unambiguous, and actionable (out of scope now; separate analysis if needed)."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency",
+          "label": "MET",
+          "rationale": "The content does not contradict itself."
+        },
+        {
+          "criterion": "Logical consistency with other completed sections",
+          "label": "N_A",
+          "rationale": "No other sections are completed yet."
+        }
+      ]
+    }
+  },
+  "3.7_MEDIUM": {
+    "sample_id": "3.7_MEDIUM",
+    "field_id": "3.7",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 72,
+    "confidence_level": "MEDIUM",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 50,
+      "testability": 58,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "INVENTED_ROLE_OR_OWNER",
+        "reason": "Finance department is named as the responsible party without supporting evidence from the confirmed project facts.",
+        "excerpt": "Settlement will be handled by the finance department"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:07:11.935412+00:00",
+    "elapsed_seconds": 4.35,
+    "notes": "Defers settlement but no scope boundary, no dependency noted, vague reference to 'existing procedures'.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability of claims",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statement that settlement will be handled by the finance department is not directly supported by the confirmed evidence, which only says settlement remains in existing core banking system and is out of scope. The reference to \"existing procedures\" is consistent with the evidence, but the specific party (finance department) is not confirmed."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Alignment with reference/business context",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied. The approach of using the finance department and existing procedures is reasonable for an enterprise banking project."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Settlement scope identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "The section mentions settlement but does not explicitly state that the scope is out of scope for this BRD, which is confirmed by evidence."
+        },
+        {
+          "criterion": "Relevant parties identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "Finance department is named, but this role is not confirmed by the provided evidence."
+        },
+        {
+          "criterion": "Settlement process described",
+          "label": "NOT_MET",
+          "rationale": "The description \"according to existing procedures\" is vague and does not detail the process."
+        },
+        {
+          "criterion": "Calculation logic consistency",
+          "label": "N_A",
+          "rationale": "No calculation logic is applicable to this field."
+        },
+        {
+          "criterion": "Timing/SLA stated",
+          "label": "N_A",
+          "rationale": "Evidence does not provide any timing or SLA, and the section correctly omits them."
+        },
+        {
+          "criterion": "Exception or dispute handling addressed",
+          "label": "N_A",
+          "rationale": "No exception handling is required based on the evidence."
+        },
+        {
+          "criterion": "No invented financial rules or obligations",
+          "label": "MET",
+          "rationale": "The statement does not introduce new settlement obligations."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity of wording",
+          "label": "MOSTLY_MET",
+          "rationale": "The sentence is concise but the phrase \"existing procedures\" is ambiguous without further detail."
+        },
+        {
+          "criterion": "Testability / verifiability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The claim can be verified against existing procedures, but those procedures are not defined in the BRD, limiting testability."
+        },
+        {
+          "criterion": "Actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "Finance can act on the statement, yet no specific actions or steps are outlined."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency",
+          "label": "MET",
+          "rationale": "The statement does not contradict itself."
+        },
+        {
+          "criterion": "Dependency consistency",
+          "label": "N_A",
+          "rationale": "Section 3.8 (dependency) is not yet completed, so consistency cannot be fully assessed."
+        }
+      ]
+    }
+  },
+  "3.7_POOR": {
+    "sample_id": "3.7_POOR",
+    "field_id": "3.7",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 30,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 0,
+      "section_compliance": 0,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Settlement SLA (T+1 days) is introduced without evidence",
+        "excerpt": "Settlement must occur within T+1 days"
+      },
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "Section claims settlement occurs while evidence states settlement is out of scope",
+        "excerpt": "Settlement must occur within T+1 days"
+      },
+      {
+        "type": "INVENTED_BUSINESS_RULE",
+        "reason": "Automatic reconciliation with SWIFT and ISO 20022 generation is not evidenced",
+        "excerpt": "The system will automatically reconcile with SWIFT and generate ISO 20022 payment messages for all approved loans"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "SWIFT and ISO 20022 are mentioned without project evidence",
+        "excerpt": "reconcile with SWIFT and generate ISO 20022 payment messages"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:07:53.395139+00:00",
+    "elapsed_seconds": 4.82,
+    "notes": "Invented T+1 settlement SLA, invented SWIFT integration, invented ISO 20022 requirement. No evidence for any of these.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "NOT_MET",
+          "rationale": "The section asserts a settlement SLA (T+1 days) and system behavior (SWIFT reconciliation, ISO 20022 messages) that are not present in the confirmed project evidence; these facts are invented."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "NOT_MET",
+          "rationale": "No reference BRDs are used, but the section introduces specific settlement mechanisms without project evidence, violating alignment rules."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "NOT_MET",
+          "rationale": "The section incorrectly treats settlement as in\u2011scope, does not identify parties, and adds timing and technical details not supported by evidence; it also invents obligations."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statements are clear and actionable, but they are not testable or verifiable because they are not grounded in project evidence."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "MET",
+          "rationale": "The content does not contradict itself and no completed prerequisite sections exist; therefore internal consistency is met."
+        }
+      ]
+    }
+  },
+  "3.8_GOOD": {
+    "sample_id": "3.8_GOOD",
+    "field_id": "3.8",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": null
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:08:15.793136+00:00",
+    "elapsed_seconds": 22.39,
+    "notes": "Assumptions explicitly labeled, distinguished from dependencies, no assumption promoted to fact, dependencies have targets and impact.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "MET",
+          "rationale": "All assumptions and dependencies match the confirmed user evidence; no invented facts or numbers are present."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied; the section aligns with typical enterprise project expectations without unsupported specifics."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "MET",
+          "rationale": "Assumptions are clearly labeled and separated from dependencies; each dependency references a target section or decision; impact is described for D2; no circular or speculative confirmed facts."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "MET",
+          "rationale": "Statements are concise, unambiguous, and actionable; they can be verified (e.g., legal review, asset inventory) and no unnecessary jargon is used."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "N_A",
+          "rationale": "No other BRD sections have been completed, so cross\u2011section consistency cannot be assessed; internally the content is self\u2011consistent."
+        }
+      ]
+    }
+  },
+  "3.8_MEDIUM": {
+    "sample_id": "3.8_MEDIUM",
+    "field_id": "3.8",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 60,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 75,
+      "section_compliance": 50,
+      "testability": 75,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:08:36.811951+00:00",
+    "elapsed_seconds": 21.0,
+    "notes": "Some assumptions/dependencies present but generic. Not labeled, no impact stated, no target specificity.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims are traceable to confirmed evidence",
+          "label": "NOT_MET",
+          "rationale": "Both the assumption of adequate budget/resources and the dependency on IT team availability/vendor cooperation are not supported by any confirmed user/project evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No misuse of reference BRDs or copying of specific numbers/roles",
+          "label": "MOSTLY_MET",
+          "rationale": "The content does not reference external BRDs or copy specific details; it remains generic, which aligns with the reference alignment criteria."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Assumptions are explicitly labeled and distinguished from dependencies",
+          "label": "MET",
+          "rationale": "The text uses phrasing that indicates assumptions and dependencies."
+        },
+        {
+          "criterion": "Each dependency has a clear target section, system, or decision and impact described",
+          "label": "NOT_MET",
+          "rationale": "The dependency statement is vague (\"IT team availability and vendor cooperation\") and lacks a specific target, decision point, or described impact if unmet."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Statements are clear and unambiguous",
+          "label": "MET",
+          "rationale": "The language is straightforward and easy to understand."
+        },
+        {
+          "criterion": "Content is verifiable/testable and actionable",
+          "label": "PARTIALLY_MET",
+          "rationale": "The assumptions and dependencies are too generic to be objectively verified or acted upon without additional criteria."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency within the section",
+          "label": "MET",
+          "rationale": "No self\u2011contradictions are present."
+        },
+        {
+          "criterion": "Consistency with other completed sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed yet, so consistency cannot be evaluated."
+        }
+      ]
+    }
+  },
+  "3.8_POOR": {
+    "sample_id": "3.8_POOR",
+    "field_id": "3.8",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 12,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "CONFLICT",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 33,
+      "section_compliance": 0,
+      "testability": 25,
+      "consistency": 0
+    },
+    "critical_flags": [
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The statement \"no significant dependencies\" directly contradicts confirmed dependencies D1, D2, and D3.",
+        "excerpt": "There are no significant dependencies since the project team is fully capable and experienced."
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:09:05.178407+00:00",
+    "elapsed_seconds": 28.35,
+    "notes": "No real assumptions, no real dependencies, wishful thinking statements. Useless for requirement governance.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims traceable to confirmed evidence",
+          "label": "NOT_MET",
+          "rationale": "The statement \"We assume the project will succeed\" is not supported by any confirmed assumption, and \"no significant dependencies\" contradicts documented dependencies D1-D3."
+        },
+        {
+          "criterion": "No invented values or facts",
+          "label": "NOT_MET",
+          "rationale": "The content invents a blanket success assumption and denies existing dependencies without evidence."
+        },
+        {
+          "criterion": "Key assertions supported by user context",
+          "label": "NOT_MET",
+          "rationale": "Assertions are not linked to the provided A1, A2, D1-D3 evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Business sense compared to similar projects",
+          "label": "NOT_MET",
+          "rationale": "The generic claim of project success provides no business rationale and ignores known constraints."
+        },
+        {
+          "criterion": "No copied specifics from reference BRDs",
+          "label": "MET",
+          "rationale": "No numbers, roles, or policies were copied from external references."
+        },
+        {
+          "criterion": "Reasonable enterprise approach",
+          "label": "NOT_MET",
+          "rationale": "Ignoring documented dependencies makes the approach unreasonable."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Assumptions explicitly labeled",
+          "label": "NOT_MET",
+          "rationale": "Assumption is phrased as a fact, not labeled as an assumption."
+        },
+        {
+          "criterion": "Assumptions distinguished from dependencies",
+          "label": "NOT_MET",
+          "rationale": "The section conflates assumptions with dependencies, stating there are none."
+        },
+        {
+          "criterion": "No assumption promoted to confirmed fact",
+          "label": "NOT_MET",
+          "rationale": "\"We assume the project will succeed\" is presented as a certainty."
+        },
+        {
+          "criterion": "Each dependency has clear target",
+          "label": "NOT_MET",
+          "rationale": "No dependencies are listed despite confirmed D1-D3."
+        },
+        {
+          "criterion": "Impact of unmet dependency described",
+          "label": "NOT_MET",
+          "rationale": "No impact description is provided."
+        },
+        {
+          "criterion": "No circular dependencies",
+          "label": "N_A",
+          "rationale": "Circularity cannot be assessed from the given content."
+        },
+        {
+          "criterion": "No speculative dependencies presented as confirmed",
+          "label": "NOT_MET",
+          "rationale": "The claim of \"no significant dependencies\" contradicts known speculative dependencies."
+        },
+        {
+          "criterion": "Assumption/dependency consistency with other sections",
+          "label": "NOT_MET",
+          "rationale": "Content conflicts with confirmed dependencies in other sections."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clear and unambiguous wording",
+          "label": "NOT_MET",
+          "rationale": "Statements are vague and lack specificity."
+        },
+        {
+          "criterion": "Verifiable or testable content",
+          "label": "NOT_MET",
+          "rationale": "\"Project will succeed\" and \"no significant dependencies\" cannot be objectively verified."
+        },
+        {
+          "criterion": "Actionable statements",
+          "label": "NOT_MET",
+          "rationale": "No actionable guidance is provided."
+        },
+        {
+          "criterion": "No unnecessary jargon",
+          "label": "MET",
+          "rationale": "The language is simple and free of jargon."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internally consistent",
+          "label": "NOT_MET",
+          "rationale": "The section both assumes success and denies dependencies, creating internal contradiction."
+        },
+        {
+          "criterion": "Consistent with completed sections",
+          "label": "NOT_MET",
+          "rationale": "Contradicts documented dependencies D1-D3."
+        },
+        {
+          "criterion": "Dependencies properly reflected",
+          "label": "NOT_MET",
+          "rationale": "Existing dependencies are omitted or denied."
+        }
+      ]
+    }
+  },
+  "4.1_GOOD": {
+    "sample_id": "4.1_GOOD",
+    "field_id": "4.1",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:09:26.785103+00:00",
+    "elapsed_seconds": 21.59,
+    "notes": "Readiness target is a range (honest), criteria confirmed by user, prerequisites identified, technical vs business readiness distinguished.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "MET",
+          "rationale": "All dates, readiness criteria, and prerequisite references are directly taken from the confirmed user evidence; no invented facts are present."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied; the section reflects only project\u2011specific evidence and reasonable business expectations."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section\u2011specific compliance for Field 4.1",
+          "label": "MET",
+          "rationale": "Target go\u2011live window, readiness criteria, prerequisite dependency, and distinction between technical completion and business sign\u2011off are all present and supported by evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "MET",
+          "rationale": "Statements are concise, unambiguous, and actionable; each readiness item can be verified."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency",
+          "label": "MET",
+          "rationale": "No contradictions within the section."
+        },
+        {
+          "criterion": "Cross\u2011section consistency",
+          "label": "N_A",
+          "rationale": "No prerequisite sections have been completed yet to verify against."
+        }
+      ]
+    }
+  },
+  "4.1_MEDIUM": {
+    "sample_id": "4.1_MEDIUM",
+    "field_id": "4.1",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 0,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 0,
+      "section_compliance": 0,
+      "testability": 0,
+      "consistency": null
+    },
+    "critical_flags": [
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The proposed readiness date \"mid\u2011next year\" conflicts with the confirmed go\u2011live window of Q3 2025 (July\u2013September).",
+        "excerpt": "mid-next year"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:09:50.367650+00:00",
+    "elapsed_seconds": 23.57,
+    "notes": "Target mentioned but vague. No criteria, no prerequisites, no distinction from commercial launch.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims about dates and readiness are traceable to confirmed evidence",
+          "label": "NOT_MET",
+          "rationale": "The statement \"ready by mid-next year\" is not supported by the confirmed go-live window of Q3 2025; no evidence is provided for the invented timeline."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No unverified reference data is copied; business context aligns with project specifics",
+          "label": "NOT_MET",
+          "rationale": "The content introduces an unsupported date and does not reflect the confirmed business readiness criteria; it does not align with the project's business context."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Readiness target date is evidence\u2011based and readiness definition is described",
+          "label": "NOT_MET",
+          "rationale": "No evidence\u2011based target date is provided (mid\u2011next year contradicts Q3 2025), and the section omits the required readiness criteria and prerequisite details."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Statement is clear, testable and actionable",
+          "label": "NOT_MET",
+          "rationale": "The phrase \"mid\u2011next year\" is vague and non\u2011testable; \"ensure everything is tested before launch\" is overly generic and not actionable without specific criteria."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency and alignment with other completed sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed, so cross\u2011section consistency cannot be evaluated."
+        }
+      ]
+    }
+  },
+  "4.1_POOR": {
+    "sample_id": "4.1_POOR",
+    "field_id": "4.1",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 33,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 0,
+      "section_compliance": 0,
+      "testability": 67,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Branch count of 50 is not evidenced",
+        "excerpt": "All 50 branches operational from day one"
+      },
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "Go\u2011live date conflicts with confirmed Q3\u202f2025 window",
+        "excerpt": "Go-live date: January 15, 2025"
+      },
+      {
+        "type": "INVENTED_BUSINESS_RULE",
+        "reason": "Zero\u2011downtime deployment is asserted without any supporting evidence",
+        "excerpt": "Zero downtime deployment"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:10:13.891144+00:00",
+    "elapsed_seconds": 23.51,
+    "notes": "Specific date invented with no evidence. 50-branch simultaneous launch and zero downtime stated as facts without basis.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Traceability of all factual claims to confirmed evidence",
+          "label": "NOT_MET",
+          "rationale": "The go\u2011live date (Jan 15, 2025), branch count (50), and zero\u2011downtime claim are not supported by any user\u2011provided evidence; the only confirmed timing is a Q3\u202f2025 window."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No misuse of reference BRDs and reasonable business sense",
+          "label": "NOT_MET",
+          "rationale": "While no reference data were copied, the invented specifics (exact date, branch count, zero\u2011downtime) lack project evidence and therefore do not make a sound business case."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Readiness target date is evidence\u2011backed",
+          "label": "NOT_MET",
+          "rationale": "Date given (Jan\u202f15\u202f2025) contradicts the confirmed Q3\u202f2025 window."
+        },
+        {
+          "criterion": "Readiness criteria or definition of ready are described",
+          "label": "NOT_MET",
+          "rationale": "No business\u2011readiness criteria (training, UAT sign\u2011off, SOP approval, API test, compliance review) are mentioned."
+        },
+        {
+          "criterion": "Logical prerequisites for readiness are identified",
+          "label": "NOT_MET",
+          "rationale": "Prerequisite 3.3.5 and business sign\u2011off requirements are omitted."
+        },
+        {
+          "criterion": "No invented dates or milestones without evidence",
+          "label": "NOT_MET",
+          "rationale": "The specific go\u2011live date is invented."
+        },
+        {
+          "criterion": "Service delivery readiness aligns with section 3.3.5",
+          "label": "NOT_MET",
+          "rationale": "No reference to the required service\u2011delivery readiness activities."
+        },
+        {
+          "criterion": "Technical completion distinguished from business readiness",
+          "label": "NOT_MET",
+          "rationale": "The statement mixes technical deployment (zero downtime) with business readiness without distinction."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity of statements",
+          "label": "MET",
+          "rationale": "The sentences are concise and unambiguous."
+        },
+        {
+          "criterion": "Testability / verifiability",
+          "label": "PARTIALLY_MET",
+          "rationale": "Because the facts are unsupported, the statements cannot be verified against project evidence."
+        },
+        {
+          "criterion": "Actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "Zero\u2011downtime deployment is an action goal but lacks defined means or acceptance criteria."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency",
+          "label": "MET",
+          "rationale": "The date, branch count, and zero\u2011downtime claim do not contradict each other."
+        },
+        {
+          "criterion": "Logical consistency with other completed sections",
+          "label": "MET",
+          "rationale": "No other sections are completed, so no conflict exists."
+        }
+      ]
+    }
+  },
+  "4.2_GOOD": {
+    "sample_id": "4.2_GOOD",
+    "field_id": "4.2",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:10:40.353169+00:00",
+    "elapsed_seconds": 26.45,
+    "notes": "Scope defined, audience identified, timing evidence-based, aligned with 4.1, distinct from rollout, no invented go/no-go criteria.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual statements are traceable to confirmed user/project evidence",
+          "label": "MET",
+          "rationale": "The scope, audience, timing and distinction statements exactly match the confirmed evidence provided."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference content copied; business approach reasonable for similar digital loan launches",
+          "label": "MET",
+          "rationale": "The section contains only project\u2011specific facts and does not import numbers, roles, or rules from benchmark BRDs."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Scope of commercial launch described",
+          "label": "MET",
+          "rationale": "Specifies that the portal will be available to individual and SME applicants in the pilot branch network."
+        },
+        {
+          "criterion": "Target audience identified",
+          "label": "MET",
+          "rationale": "Clearly names existing and new PT Maju Bersama loan applicants in pilot catchment areas."
+        },
+        {
+          "criterion": "Timing stated only where evidence supports it",
+          "label": "MET",
+          "rationale": "Provides Q3\u202f2025 timing and Ready for Service sign\u2011off, both present in the evidence."
+        },
+        {
+          "criterion": "Aligned with Ready for Service milestone in section 4.1",
+          "label": "MET",
+          "rationale": "References business readiness criteria (4.1) and Ready for Service sign\u2011off as launch prerequisite."
+        },
+        {
+          "criterion": "Commercial conditions/prerequisites only stated where evidence confirms them",
+          "label": "MET",
+          "rationale": "Mentions business readiness criteria, which is documented in the evidence."
+        },
+        {
+          "criterion": "Commercial launch distinguished from full branch network rollout",
+          "label": "MET",
+          "rationale": "Explicitly notes distinction and points to section\u202f4.4 for full rollout."
+        },
+        {
+          "criterion": "No invented go/no\u2011go criteria presented",
+          "label": "MET",
+          "rationale": "All go/no\u2011go statements are limited to the confirmed Ready for Service sign\u2011off."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability and actionability of statements",
+          "label": "MET",
+          "rationale": "Sentences are concise, unambiguous, and can be verified (availability, audience, timing) and acted upon."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency of the section",
+          "label": "MET",
+          "rationale": "No contradictory statements within the content."
+        },
+        {
+          "criterion": "Logical consistency with completed prerequisite sections",
+          "label": "MET",
+          "rationale": "Prerequisite section 4.1 is not yet completed, so no conflict exists."
+        }
+      ]
+    }
+  },
+  "4.2_MEDIUM": {
+    "sample_id": "4.2_MEDIUM",
+    "field_id": "4.2",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 72,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "CONSISTENT",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 43,
+      "testability": 69,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:11:03.512427+00:00",
+    "elapsed_seconds": 23.14,
+    "notes": "Launch intent present but no scope, no audience specificity, no timing, marketing mentioned without evidence.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims about facts, numbers, dates, SLA, roles, or vendors are traceable to confirmed user/project evidence",
+          "label": "PARTIALLY_MET",
+          "rationale": "The launch claim aligns with readiness criteria, but the marketing campaign statement lacks supporting evidence."
+        },
+        {
+          "criterion": "No values are invented or inferred where project evidence is absent",
+          "label": "PARTIALLY_MET",
+          "rationale": "A marketing campaign is asserted despite no confirmed evidence of such a campaign."
+        },
+        {
+          "criterion": "Key assertions are supported by user-stated context, not assumed from general knowledge",
+          "label": "PARTIALLY_MET",
+          "rationale": "\"After testing is completed\" is plausible but not explicitly confirmed in the provided evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Section makes business sense compared with similar projects (benchmark only)",
+          "label": "MET",
+          "rationale": "The content is reasonable for a commercial launch context."
+        },
+        {
+          "criterion": "No specific number, SLA, role, rule, or vendor from a reference BRD is copied verbatim without project evidence",
+          "label": "MET",
+          "rationale": "No reference material is used."
+        },
+        {
+          "criterion": "Business approach is reasonable compared to similar enterprise or digital projects",
+          "label": "MET",
+          "rationale": "Stating a launch supported by marketing is a common practice and does not conflict with project scope."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Scope of the commercial launch is described",
+          "label": "PARTIALLY_MET",
+          "rationale": "Launch is mentioned, but details such as pilot branch network and applicant types are omitted."
+        },
+        {
+          "criterion": "Target audience or customer segment is identified where relevant",
+          "label": "NOT_MET",
+          "rationale": "The generated text does not specify individual or SME applicants."
+        },
+        {
+          "criterion": "Timing is only stated where project evidence supports it",
+          "label": "MET",
+          "rationale": "No timing is provided, avoiding unsupported dates."
+        },
+        {
+          "criterion": "Commercial launch is aligned with the Ready for Service milestone in section 4.1",
+          "label": "PARTIALLY_MET",
+          "rationale": "Implied by \"after testing is completed\" but not explicitly linked to the Ready for Service sign\u2011off."
+        },
+        {
+          "criterion": "Commercial conditions or prerequisites are only stated where evidence confirms them",
+          "label": "NOT_MET",
+          "rationale": "Testing completion is asserted without explicit evidence."
+        },
+        {
+          "criterion": "Commercial launch is distinguished from operational rollout",
+          "label": "NOT_MET",
+          "rationale": "No distinction from the full branch network rollout is made."
+        },
+        {
+          "criterion": "No invented go/no-go criteria are stated as confirmed",
+          "label": "MET",
+          "rationale": "No go/no\u2011go criteria are introduced."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Requirements or descriptions are clearly and unambiguously stated",
+          "label": "MOSTLY_MET",
+          "rationale": "Sentences are simple, but lack specificity (e.g., which testing)."
+        },
+        {
+          "criterion": "Content is verifiable or testable where the section type naturally warrants it",
+          "label": "PARTIALLY_MET",
+          "rationale": "\"After testing is completed\" is not testable without defining the testing scope; marketing claim is not verifiable."
+        },
+        {
+          "criterion": "Requirements or statements are actionable",
+          "label": "PARTIALLY_MET",
+          "rationale": "Stakeholders cannot act on an undefined marketing campaign."
+        },
+        {
+          "criterion": "No unnecessary jargon or vacuous claims that add no verifiable meaning",
+          "label": "MET",
+          "rationale": "Language is straightforward without filler jargon."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Section is internally consistent with no self-contradictions",
+          "label": "MET",
+          "rationale": "Statements do not contradict each other."
+        },
+        {
+          "criterion": "Section is logically consistent with other completed BRD sections",
+          "label": "MET",
+          "rationale": "No conflict with the evidence from section 4.1."
+        },
+        {
+          "criterion": "Dependencies are properly reflected and no conflict exists with prerequisite section content",
+          "label": "MET",
+          "rationale": "Dependencies are acknowledged implicitly; no direct conflict."
+        }
+      ]
+    }
+  },
+  "4.2_POOR": {
+    "sample_id": "4.2_POOR",
+    "field_id": "4.2",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 30,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 0,
+      "section_compliance": 0,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Download target has no supporting evidence",
+        "excerpt": "We expect 100,000 downloads in the first month."
+      },
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Launch date is not supported by evidence",
+        "excerpt": "on February 14, 2025"
+      },
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "Date contradicts confirmed Q3 2025 launch window",
+        "excerpt": "February 14, 2025"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:11:38.455473+00:00",
+    "elapsed_seconds": 34.93,
+    "notes": "Invented channels (App Store), invented date with marketing rationale, fabricated download target.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "NOT_MET",
+          "rationale": "The stated launch date (Feb 14, 2025) and download target (100,000) are not present in the confirmed project evidence; they are invented."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "NOT_MET",
+          "rationale": "The marketing date and download goal are not aligned with the project's confirmed Q3 2025 launch window and add no business justification."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "NOT_MET",
+          "rationale": "The content omits the required scope description, target audience, alignment with Ready for Service, and distinction from operational rollout, and introduces unsupported timing and metrics."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The language is clear and testable, but the statements are not actionable because they rely on unsupported facts."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "MET",
+          "rationale": "The section is internally consistent and does not conflict with any completed prerequisite sections (none exist yet)."
+        }
+      ]
+    }
+  },
+  "4.3_GOOD": {
+    "sample_id": "4.3_GOOD",
+    "field_id": "4.3",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:12:05.526013+00:00",
+    "elapsed_seconds": 27.05,
+    "notes": "Internal audience named, communication needs specific, owner confirmed by user, timing tied to 3.3.5, no invented obligations.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual claims are traceable to confirmed evidence",
+          "label": "MET",
+          "rationale": "The audience, communication needs, owner, timing, and training status match the user\u2011provided evidence exactly."
+        },
+        {
+          "criterion": "No invented values, dates, or roles",
+          "label": "MET",
+          "rationale": "No numbers, dates, or roles are introduced beyond what the evidence supplies."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No copying of reference BRD specifics",
+          "label": "MET",
+          "rationale": "No reference BRD data is used; the content relies solely on project evidence."
+        },
+        {
+          "criterion": "Business approach reasonable for similar projects",
+          "label": "MET",
+          "rationale": "Described internal socialization steps are typical for enterprise system rollouts."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Internal audience identified",
+          "label": "MET",
+          "rationale": "Branch Tellers, Credit Analysts, Branch Managers, and Compliance officers are listed as required."
+        },
+        {
+          "criterion": "Communication or training needs described",
+          "label": "MET",
+          "rationale": "Briefings, portal demos, hands\u2011on training, and SOP distribution are specified."
+        },
+        {
+          "criterion": "Relevant content for socialization identified",
+          "label": "MET",
+          "rationale": "Process changes, role impacts, and SOP updates are noted."
+        },
+        {
+          "criterion": "Owner named with evidence",
+          "label": "MET",
+          "rationale": "Branch Operations is confirmed as the responsible owner."
+        },
+        {
+          "criterion": "Timing stated with evidence",
+          "label": "MET",
+          "rationale": "Socialization during the service delivery readiness period before go\u2011live matches the evidence."
+        },
+        {
+          "criterion": "Alignment with section 3.3.4",
+          "label": "MET",
+          "rationale": "Briefing on process changes references 3.3.4 as required."
+        },
+        {
+          "criterion": "No invented mandatory training obligations",
+          "label": "MET",
+          "rationale": "The statement correctly notes that no external certification has been confirmed."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Statements are clear and unambiguous",
+          "label": "MET",
+          "rationale": "Each item is concise and directly describes what is needed."
+        },
+        {
+          "criterion": "Content is verifiable/testable where appropriate",
+          "label": "MET",
+          "rationale": "The audience, owner, and timing can be checked against project records."
+        },
+        {
+          "criterion": "Requirements are actionable",
+          "label": "MET",
+          "rationale": "Stakeholders can plan and execute the described briefings and trainings."
+        },
+        {
+          "criterion": "No unnecessary jargon or vacuous claims",
+          "label": "MET",
+          "rationale": "Language is straightforward without filler."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency (no contradictions)",
+          "label": "MET",
+          "rationale": "All statements align with each other."
+        },
+        {
+          "criterion": "Logical consistency with other completed sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed yet to compare against."
+        },
+        {
+          "criterion": "Dependencies reflected correctly",
+          "label": "MET",
+          "rationale": "References to sections 3.3.4 and 3.3.5 are noted as required timing and content."
+        }
+      ]
+    }
+  },
+  "4.3_MEDIUM": {
+    "sample_id": "4.3_MEDIUM",
+    "field_id": "4.3",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 65,
+    "confidence_level": "MEDIUM",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 50,
+      "reference_context": 100,
+      "section_compliance": 36,
+      "testability": 75,
+      "consistency": null
+    },
+    "critical_flags": [
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The claim that \"All staff\" will be informed contradicts the confirmed audience limited to specific branch roles.",
+        "excerpt": "All staff will be informed about the new system."
+      },
+      {
+        "type": "MATERIAL_SCOPE_LEAK",
+        "reason": "The section expands the scope beyond the defined internal audience, introducing content that belongs to a broader audience not confirmed for this project.",
+        "excerpt": "All staff will be informed about the new system."
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:12:26.906628+00:00",
+    "elapsed_seconds": 21.37,
+    "notes": "Socialization intent present but no audience specificity, no content detail, no owner.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "claims grounded to confirmed evidence",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statement that training will be provided before launch aligns with timing evidence, but the claim that \"All staff\" will be informed exceeds the confirmed internal audience (specific branch roles) and is not supported by evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "alignment with reference and business context",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied; the internal socialization concept is appropriate for an enterprise system rollout."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "internal audience identified",
+          "label": "NOT_MET",
+          "rationale": "The generated text says \"All staff\" whereas evidence specifies Branch Tellers, Credit Analysts, Branch Managers, and Compliance officers."
+        },
+        {
+          "criterion": "communication or training needs described",
+          "label": "PARTIALLY_MET",
+          "rationale": "Training is mentioned, but no details on briefing, portal demo, or SOP distribution are provided."
+        },
+        {
+          "criterion": "relevant content for socialization identified",
+          "label": "NOT_MET",
+          "rationale": "The content omits required items such as SOP updates, portal demonstration, and hands\u2011on training referenced in the evidence."
+        },
+        {
+          "criterion": "owner named where evidence confirms it",
+          "label": "NOT_MET",
+          "rationale": "The section does not name the confirmed owner (Branch Operations)."
+        },
+        {
+          "criterion": "timing only where evidence supports it",
+          "label": "MET",
+          "rationale": "The statement that training occurs \"before launch\" matches the evidence that socialization must happen before go\u2011live."
+        },
+        {
+          "criterion": "alignment with organizational changes in section 3.3.4",
+          "label": "NOT_MET",
+          "rationale": "No reference to the process changes or role impacts described in 3.3.4."
+        },
+        {
+          "criterion": "no invented training obligations or mandatory programs",
+          "label": "MET",
+          "rationale": "The text only mentions training provision, which is confirmed; it does not add any mandatory certification."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "clarity, testability & actionability",
+          "label": "MOSTLY_MET",
+          "rationale": "The statements are clear and actionable but lack sufficient detail to be fully testable (e.g., who receives the information, what training content)."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "internal consistency",
+          "label": "N_A",
+          "rationale": "No contradictory statements within the section itself."
+        },
+        {
+          "criterion": "logical consistency with other completed sections",
+          "label": "N_A",
+          "rationale": "No other sections have been completed to compare against."
+        },
+        {
+          "criterion": "dependency reflection",
+          "label": "N_A",
+          "rationale": "Prerequisite sections (e.g., 3.3.4, 3.3.5) are not yet completed, so verification is not possible."
+        }
+      ]
+    }
+  },
+  "4.3_POOR": {
+    "sample_id": "4.3_POOR",
+    "field_id": "4.3",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 45,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 75,
+      "section_compliance": 0,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Employee count, program duration, and completion window are not evidenced.",
+        "excerpt": "A mandatory 40-hour e-learning certification program must be completed by all 2,000 employees company-wide within 30 days of launch"
+      },
+      {
+        "type": "INVENTED_VENDOR_OR_SYSTEM",
+        "reason": "Cornerstone OnDemand LMS is not mentioned in the confirmed evidence.",
+        "excerpt": "delivered through Cornerstone OnDemand LMS"
+      },
+      {
+        "type": "INVENTED_BUSINESS_RULE",
+        "reason": "A mandatory certification program is introduced without any project confirmation.",
+        "excerpt": "A mandatory 40-hour e-learning certification program must be completed"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:12:59.849551+00:00",
+    "elapsed_seconds": 32.93,
+    "notes": "40-hour requirement invented, 2000-employee scope invented, 30-day timeline invented, vendor (Cornerstone) invented.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence Grounding & Traceability",
+          "label": "NOT_MET",
+          "rationale": "All quantitative claims (40\u2011hour program, 2,000 employees, 30\u2011day completion) and the LMS vendor are absent from the confirmed project evidence; they are invented."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & Business Context Alignment",
+          "label": "MOSTLY_MET",
+          "rationale": "No reference BRD content is copied verbatim, and a mandatory e\u2011learning program could be reasonable in similar projects, but the lack of project\u2011specific evidence weakens alignment."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-Specific Compliance",
+          "label": "NOT_MET",
+          "rationale": "The internal audience is incorrectly broadened to all employees; required training, owner, timing, and alignment with section 3.3.4 are not supported by the evidence, and an invented mandatory program is introduced."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, Testability & Actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The statement is clear and actionable, but because the numbers and obligations are unsupported, the requirement is not verifiable or testable against project facts."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & Dependency Integrity",
+          "label": "MET",
+          "rationale": "The content does not contradict itself and no completed prerequisite sections exist to create conflict."
+        }
+      ]
+    }
+  },
+  "4.4_GOOD": {
+    "sample_id": "4.4_GOOD",
+    "field_id": "4.4",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": 100
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:13:29.472047+00:00",
+    "elapsed_seconds": 29.61,
+    "notes": "Phased strategy described, segments identified, entry conditions stated, timing honest (not invented), aligned with 4.2.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual statements are traceable to confirmed evidence",
+          "label": "MET",
+          "rationale": "The rollout phases, branch count, entry condition and lack of timelines match the confirmed user evidence exactly; no invented facts are present."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference BRD content copied without project evidence",
+          "label": "MET",
+          "rationale": "The section does not use any external reference numbers, roles, or policies; all content is derived from project evidence."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Rollout strategy, phases, targets, timing, alignment with commercial launch, and entry conditions are described per evidence, with no invented constructs",
+          "label": "MET",
+          "rationale": "The section meets all field\u20114.4 requirements: phased geographic rollout, pilot/regional/national phases, target branches, alignment to 4.2, and entry review by Head of Credit Operations; no unsupported timelines or thresholds are added."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Content is clear, unambiguous, testable and actionable",
+          "label": "MET",
+          "rationale": "Each phase and entry condition is stated plainly; stakeholders can verify completion and take actions based on the described reviews."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internally consistent and no conflict with completed prerequisite sections",
+          "label": "MET",
+          "rationale": "No contradictions within the section and no other completed sections exist to cause conflict."
+        }
+      ]
+    }
+  },
+  "4.4_MEDIUM": {
+    "sample_id": "4.4_MEDIUM",
+    "field_id": "4.4",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 97,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 88,
+      "testability": 100,
+      "consistency": null
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:13:51.593077+00:00",
+    "elapsed_seconds": 22.1,
+    "notes": "Phased approach mentioned but no segments, no entry conditions, no timing context.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims are traceable to confirmed user evidence and no invented values are present",
+          "label": "MET",
+          "rationale": "The statement that the system will be rolled out in phases, starting with a pilot and then expanding to all branches directly reflects the confirmed phased rollout strategy; no numbers or dates are added."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference BRD content is copied and the approach is reasonable for an enterprise rollout",
+          "label": "MET",
+          "rationale": "There are no reference BRDs to copy from, and a phased pilot\u2011then\u2011expand approach aligns with typical enterprise digital product deployments."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Rollout strategy or approach is described",
+          "label": "MET",
+          "rationale": "The content states a phased rollout beginning with a pilot."
+        },
+        {
+          "criterion": "Logical phases or stages of rollout are identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "Only two stages (pilot and then all branches) are mentioned, while the confirmed evidence defines three distinct phases."
+        },
+        {
+          "criterion": "Target segments, regions, or user groups are identified",
+          "label": "PARTIALLY_MET",
+          "rationale": "The pilot is implied, and \"all branches\" is generic; the evidence specifies pilot branches, regional expansion, and national rollout, which are not fully detailed."
+        },
+        {
+          "criterion": "Timing references are only included where project evidence supports them",
+          "label": "MET",
+          "rationale": "No timelines or dates are provided."
+        },
+        {
+          "criterion": "Rollout approach is aligned with the commercial launch plan in section 4.2",
+          "label": "MET",
+          "rationale": "Both the evidence and the generated text describe a phased rollout following commercial launch."
+        },
+        {
+          "criterion": "Entry and exit conditions for phases are only stated where evidence exists",
+          "label": "MET",
+          "rationale": "The content does not mention any conditions, avoiding unsupported statements."
+        },
+        {
+          "criterion": "No invented pilot programs or phasing constructs are stated as confirmed",
+          "label": "MET",
+          "rationale": "The pilot mentioned matches the confirmed pilot; no extra constructs are added."
+        },
+        {
+          "criterion": "Rollout risks or controls are proportionate to the evidence available",
+          "label": "MET",
+          "rationale": "No risks or controls are introduced, so nothing is overstated."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Content is clear, unambiguous and actionable",
+          "label": "MET",
+          "rationale": "The sentence concisely describes the rollout sequence without jargon; stakeholders can understand the intended approach."
+        },
+        {
+          "criterion": "Statement is verifiable or testable where appropriate",
+          "label": "MET",
+          "rationale": "Verification can be done by checking that a pilot is executed before broader branch rollout, matching the evidence."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency and alignment with completed sections",
+          "label": "N_A",
+          "rationale": "No other sections are completed yet; the content does not conflict with any existing material."
+        }
+      ]
+    }
+  },
+  "4.4_POOR": {
+    "sample_id": "4.4_POOR",
+    "field_id": "4.4",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 30,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 0,
+      "section_compliance": 0,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Numbers such as \"50 branches\", \"Day 1\", weekly rollout dates, and \"team of 20\" are not supported by the confirmed evidence.",
+        "excerpt": "Big bang rollout to all 50 branches on Day 1. Week 1: Jakarta. Week 2: Surabaya. Week 3: all other cities. Rollout team of 20 from HQ will travel to each location."
+      },
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "The section describes a big\u2011bang rollout, which contradicts the confirmed phased rollout strategy (pilot, regional, national) provided in the evidence.",
+        "excerpt": "Big bang rollout to all 50 branches on Day 1. Week 1: Jakarta. Week 2: Surabaya. Week 3: all other cities."
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:14:21.217374+00:00",
+    "elapsed_seconds": 29.61,
+    "notes": "Contradicts phased approach implied by 4.1. Invented timelines, invented team structure. No entry/exit conditions.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding & traceability",
+          "label": "NOT_MET",
+          "rationale": "The section introduces specific numbers (50 branches, Day 1, weekly schedule, team of 20) that are not present in the confirmed project evidence, constituting invented facts."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference & business context alignment",
+          "label": "NOT_MET",
+          "rationale": "The rollout approach (big bang) conflicts with the confirmed phased geographic rollout and does not align with the project's business context."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Section-specific compliance for Rollout Scenario (4.4)",
+          "label": "NOT_MET",
+          "rationale": "The content describes a big\u2011bang rollout with invented timelines and team size, whereas the evidence specifies a phased pilot, regional, and national rollout with no confirmed dates or team composition."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability & actionability",
+          "label": "PARTIALLY_MET",
+          "rationale": "The description is clear and unambiguous, but because it contains unsupported numbers and contradictory facts, it is not verifiable or actionable against the project requirements."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Consistency & dependency integrity",
+          "label": "MET",
+          "rationale": "The statement is internally consistent and does not conflict with any completed prerequisite sections (none exist), so consistency is satisfied."
+        }
+      ]
+    }
+  },
+  "5.1_GOOD": {
+    "sample_id": "5.1_GOOD",
+    "field_id": "5.1",
+    "quality_tier": "GOOD",
+    "expected_confidence_level": "HIGH",
+    "final_confidence": 100,
+    "confidence_level": "HIGH",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 100,
+      "testability": 100,
+      "consistency": null
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:14:45.658765+00:00",
+    "elapsed_seconds": 24.42,
+    "notes": "Retirement trigger with honest metric, affected users, transition requirement, data closure addressed, lifecycle consistent, no invented ownership.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "All factual statements, numbers, and roles are traceable to confirmed project evidence",
+          "label": "MET",
+          "rationale": "The retirement scope, trigger, affected users, transition requirements, and communication details exactly match the confirmed evidence provided; no invented facts are present."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No inappropriate copying from reference BRDs and business approach is reasonable",
+          "label": "MET",
+          "rationale": "No reference BRD data is used; the plan aligns with typical digital migration practices and is justified by project evidence."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Retirement trigger identified and supported by evidence",
+          "label": "MET",
+          "rationale": "Trigger is clearly stated as completion of Phase\u202f2 rollout and \u226595% digital portal volume, both present in evidence."
+        },
+        {
+          "criterion": "Affected users/services identified",
+          "label": "MET",
+          "rationale": "Branch Tellers and the physical document archive are explicitly listed."
+        },
+        {
+          "criterion": "Transition/migration requirements described",
+          "label": "MET",
+          "rationale": "In\u2011flight applications must be completed via legacy process and archive protocol must be finalized; both are specified."
+        },
+        {
+          "criterion": "Data or transaction closure requirements addressed",
+          "label": "MET",
+          "rationale": "Requirement to finish in\u2011flight applications before cutover covers transaction closure."
+        },
+        {
+          "criterion": "Communication requirements based on project evidence",
+          "label": "MET",
+          "rationale": "Notification via the socialization plan (4.3) is directly referenced from evidence."
+        },
+        {
+          "criterion": "No invented ownership, dates, or timelines",
+          "label": "MET",
+          "rationale": "Only the Phase\u202f2 rollout reference is used; no new dates or owners are introduced."
+        },
+        {
+          "criterion": "Retirement plan consistent with product lifecycle",
+          "label": "MET",
+          "rationale": "Retiring the legacy paper process after digital portal adoption follows a logical lifecycle transition."
+        },
+        {
+          "criterion": "No invented replacement product or successor system",
+          "label": "MET",
+          "rationale": "The digital portal is identified as the replacement, which is the intended future system per evidence."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Requirements are clear, testable, and actionable",
+          "label": "MET",
+          "rationale": "Statements are concise, define measurable trigger (\u226595% volume), and specify concrete actions for transition and communication."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency and alignment with completed dependencies",
+          "label": "N_A",
+          "rationale": "No other sections have been completed yet; therefore consistency with them cannot be verified at this stage."
+        }
+      ]
+    }
+  },
+  "5.1_MEDIUM": {
+    "sample_id": "5.1_MEDIUM",
+    "field_id": "5.1",
+    "quality_tier": "MEDIUM",
+    "expected_confidence_level": "MEDIUM",
+    "final_confidence": 80,
+    "confidence_level": "MEDIUM",
+    "review_status": "PASS",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 100,
+      "reference_context": 100,
+      "section_compliance": 47,
+      "testability": 75,
+      "consistency": null
+    },
+    "critical_flags": [],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:15:08.157771+00:00",
+    "elapsed_seconds": 22.48,
+    "notes": "Retirement intent present but no trigger, no affected users, no transition requirement, no data handling.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Evidence grounding and traceability",
+          "label": "MET",
+          "rationale": "The statement that the paper process will be retired once the new system is operational aligns with the confirmed retirement trigger (completion of Phase 2 rollout and digital portal handling the majority of volume) and does not introduce any unsupported numbers or facts."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "Reference and business context alignment",
+          "label": "MET",
+          "rationale": "No reference BRD content is copied; the retirement approach is reasonable for a digital transformation and matches the project's business context."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Retirement trigger identified and evidence-supported",
+          "label": "MOSTLY_MET",
+          "rationale": "The trigger is mentioned generically ('once the new system is fully operational'), which is consistent with evidence but lacks the specific Phase\u202f2 completion and 95% volume criteria."
+        },
+        {
+          "criterion": "Affected users/services identified",
+          "label": "NOT_MET",
+          "rationale": "The generated content does not specify the affected users (Branch Tellers) or services (physical document archive)."
+        },
+        {
+          "criterion": "Transition/migration requirements described",
+          "label": "NOT_MET",
+          "rationale": "No transition requirements (e.g., handling in\u2011flight applications or archive protocol) are included."
+        },
+        {
+          "criterion": "Data or transaction closure requirements addressed",
+          "label": "NOT_MET",
+          "rationale": "The statement omits any mention of data or transaction closure procedures."
+        },
+        {
+          "criterion": "Communication requirements described",
+          "label": "NOT_MET",
+          "rationale": "No communication plan or notification details are provided."
+        },
+        {
+          "criterion": "No invented ownership/dates/timelines",
+          "label": "MET",
+          "rationale": "The content does not introduce any specific owners, dates, or timelines beyond what is evidenced."
+        },
+        {
+          "criterion": "Retirement plan consistent with product lifecycle",
+          "label": "MET",
+          "rationale": "Retiring the legacy paper process after the digital portal becomes operational fits the expected product lifecycle."
+        },
+        {
+          "criterion": "No invented replacement product stated",
+          "label": "MET",
+          "rationale": "The digital portal is confirmed as the replacement; no unrelated product is introduced."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability, and actionability",
+          "label": "MOSTLY_MET",
+          "rationale": "The statement is concise and understandable, but the phrase 'fully operational' is vague, limiting precise testability and actionable detail."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal and cross-section consistency",
+          "label": "N_A",
+          "rationale": "No other sections are completed yet; therefore consistency cannot be fully assessed, but no contradictions are evident."
+        }
+      ]
+    }
+  },
+  "5.1_POOR": {
+    "sample_id": "5.1_POOR",
+    "field_id": "5.1",
+    "quality_tier": "POOR",
+    "expected_confidence_level": "LOW",
+    "final_confidence": 47,
+    "confidence_level": "LOW",
+    "review_status": "REVIEW_REQUIRED",
+    "dependency_status": "NOT_YET_VERIFIABLE",
+    "component_scores": {
+      "grounding": 0,
+      "reference_context": 75,
+      "section_compliance": 12,
+      "testability": 50,
+      "consistency": 100
+    },
+    "critical_flags": [
+      {
+        "type": "UNSUPPORTED_NUMERIC_FACT",
+        "reason": "Number of years of records (10) and migration duration (2 weeks) have no supporting evidence.",
+        "excerpt": "Data migration of 10 years of records will be completed in 2 weeks"
+      },
+      {
+        "type": "CONTRADICTORY_CONFIRMED_FACT",
+        "reason": "Claims immediate decommission on go\u2011live date contradict the confirmed retirement trigger (completion of Phase\u202f2 and \u226595% digital volume).",
+        "excerpt": "All legacy systems will be decommissioned immediately on go-live date"
+      }
+    ],
+    "judge_model": "openai/gpt-oss-120b",
+    "run_timestamp": "2026-08-29T09:15:37.259474+00:00",
+    "elapsed_seconds": 29.09,
+    "notes": "Invented immediate decommission, invented 10-year migration timeline (2 weeks), no transition for in-flight cases.",
+    "stage_a_judgments": {
+      "grounding": [
+        {
+          "criterion": "Claims are traceable to confirmed project evidence",
+          "label": "NOT_MET",
+          "rationale": "The statements about immediate decommission on go-live date and migration of 10 years of records in 2 weeks are not supported by any provided evidence."
+        }
+      ],
+      "reference": [
+        {
+          "criterion": "No reference BRD content copied verbatim",
+          "label": "MET",
+          "rationale": "The content does not reuse any specific numbers, roles, or rules from benchmark BRDs."
+        },
+        {
+          "criterion": "Business approach is reasonable compared to similar projects",
+          "label": "PARTIALLY_MET",
+          "rationale": "While no reference misuse occurs, the claim of migrating a decade of records in two weeks is unlikely to be realistic for an enterprise digital transformation."
+        }
+      ],
+      "section_compliance": [
+        {
+          "criterion": "Retirement trigger identified and evidence\u2011supported",
+          "label": "NOT_MET",
+          "rationale": "The generated text does not mention the confirmed trigger (Phase\u202f2 completion and \u226595% digital portal volume)."
+        },
+        {
+          "criterion": "Affected users/services identified",
+          "label": "NOT_MET",
+          "rationale": "Branch tellers and physical archive are omitted."
+        },
+        {
+          "criterion": "Transition or migration requirements described",
+          "label": "NOT_MET",
+          "rationale": "Migration timeline (10 years of data in 2 weeks) is invented and not grounded in evidence."
+        },
+        {
+          "criterion": "Data or transaction closure requirements addressed",
+          "label": "NOT_MET",
+          "rationale": "No mention of handling in\u2011flight applications or closure of legacy processes."
+        },
+        {
+          "criterion": "Communication requirements based on evidence",
+          "label": "NOT_MET",
+          "rationale": "No reference to the socialization plan or branch\u2011staff notification."
+        },
+        {
+          "criterion": "No invented ownership, dates, or timelines",
+          "label": "NOT_MET",
+          "rationale": "Timeline of immediate decommission and 2\u2011week migration is invented."
+        },
+        {
+          "criterion": "Retirement plan consistent with product lifecycle",
+          "label": "NOT_MET",
+          "rationale": "Plan does not align with the documented trigger and transition steps."
+        },
+        {
+          "criterion": "No invented replacement product stated",
+          "label": "MET",
+          "rationale": "The text does not claim any replacement product beyond the digital portal."
+        }
+      ],
+      "clarity": [
+        {
+          "criterion": "Clarity, testability and actionability of statements",
+          "label": "PARTIALLY_MET",
+          "rationale": "Statements are clear but contain invented numbers and timelines, making them untestable against project evidence."
+        }
+      ],
+      "consistency": [
+        {
+          "criterion": "Internal consistency of the section",
+          "label": "MET",
+          "rationale": "No self\u2011contradictions within the generated content."
+        }
+      ]
+    }
   }
 }

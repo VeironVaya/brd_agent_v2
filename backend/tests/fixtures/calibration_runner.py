@@ -36,10 +36,21 @@ from app.rag import CANONICAL_FIELDS_META, calculate_component_score, calculate_
 from app.services.judge import _calculate_component_scores
 from app.services.judge_prompt import build_stage_a_context, build_stage_b_context
 from app.services.judge_rubrics import (
+from app.ai.rag import CANONICAL_FIELDS_META
+from app.ai.judge import (
     GLOBAL_CLARITY_CRITERIA,
     GLOBAL_CONSISTENCY_CRITERIA,
     GLOBAL_GROUNDING_CRITERIA,
     GLOBAL_REFERENCE_CRITERIA,
+    JudgeStageAOutput,
+    JudgeStageBOutput,
+    _build_stage_a_summary,
+    _calculate_component_scores,
+    build_stage_a_context,
+    build_stage_b_context,
+    calculate_component_score,
+    calculate_final_confidence,
+    determine_confidence_level,
     get_field_rubric,
 )
 from app.services.judge_schema import JudgeStageAOutput, JudgeStageBOutput

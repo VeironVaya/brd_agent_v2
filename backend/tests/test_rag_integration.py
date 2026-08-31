@@ -32,6 +32,7 @@ from app.dtos.conversation_dtos import (
     ConversationDetailResponse,
 )
 from app.rag import (
+from app.ai.rag import (
     CANONICAL_FIELDS_META,
     CANONICAL_FIELD_ORDER,
     SearchResult,

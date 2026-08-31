@@ -58,11 +58,7 @@ from app.config import settings
 # ---------------------------------------------------------------------------
 
 _JUDGE_MODEL = "gemini/gemini-2.5-flash"
-_JUDGE_MODEL = "gemini/gemini-2.0-flash"
 _JUDGE_FALLBACKS = [
-    "gemini/gemini-3.6-flash",
-    "gemini/gemini-3.5-flash",
-    "groq/llama-3.3-70b-versatile"
     "gemini/gemini-flash-latest",
     "gemini/gemini-1.5-flash",
     "gemini/gemini-1.5-pro",
@@ -248,7 +244,6 @@ def _build_stage_a_summary(stage_a: JudgeStageAOutput) -> str:
 # ---------------------------------------------------------------------------
 
 async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any]:
-    """Call LiteLLM and return parsed JSON dict."""
     """Call LiteLLM with Gemini for Agent 2 Judge and return parsed JSON dict."""
     if not settings.groq_api_key and not settings.gemini_api_key:
         raise RuntimeError("No API key configured for LiteLLM.")
