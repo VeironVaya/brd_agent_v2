@@ -23,7 +23,7 @@ from httpx import AsyncClient
 from app.models.answer import Answer
 from app.repositories import answer_repository, section_repository
 from app.services import ai_integration, chat_service, document_service, template_service
-from app.ai.drafter.schema import AgentReply
+from app.services.ai_integration import AgentReply
 from app.dtos.conversation_dtos import (
     AnswerDto,
     ConfidenceBreakdownDto,

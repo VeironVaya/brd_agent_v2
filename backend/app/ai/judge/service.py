@@ -429,15 +429,11 @@ async def evaluate_section(
 
     # Build breakdown dictionary (persisted into JSONB and consumed by ConfidenceBreakdown.jsx)
     def _score_entry(score: int | None, judgments: list) -> dict[str, Any]:
-        reason_parts = [
-            f"{j.label}: {j.rationale}"
         rationales = [
             j.rationale.strip()
             for j in judgments
-            if j.label != JudgmentLabel.N_A
             if j.label != JudgmentLabel.N_A and j.rationale and j.rationale.strip()
         ]
-        reason = "; ".join(reason_parts[:3]) if reason_parts else "No applicable criteria."
         if not rationales:
             return {"score": score, "reason": "No applicable criteria."}
         cleaned = []
