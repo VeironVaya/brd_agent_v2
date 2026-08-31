@@ -58,14 +58,10 @@ from app.core.config import settings
 # ---------------------------------------------------------------------------
 
 _JUDGE_MODEL = "gemini/gemini-2.5-flash"
-_JUDGE_MODEL = "gemini/gemini-2.0-flash"
 _JUDGE_FALLBACKS = [
     "gemini/gemini-3.6-flash",
     "gemini/gemini-3.5-flash",
     "groq/llama-3.3-70b-versatile"
-    "gemini/gemini-flash-latest",
-    "gemini/gemini-1.5-flash",
-    "groq/llama-3.3-70b-versatile",
 ]
 
 # Aliases for direct function calls and tests

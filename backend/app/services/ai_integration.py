@@ -1,32 +1,28 @@
-"""Backward-compatibility re-export for app.ai.drafter.
+"""LiteLLM integration — wraps the real LLM call behind a strict prompt.
 
-Agent 1 (Drafter) now lives in `app.ai.drafter`.
-This module is retained strictly for backward compatibility with existing tests and callers.
+Follows the design in brainstorming/erd.md:
+- Reads system prompt and per-section context
+- Talks to Groq (llama-3.3-70b-versatile) / Gemini via LiteLLM
+- Expects JSON output conforming to LLMReplySchema
+- Translates the LLM response into an AgentReply dataclass
+- Falls back to a deterministic dummy reply when no API keys are configured
 """
 
-from app.ai.drafter import (
-    AgentReply,
-    DUMMY_AI_REPLY,
-    GREETING_PROMPT,
-    LLMReplySchema,
-    SYSTEM_PROMPT,
-    get_greeting,
-    get_reply,
-)
-from app.rag import search_references
+from __future__ import annotations
 
-<<<<<<< HEAD
-__all__ = [
-    "AgentReply",
-    "DUMMY_AI_REPLY",
-    "GREETING_PROMPT",
-    "LLMReplySchema",
-    "SYSTEM_PROMPT",
-    "get_greeting",
-    "get_reply",
-    "search_references",
-]
-=======
+from dataclasses import dataclass, field
+import json
+import os
+import litellm
+from pydantic import BaseModel, Field
+
+try:
+    import litellm.types.utils as _litellm_utils
+    import litellm.types.llms.openai as _litellm_openai
+    _litellm_utils.Message.model_rebuild(_types_namespace=vars(_litellm_openai))
+except Exception:
+    pass
+
 from app.config import settings
 from app.services.brd_rules import get_section_rules_prompt
 
@@ -49,11 +45,10 @@ class AgentReply:
     answer_text: str | None = None
     completeness: int | None = None
     confidence: int | None = None
+    confidence_reason: str | None = None
+    confidence_components: dict | None = None
     missing_items: list[str] = field(default_factory=list)
     is_assumption: bool = False
-    # AI team: populate this with the 5-dimension breakdown dict.
-    # Shape: {"grounding": {"score": int, "reason": str}, ...}
-    # Leave None if not yet computed — the frontend hides the panel gracefully.
     confidence_breakdown: dict | None = None
 
 
@@ -61,7 +56,7 @@ class LLMReplySchema(BaseModel):
     reply_text: str = Field(..., description="The chat reply to the user")
     answer_text: str | None = Field(None, description="The updated formal draft text for this section")
     completeness: int = Field(..., description="Completeness score 0-100")
-    confidence: int = Field(..., description="Confidence score 0-100")
+    confidence: int | None = Field(None, description="Confidence score 0-100")
     missing_items: list[str] = Field(default_factory=list, description="List of missing information")
     is_assumption: bool = Field(default=False, description="True if AI made assumptions")
     confidence_breakdown: dict | None = Field(
@@ -142,21 +137,24 @@ async def get_reply(
     message_text: str,
     history: list[dict],
     current_answer: dict | None,
+    field_id: str | None = None,
     context_answers: dict[str, str] | None = None,
 ) -> AgentReply:
     """Real AI Integration: LiteLLM routing processing room data and outputting AgentReply."""
-    # if not settings.gemini_api_key and not settings.groq_api_key:
-    #     return AgentReply(
-    #         reply_text=DUMMY_AI_REPLY,
-
-    # ini kalo groq dulu baru gemini        
     if not settings.groq_api_key and not settings.gemini_api_key:
+        turns_so_far = len(history) // 2 + 1
+        completeness = min(100, turns_so_far * 34)
+        missing_items = [] if completeness >= 100 else ["More detail needed before this can be marked complete."]
+
+        previous_answer_text = (current_answer or {}).get("answer_text") or ""
+        answer_text = f"{previous_answer_text} {message_text}".strip()
+
         return AgentReply(
-            reply_text="Got it — logged. (Dummy AI: Please set GROQ_API_KEY or GEMINI_API_KEY in .env)",
-            answer_text=(current_answer or {}).get("answer_text") or f"{message_text}",
-            completeness=50,
-            confidence=90,
-            missing_items=["Missing API Key"],
+            reply_text=DUMMY_AI_REPLY,
+            answer_text=answer_text,
+            completeness=completeness,
+            confidence=None,
+            missing_items=missing_items,
             is_assumption=False,
             confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
         )
@@ -187,13 +185,9 @@ async def get_reply(
 
     try:
         chat_completion = await litellm.acompletion(
-            # model="gemini/gemini-1.5-flash",
-            # fallbacks=["gemini/gemini-flash-latest"],
-
-            # ini kalo gemini dulu baru groq
             model="groq/llama-3.3-70b-versatile",
             fallbacks=[
-                "gemini/gemini-3.1-flash-lite",
+                "gemini/gemini-2.0-flash",
                 "gemini/gemini-flash-latest",
             ],
             messages=[
@@ -232,9 +226,7 @@ async def get_reply(
             confidence=llm_reply.confidence,
             missing_items=llm_reply.missing_items,
             is_assumption=llm_reply.is_assumption,
-            # AI team: llm_reply.confidence_breakdown is None until the model
-            # returns it. Fallback to dummy so the UI is always exercisable.
-            confidence_breakdown=llm_reply.confidence_breakdown or _DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=llm_reply.confidence_breakdown,
         )
         
     except Exception as e:
@@ -287,7 +279,7 @@ async def get_greeting(
     try:
         chat_completion = await litellm.acompletion(
             model="groq/llama-3.3-70b-versatile",
-            fallbacks=["gemini/gemini-3.1-flash-lite", "gemini/gemini-flash-latest"],
+            fallbacks=["gemini/gemini-2.0-flash", "gemini/gemini-flash-latest"],
             messages=[
                 {
                     "role": "system",
@@ -329,4 +321,4 @@ async def get_greeting(
             confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
         )
 
->>>>>>> origin/master
+

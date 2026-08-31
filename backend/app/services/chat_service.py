@@ -25,6 +25,7 @@ from app.ai.rag import CANONICAL_ANSWERABLE_FIELDS, ReferenceCitation, search_re
 from app.ai.validator import validate_project_facts
 from app.services import conversation_service, template_service
 from app.ai import drafter as ai_integration
+from app.services import ai_integration, conversation_service, template_service
 from app.ai import judge
 
 
