@@ -205,6 +205,12 @@ CRITIQUE GUIDELINES
 - Do NOT introduce new project facts, invent requirements, or add goals not established in evidence.
 - Keep each list item concise: 1-2 sentences maximum.
 - Suggestions may be framed as questions (e.g. "Consider clarifying X — what is the target threshold?").
+- Be specific, highly analytical, and actionable. Avoid trivial or generic statements.
+- Strengths: Highlight exact elements that make this draft high-quality (e.g., concrete volume metrics, clear problem-cause separation, solid grounding).
+- Issues: Detail concrete gaps, ambiguities, or risks identified in Stage A. If scores are 100% and no critical defects exist, state minor areas of potential operational risk or keep empty `[]`.
+- Suggestions: Provide high-value, proactive advice from a Senior BA perspective (e.g., downstream impacts on section 1.2/1.3, baseline metric considerations, stakeholder boundary questions, or testability advice).
+- Do NOT fabricate new project facts or inject unauthorized requirements. Frame improvements as recommendations or inquiry prompts for the author.
+- Keep each point concise (1-2 sentences maximum).
 
 ========================================
 OUTPUT FORMAT

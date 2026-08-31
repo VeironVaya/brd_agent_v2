@@ -435,6 +435,12 @@ async def evaluate_section(
             if j.label != JudgmentLabel.N_A
         ]
         reason = "; ".join(reason_parts[:3]) if reason_parts else "No applicable criteria."
+        reason_parts = []
+        for j in judgments:
+            if j.label != JudgmentLabel.N_A:
+                lbl = j.label.value if hasattr(j.label, "value") else str(j.label).replace("JudgmentLabel.", "")
+                reason_parts.append(f"[{lbl}] {j.rationale}")
+        reason = " • ".join(reason_parts[:3]) if reason_parts else "No applicable criteria."
         return {"score": score, "reason": reason}
 
     critical_flags_list = [
