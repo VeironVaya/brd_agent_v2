@@ -97,13 +97,6 @@ DEPENDENCY_RULES = {
                 "big_question": """Why does this BRD exist and what decision does it support?""",
                 "info_needed": """What approval or decision is this document driving? What's in scope and out of scope? Who is the audience for this BRD?"""
             },
-            {
-                "to_id": "1.4",
-                "type": "S!",
-                "reason": """A strong purpose statement typically frames itself against the program type, but Program Type is generated after Purpose in this sequence.""",
-                "big_question": """Why does this BRD exist and what decision does it support?""",
-                "info_needed": """What approval or decision is this document driving? What's in scope and out of scope? Who is the audience for this BRD?"""
-            },
         ]
     },
     "1.4": {
@@ -121,6 +114,13 @@ DEPENDENCY_RULES = {
                 "to_id": "1.2",
                 "type": "S",
                 "reason": """The type of program should match the nature of the stated objective.""",
+                "big_question": """What kind of initiative is this?""",
+                "info_needed": """Is this a new build, enhancement, compliance mandate, migration, or process improvement? What's driving the classification?"""
+            },
+            {
+                "to_id": "1.3",
+                "type": "S",
+                "reason": """The program type classification should align with the stated purpose of this business requirement.""",
                 "big_question": """What kind of initiative is this?""",
                 "info_needed": """Is this a new build, enhancement, compliance mandate, migration, or process improvement? What's driving the classification?"""
             },
@@ -615,8 +615,6 @@ def get_section_rules_prompt(section_id: str, context_answers: dict[str, str] = 
         for dep in rules["dependencies"]:
             dep_title = DEPENDENCY_RULES.get(dep["to_id"], {}).get("title", "")
             req_type = "Strict Blocker (Strong)" if dep["type"] == "S" else "Non-blocking context (Weak)"
-            if dep["type"] == "S!":
-                req_type = "Forward Reference Anomaly (S!)"
             
             prompt += f"  * Depends on {dep['to_id']} {dep_title} [{req_type}]: {dep['reason']}\n"
             prompt += f"    - Big Question to answer: {dep['big_question']}\n"
