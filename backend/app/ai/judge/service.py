@@ -58,10 +58,15 @@ from app.config import settings
 # ---------------------------------------------------------------------------
 
 _JUDGE_MODEL = "gemini/gemini-2.5-flash"
+_JUDGE_MODEL = "gemini/gemini-2.0-flash"
 _JUDGE_FALLBACKS = [
     "gemini/gemini-3.6-flash",
     "gemini/gemini-3.5-flash",
     "groq/llama-3.3-70b-versatile"
+    "gemini/gemini-flash-latest",
+    "gemini/gemini-1.5-flash",
+    "gemini/gemini-1.5-pro",
+    "groq/llama-3.3-70b-versatile",
 ]
 
 # Aliases for direct function calls and tests
@@ -101,7 +106,7 @@ def _classify_user_input(text: str) -> str:
 
     # Question patterns
     question_starters = (
-        "apakah", "bagaimana", "kenapa", "mengapa", "bisakah", "kapan", "siapa", "dimana", "mana",
+        # "apakah", "bagaimana", "kenapa", "mengapa", "bisakah", "kapan", "siapa", "dimana", "mana",
         "can we", "could we", "what if", "should we", "is it possible", "how about", "why", "when", "who", "where", "how"
     )
     if stripped.endswith("?") or any(lower.startswith(q) for q in question_starters):
@@ -109,7 +114,7 @@ def _classify_user_input(text: str) -> str:
 
     # Brainstorming / Hypothesis patterns
     speculative_starters = (
-        "mungkin", "kayaknya", "sepertinya", "bisa jadi", "kira-kira", "usul", "ide", "bagus kalau", "gimana kalau",
+        # "mungkin", "kayaknya", "sepertinya", "bisa jadi", "kira-kira", "usul", "ide", "bagus kalau", "gimana kalau",
         "maybe", "perhaps", "suppose", "consider", "brainstorming", "suggest", "i think", "tentative", "what about"
     )
     if any(lower.startswith(s) for s in speculative_starters):
@@ -244,8 +249,14 @@ def _build_stage_a_summary(stage_a: JudgeStageAOutput) -> str:
 
 async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any]:
     """Call LiteLLM and return parsed JSON dict."""
+    """Call LiteLLM with Gemini for Agent 2 Judge and return parsed JSON dict."""
     if not settings.groq_api_key and not settings.gemini_api_key:
         raise RuntimeError("No API key configured for LiteLLM.")
+
+    if settings.gemini_api_key:
+        os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
+    if settings.groq_api_key:
+        os.environ["GROQ_API_KEY"] = settings.groq_api_key
 
     max_attempts = 4
     for attempt in range(max_attempts):
@@ -257,6 +268,7 @@ async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any
                 response_format={"type": "json_object"},
                 temperature=temperature,
             )
+            print(f"[AGENT 2 JUDGE MODEL]: {getattr(completion, 'model', _JUDGE_MODEL)}")
             raw = completion.choices[0].message.content or "{}"
             return json.loads(raw)
         except Exception as exc:
