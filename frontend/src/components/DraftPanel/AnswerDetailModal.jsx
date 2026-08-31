@@ -27,14 +27,6 @@ export default function AnswerDetailModal({ open, onClose, fieldId, answers, cus
       </div>
       <ConfidenceBreakdown breakdown={answer.confidence_breakdown} />
       <div className="text-sm mt-3.5 leading-relaxed">{answer.answer}</div>
-      {answer.confidence_reason && (
-        <div className="mt-3.5 p-3 bg-bg-subtle rounded-md border border-border text-[12.5px] text-text-secondary leading-relaxed">
-          <div className="font-semibold text-text-primary mb-1 text-[11px] uppercase tracking-wider">
-            Reason
-          </div>
-          {answer.confidence_reason}
-        </div>
-      )}
       <div className="flex justify-end mt-5.5">
 
         <button
