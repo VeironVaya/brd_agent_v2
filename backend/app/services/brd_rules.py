@@ -656,7 +656,6 @@ GLOBAL_CLARITY_CRITERIA: list[str] = [
     "Content is verifiable or testable where the section type naturally warrants it (do not require numbers for sections where numbers are not natural)",
     "Requirements or statements are actionable — someone can take action based on them",
     "No unnecessary jargon or vacuous claims that add no verifiable meaning",
-    "Substantive Specificity: The content must provide concrete, decision-useful information. It must not merely restate the section title, requirement, or claim using synonyms, circular wording, or tautological statements."
     "Content provides substantive specificity that adds concrete, decision-useful information, and does not merely restate the section heading, title, or claim using synonyms, circular wording, or tautological statements",
 ]
 

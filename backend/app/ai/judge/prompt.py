@@ -78,12 +78,18 @@ BIAS MITIGATION — STRICTLY ENFORCE
 RUBRIC — EVALUATE EACH COMPONENT
 ========================================
 Use judgment labels: MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A
-- MET: criterion is substantively satisfied
-- MOSTLY_MET: satisfied overall with only minor weakness
-- PARTIALLY_MET: partially satisfied but a material gap or ambiguity remains
-- NOT_MET: criterion is applicable but substantively fails (including when content is empty, circular, off-topic, or fails to address the criterion)
-- N_A: criterion is genuinely not applicable to this project domain OR cannot be verified from available information. Do NOT use N_A when an applicable section criterion is simply unfulfilled or absent in the draft — use NOT_MET instead.
-N_A must NOT be treated as failure.
+
+Semantic Definitions & Distinctions:
+- MET: Core requirement is fully and substantively satisfied with clear, actionable details.
+- MOSTLY_MET: Core requirement is satisfied; only minor refinements, non-critical clarifications, or optional details remain.
+- PARTIALLY_MET: Core idea exists, but one or more substantive gaps, ambiguities, or unaddressed elements remain that affect completeness.
+- NOT_MET: Core requirement is missing, unfulfilled, materially unusable, circular/tautological, or completely off-topic.
+- N_A: Criterion is genuinely not applicable to this project's domain OR cannot be verified from available information. Do NOT use N_A when an applicable section criterion is simply unfulfilled or absent in the draft — use NOT_MET instead. N_A must NOT be treated as failure.
+
+Decision & Boundary Rules:
+- Judge severity of missing information, not merely the number of missing items.
+- Do NOT use NOT_MET merely because optional or minor detail is missing (if the core requirement is present, use MOSTLY_MET or PARTIALLY_MET).
+- Do NOT use MOSTLY_MET when a missing element materially affects usefulness, testability, or decision-readiness (use PARTIALLY_MET).
 
 ANTI-DOUBLE-COUNTING — assign each defect to exactly ONE component:
 - Unsupported project fact → grounding
@@ -117,11 +123,11 @@ Criteria:
 {clarity_criteria}
 
 --- COMPONENT 5: Consistency & Dependency Integrity ---
-Dependency status guidance:
+Note: In consistency_judgments, use the standard labels (MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A).
+For the separate top-level "dependency_status" field, use one of:
 - CONSISTENT: all relevant completed dependency sections are addressed and content is consistent
 - CONFLICT: content directly contradicts a completed prerequisite section
-- NOT_YET_VERIFIABLE: prerequisite sections have not been completed yet
-NOT_YET_VERIFIABLE must NOT be penalized.
+- NOT_YET_VERIFIABLE: prerequisite sections have not been completed yet (do NOT penalize)
 Criteria:
 {consistency_criteria}
 
