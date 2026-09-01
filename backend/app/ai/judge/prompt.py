@@ -66,7 +66,7 @@ Section Title: {section_title}
 BIAS MITIGATION — STRICTLY ENFORCE
 ========================================
 - Do NOT reward verbosity. A concise, correct requirement is better than a long, vague one.
-- Do NOT reward technical jargon or professional tone by itself.
+- Do NOT reward technical jargon or professional tone by itself. Professional or grammatically clear wording is NOT considered sufficient when the semantic content is circular, tautological, or empty.
 - Do NOT penalize concise but correct requirements.
 - Do NOT prefer wording similar to your own style.
 - Do NOT assume reference BRDs are correct for the current project.
@@ -81,32 +81,38 @@ Use judgment labels: MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A
 - MET: criterion is substantively satisfied
 - MOSTLY_MET: satisfied overall with only minor weakness
 - PARTIALLY_MET: partially satisfied but a material gap or ambiguity remains
-- NOT_MET: criterion is applicable but substantively fails
-- N_A: criterion is not applicable OR cannot be fairly verified from available information
+- NOT_MET: criterion is applicable but substantively fails (including when content is empty, circular, off-topic, or fails to address the criterion)
+- N_A: criterion is genuinely not applicable to this project domain OR cannot be verified from available information. Do NOT use N_A when an applicable section criterion is simply unfulfilled or absent in the draft — use NOT_MET instead.
 N_A must NOT be treated as failure.
 
 ANTI-DOUBLE-COUNTING — assign each defect to exactly ONE component:
 - Unsupported project fact → grounding
 - Misuse of reference → reference_alignment
 - Wrong section / scope → section_compliance
-- Vague / non-testable → clarity/testability
+- Vague / non-testable / circular / tautological → clarity/testability
 - Cross-section contradiction → consistency/dependency
 
 --- COMPONENT 1: Evidence Grounding & Traceability ---
+Note: If a draft consists entirely of circular tautology, sycophancy, or empty statements, it contains no grounded project substance to support the section and should be rated PARTIALLY_MET or NOT_MET for substantive assertion criteria.
 Criteria:
 {grounding_criteria}
 
 --- COMPONENT 2: Reference & Business Context Alignment ---
+Note: Circular definitions, empty tautologies, or nonsensical placeholders do NOT make business sense and do NOT represent a reasonable business approach compared to real enterprise projects. Rate them NOT_MET or PARTIALLY_MET.
 Criteria:
 {reference_criteria}
 
 --- COMPONENT 3: Section-Specific Compliance ---
 (These criteria are specific to field {field_id})
+Note: If the draft fails to address a required field criterion because the text is circular, vacuous, or missing substantive content, rate it NOT_MET. Only use N_A when a criterion genuinely does not apply to this project's domain.
 Criteria:
 {field_specific_criteria}
 
 --- COMPONENT 4: Clarity, Testability & Actionability ---
 Note: Quantification is conditional. Do NOT require numbers for sections where numbers are not naturally required.
+Strict Substantive Specificity & Anti-Tautology Rule:
+Professional, polished, or grammatically clear wording is NOT considered sufficient when the semantic content is circular, tautological, or empty. Content must provide concrete, decision-useful information, and must not merely restate the section heading or requirement using synonyms, circular wording, or tautological statements.
+For predominantly circular, empty, or tautological content, rate the Clarity/Testability/Actionability criteria as NOT_MET (or PARTIALLY_MET if minor non-circular substance exists).
 Criteria:
 {clarity_criteria}
 
@@ -156,6 +162,17 @@ Return ONLY a valid JSON object with this exact structure. No markdown, no expla
     {{"type": "string", "reason": "string", "excerpt": "string"}}
   ]
 }}
+
+If the content is primarily tautological or circular and does not add
+substantive information, grade the relevant Clarity criterion as
+PARTIALLY_MET or NOT_MET.
+
+A grammatically clear or professional-sounding sentence is not sufficient
+to satisfy clarity/actionability if its meaning is circular or empty.
+
+Treat Clarity / Testability / Actionability as the primary owner of this issue.
+Do not penalize other components unless they independently violate their criteria.
+
 """
 
 
