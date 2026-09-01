@@ -21,7 +21,6 @@ from app.ai.judge.scoring import (
     calculate_final_confidence,
     determine_confidence_level,
 )
-from app.ai.judge.rubrics import (
 from app.services.brd_rules import (
     FIELD_SPECIFIC_RUBRICS,
     GLOBAL_CLARITY_CRITERIA,
