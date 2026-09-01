@@ -43,6 +43,7 @@ from app.ai.judge.schema import (
     JudgeStageBOutput,
 )
 from app.ai.judge.rubrics import (
+from app.services.brd_rules import (
     GLOBAL_CLARITY_CRITERIA,
     GLOBAL_CONSISTENCY_CRITERIA,
     GLOBAL_GROUNDING_CRITERIA,
