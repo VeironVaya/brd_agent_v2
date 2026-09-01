@@ -18,11 +18,9 @@ brd-app/
 ├── backend/                 # FastAPI — controllers → services → repositories
 │   ├── app/
 │   │   ├── main.py          # app entrypoint, mounts routers + middleware
-│   │   │
-│   │   ├── core/            # core infrastructure
-│   │   │   ├── config.py    # env-driven settings (DATABASE_URL, JWT_SECRET, ...)
-│   │   │   ├── db.py        # SQLAlchemy async engine/session
-│   │   │   └── exceptions.py# domain exceptions -> {error, message} JSON shape
+│   │   ├── config.py        # env-driven settings (DATABASE_URL, JWT_SECRET, LLM keys, ...)
+│   │   ├── db.py            # SQLAlchemy async engine/session
+│   │   ├── exceptions.py    # domain exceptions -> {error, message} JSON shape
 │   │   │
 │   │   ├── routes/          # APIRouters — path + verb -> controller, no logic
 │   │   ├── controllers/     # thin: parse request, call one service, commit & return
@@ -31,29 +29,24 @@ brd-app/
 │   │   ├── repositories/    # DB queries only, no business rules
 │   │   │
 │   │   ├── services/        # normal backend business logic & orchestration:
-│   │   │   ├── chat_service.py / chat.py               # message posting, focus tracking
-│   │   │   ├── conversation_service.py / conversation.py # CRUD + template seeding
-│   │   │   ├── document_service.py / document.py       # Markdown/PDF export
-│   │   │   ├── template_service.py / template.py       # static 26-leaf template config
-│   │   │   ├── section_tree_service.py / section_tree.py # recursive CustomSection tree
-│   │   │   ├── brd_rules.py                            # BRD dependency matrix
-│   │   │   ├── brd_group_service.py
-│   │   │   ├── choice_section_service.py
-│   │   │   ├── custom_section_service.py
-│   │   │   ├── review_service.py
-│   │   │   └── share_service.py
+│   │   │   ├── ai_integration.py        # ──> AGENT 1: Conversational BRD Drafter & Elicitor
+│   │   │   ├── brd_rules.py             # ──> Unified Rulebook (DAG Dependencies & Audit Rubrics)
+│   │   │   ├── chat_service.py          # message posting, focus tracking, Agent 1 + 2 pipeline
+│   │   │   ├── conversation_service.py  # CRUD + template seeding
+│   │   │   ├── document_service.py      # Markdown/PDF export
+│   │   │   ├── template_service.py      # static 26-leaf template config
+│   │   │   ├── section_tree_service.py  # recursive CustomSection tree
+│   │   │   ├── brd_group_service.py     # BRD grouping management
+│   │   │   ├── choice_section_service.py# LoV & Choice sections
+│   │   │   ├── custom_section_service.py# user-defined custom sections
+│   │   │   ├── review_service.py        # re-review & dependency tracking
+│   │   │   └── share_service.py         # collaboration & access control
 │   │   │
 │   │   ├── ai/              # AI subsystem (modular separation of responsibilities)
-│   │   │   ├── drafter/     # AGENT 1: Conversational BRD Drafter
-│   │   │   │   ├── service.py   # generation & revision logic (get_reply)
-│   │   │   │   ├── prompt.py    # official SYSTEM_PROMPT
-│   │   │   │   └── schema.py    # AgentReply, LLMReplySchema
-│   │   │   │
 │   │   │   ├── judge/       # AGENT 2: Senior BA Reviewer / Judge
 │   │   │   │   ├── service.py   # 2-stage evaluation orchestration (evaluate_section)
 │   │   │   │   ├── scoring.py   # deterministic confidence scoring & rubric mapping
 │   │   │   │   ├── prompt.py    # Stage A (Verifier/Grader) & Stage B (Critic) prompts
-│   │   │   │   ├── rubrics.py   # 4 global rubrics + 26 field-specific rubrics
 │   │   │   │   └── schema.py    # structured Judge I/O schemas
 │   │   │   │
 │   │   │   ├── validator.py # HARD VALIDATOR: anti-hallucination fact checking
@@ -69,19 +62,22 @@ brd-app/
 │   │   ├── middleware/      # auth (JWT), CORS, logging, error handling
 │   │   └── utils/           # id generation, etc.
 │   │
+│   ├── data/
+│   │   └── reference_brds/  # 15 canonical ground-truth BRD reference documents
 │   ├── migrations/          # Alembic schema history
-│   ├── tests/               # pytest — real Postgres, real HTTP requests
-│   └── implementation_1.md  # the original build plan (historical record)
+│   ├── tests/               # pytest suite (107 unit & integration tests)
+│   └── implementation_1.md  # original build plan (historical record)
 │
 ├── frontend/                # React + Vite
 │   ├── Dockerfile           # dev-mode container (runs `npm run dev`), bind-mounted
 │   └── src/
 │       ├── pages/           # LoginPage, ConversationsPage, DraftSessionPage, ExportPage
 │       ├── components/
-│       │   ├── Chat/        # message thread, room tabs
-│       │   ├── DraftPanel/  # section tree, progress, custom-section modals
-│       │   ├── Sidebar/     # conversation list pieces
-│       │   └── common/      # buttons, modals, form fields
+│       │   ├── Chat/        # message thread, room tabs, focus bar
+│       │   ├── DraftPanel/  # section tree, progress, confidence breakdown modal
+│       │   ├── Sidebar/     # conversation list, groups, share modals
+│       │   ├── ChoiceSections/ # choice & LoV modal
+│       │   └── common/      # buttons, modals, form fields, badges
 │       ├── services/api.js  # the ONLY file that talks to the backend
 │       └── utils/           # draftFields.js, customSectionTree.js, documentPdf.js
 │
@@ -101,8 +97,8 @@ API Layer (routes → controllers)
 Chat Service (app/services/chat_service.py)
   │
   ▼
-Agent 1 Drafter (app/ai/drafter/service.py)
-  │ [Generates/revises section draft, answer_text, completeness]
+Agent 1 Drafter (app/services/ai_integration.py)
+  │ [Generates/revises section draft, answer_text, completeness via LLaMA 3.3 70B]
   ▼
 Hard Validator (app/ai/validator.py)
   │ [Checks unconfirmed numbers, metrics, SLAs against confirmed user evidence]
@@ -111,7 +107,7 @@ RAG References (app/ai/rag/retrieval.py)
   │ [Retrieves top reference BRD chunks as benchmark context]
   ▼
 Agent 2 Stage A: Verifier & Grader (app/ai/judge/service.py)
-  │ [Labels rubric criteria: MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A]
+  │ [Labels rubric criteria from brd_rules.py via Gemini 2.0 Flash]
   ▼
 Deterministic Judge Scoring (app/ai/judge/scoring.py)
   │ [Averages components, renormalizes N_A weights, computes final confidence 0-100]
@@ -155,18 +151,18 @@ again — only rebuilds the images that actually changed.
 without a Docker image rebuild per change):
 ```
 docker compose up -d postgres                             # just the DB
-cd backend && .venv\Scripts\activate && alembic upgrade head
+cd backend && source .venv/bin/activate && alembic upgrade head
 cd backend && uvicorn app.main:app --reload                # :8000
 cd frontend && npm run dev                                 # :5173
 ```
 First-time backend setup: `python -m venv .venv` then
-`.venv\Scripts\pip install -e ".[dev]"` inside `backend/`.
+`.venv/bin/pip install -e ".[dev]"` inside `backend/`.
 
 ## Testing
 
 ```
-cd backend && pytest                                    # 45 tests, real DB
-cd bruno && npx @usebruno/cli run --env Local -r         # 45 requests, 72 assertions
+cd backend && pytest                                    # 107 tests, real DB
+cd bruno && npx @usebruno/cli run --env Local -r         # API collection requests
 ```
 
 Both are black-box — real HTTP requests against the real API, not
@@ -180,3 +176,4 @@ mocked. See `bruno/README.md` for what the collection covers.
   source of truth, kept current
 - `brainstorming/integration_1.md` — narrative of how the backend build
   actually went
+
