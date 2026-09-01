@@ -16,6 +16,8 @@ Anti-double-counting ownership:
   Wrong section / scope             → section_compliance
   Vague / non-testable              → clarity/testability
   Cross-section contradiction       → consistency/dependency
+This module re-exports the canonical audit rubrics and global criteria
+defined in `app.services.brd_rules`.
 """
 
 from __future__ import annotations
@@ -23,11 +25,26 @@ from __future__ import annotations
 # ---------------------------------------------------------------------------
 # Global rubric criteria (4 components, same for all fields)
 # ---------------------------------------------------------------------------
+from app.services.brd_rules import (
+    FIELD_SPECIFIC_RUBRICS,
+    GLOBAL_CLARITY_CRITERIA,
+    GLOBAL_CONSISTENCY_CRITERIA,
+    GLOBAL_GROUNDING_CRITERIA,
+    GLOBAL_REFERENCE_CRITERIA,
+    get_field_rubric,
+)
 
 GLOBAL_GROUNDING_CRITERIA: list[str] = [
     "Claims about facts, numbers, dates, SLA, roles, or vendors are traceable to confirmed user/project evidence",
     "No values are invented or inferred where project evidence is absent",
     "Key assertions are supported by user-stated context, not assumed from general knowledge",
+__all__ = [
+    "FIELD_SPECIFIC_RUBRICS",
+    "GLOBAL_CLARITY_CRITERIA",
+    "GLOBAL_CONSISTENCY_CRITERIA",
+    "GLOBAL_GROUNDING_CRITERIA",
+    "GLOBAL_REFERENCE_CRITERIA",
+    "get_field_rubric",
 ]
 
 GLOBAL_REFERENCE_CRITERIA: list[str] = [
