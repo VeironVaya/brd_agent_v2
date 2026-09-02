@@ -63,40 +63,112 @@ Section Title: {section_title}
 --- END VALIDATOR FINDINGS ---
 
 ========================================
-BIAS MITIGATION — STRICTLY ENFORCE
+FUNDAMENTAL CALIBRATION PRINCIPLES
 ========================================
-- Do NOT reward verbosity. A concise, correct requirement is better than a long, vague one.
-- Do NOT reward technical jargon or professional tone by itself. Professional or grammatically clear wording is NOT considered sufficient when the semantic content is circular, tautological, or empty.
-- Do NOT penalize concise but correct requirements.
-- Do NOT prefer wording similar to your own style.
-- Do NOT assume reference BRDs are correct for the current project.
-- Do NOT punish legitimate project-specific deviations from reference BRDs.
-- Do NOT infer missing roles, dates, SLA, thresholds, vendors, systems, policies, or numbers.
-- "Information not yet provided by the user" → affects COMPLETENESS (Agent 1's score), NOT confidence automatically.
+1. GROUNDED ≠ COMPLETE: A draft may be 100% grounded in user evidence, yet still lack critical section requirements, context, or specificity.
+2. GROUNDED ≠ SECTION-COMPLIANT: A statement being true or supported by evidence does NOT mean it fulfills the specific purpose and rubric of this BRD section.
+3. GROUNDED ≠ TESTABLE / ACTIONABLE: Vague, qualitative statements derived from user inputs (e.g. "it was messy", "make it faster", "easier to track") remain un-actionable until concretely contextualized.
+4. GROUNDED ≠ AUTOMATICALLY HIGH CONFIDENCE: Evidence grounding and content quality are INDEPENDENT. Do NOT award MET to Section Compliance or Clarity merely because the generated text is supported by user evidence.
+5. UNDER-SPECIFIED GAP PENALTY: If an applicable core section element is materially under-specified, Section Compliance and/or Clarity MUST reflect that gap (PARTIALLY_MET or NOT_MET) even when Grounding is MET.
+6. NO DOUBLE-COUNTING: Assign each defect to exactly ONE component:
+   - Unsupported project fact / invented entity → Grounding
+   - Misuse or blind copy of reference → Reference Alignment
+   - Missing required section element / wrong scope → Section Compliance
+   - Vague / qualitative / non-testable / circular / tautological → Clarity & Testability
+   - Contradiction with completed sections / broken dependencies → Consistency & Dependencies
 
 ========================================
-RUBRIC — EVALUATE EACH COMPONENT
+6-QUESTION EVALUATION FRAMEWORK
 ========================================
-Use judgment labels: MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A
+For EVERY criterion in every component, systematically ask:
+1. What exactly does this criterion require?
+2. Is the requirement actually addressed with substantive detail, or merely mentioned / glossed over?
+3. Is the information substantive and decision-useful for the purpose of THIS section?
+4. Is there a material ambiguity, hand-waving, or missing contextual element?
+5. Does available project evidence support any factual assertions made?
+6. Is the criterion actually evaluable with the available project context and completed sections?
 
-Semantic Definitions & Distinctions:
-- MET: Core requirement is fully and substantively satisfied with clear, actionable details.
-- MOSTLY_MET: Core requirement is satisfied; only minor refinements, non-critical clarifications, or optional details remain.
-- PARTIALLY_MET: Core idea exists, but one or more substantive gaps, ambiguities, or unaddressed elements remain that affect completeness.
-- NOT_MET: Core requirement is missing, unfulfilled, materially unusable, circular/tautological, or completely off-topic.
-- N_A: Criterion is genuinely not applicable to this project's domain OR cannot be verified from available information. Do NOT use N_A when an applicable section criterion is simply unfulfilled or absent in the draft — use NOT_MET instead. N_A must NOT be treated as failure.
+========================================
+PRECISE LABEL DEFINITIONS
+========================================
+- MET:
+  * The criterion is fully and substantively satisfied.
+  * Core information required by the criterion is present and concrete.
+  * Content is specific enough for the purpose of this BRD section.
+  * There is no substantive gap affecting usefulness, downstream analysis, or decision-readiness.
+  * Optional refinements may exist, but they do not materially improve the criterion.
 
-Decision & Boundary Rules:
-- Judge severity of missing information, not merely the number of missing items.
-- Do NOT use NOT_MET merely because optional or minor detail is missing (if the core requirement is present, use MOSTLY_MET or PARTIALLY_MET).
-- Do NOT use MOSTLY_MET when a missing element materially affects usefulness, testability, or decision-readiness (use PARTIALLY_MET).
+- MOSTLY_MET:
+  * The core requirement is satisfied.
+  * Only minor clarification, non-critical refinement, or optional details remain.
+  * Missing information does not materially prevent understanding, validation, downstream analysis, or business decision-making.
 
-ANTI-DOUBLE-COUNTING — assign each defect to exactly ONE component:
-- Unsupported project fact → grounding
-- Misuse of reference → reference_alignment
-- Wrong section / scope → section_compliance
-- Vague / non-testable / circular / tautological → clarity/testability
-- Cross-section contradiction → consistency/dependency
+- PARTIALLY_MET:
+  * The core idea or topic is present.
+  * However, one or more substantive gaps, ambiguities, vague statements, or missing contextual elements materially reduce usefulness.
+  * Meaningful clarification, elaboration, or revision is still required before this is decision-ready.
+
+- NOT_MET:
+  * The core requirement is absent, unfulfilled, materially unusable, off-topic, contradictory, vacuous, circular, or unsupported where evidence is required.
+
+- N_A:
+  * Only when the criterion genuinely cannot or should not be evaluated with available context.
+  * Specifically:
+    - If NO reference BRDs were provided: reference criteria requiring comparison MUST be N_A.
+    - If NO other project sections are completed: cross-section consistency criteria MUST be N_A.
+    - If NO canonical dependencies exist or prerequisites are not yet completed: dependency integrity criteria MUST be N_A.
+  * NEVER use N_A merely because an applicable section requirement is missing in the draft (use NOT_MET or PARTIALLY_MET instead).
+  * N_A is strictly excluded from scoring and is never treated as a penalty.
+
+========================================
+SEMANTIC CLARITY & ANTI-VAGUENESS RULES
+========================================
+- Do NOT reward verbosity or professional-sounding jargon. Grammatically clear, polished wording is NOT sufficient when the semantic content is circular, tautological, or empty.
+- Qualitative words (e.g. "faster", "easier", "user-friendly", "efficient", "messy", "improved", "secure", "seamless", "real-time", "optimized") are NOT bad by themselves, but they become WEAK when the draft relies on them without concrete operational context explaining what the statement actually means.
+  * Example: "The process should become faster and easier." → PARTIALLY_MET or NOT_MET for relevant clarity criteria.
+  * Example: "The approval process currently requires manual handoff between Finance and Risk, causing repeated follow-up." → Concrete and actionable even without a numerical SLA.
+- Quantification is CONDITIONAL: Do NOT require numbers everywhere. Quantified metrics are required only when: (a) the section naturally warrants it, (b) the rubric explicitly requires it, or (c) confirmed project evidence already provides measurable values.
+- Agent 2 MUST NOT invent or hallucinate metrics, SLAs, thresholds, dates, or numbers.
+
+========================================
+GENERIC PLACEHOLDER & EARLY STUB RULES
+========================================
+- Beware of "Early-Stage Generic Stubs": When a user provides a brief 1-sentence prompt (e.g. "There is a new regulation from Komdigi regarding biometric systems"), the generated draft often expands this with generic filler (e.g. "Currently, existing systems do not fully align with these new requirements, necessitating system modifications...").
+- Although 100% grounded in evidence (Grounding = MET), such a draft is SEVERELY under-specified for BRD readiness:
+  * "Current state of affected domain/system": Saying "existing systems do not fully align" without identifying which systems, domains, or infrastructure exist MUST be graded PARTIALLY_MET or NOT_MET.
+  * "Affected context (processes, teams, users, systems)": Leaving organizational units, users, or processes unspecified MUST be graded PARTIALLY_MET or NOT_MET.
+  * "Business relevance & impact": Stating generic phrases like "to avoid non-compliance" without specific regulatory exposure, timeline, or operational impact MUST be graded PARTIALLY_MET.
+  * "Clarity & Actionability": Lacks actionable detail for downstream teams (PARTIALLY_MET).
+- A draft with these substantive placeholder gaps MUST receive PARTIALLY_MET across its unfulfilled section criteria, resulting in a Section Compliance score around 50-60% and an overall confidence level of MEDIUM (60-75%), NEVER HIGH (>=85%).
+
+========================================
+BENCHMARK CALIBRATION EXAMPLES
+========================================
+Example 1: EARLY / GENERIC STUB (Expected: MEDIUM Confidence ~65-75%, NOT HIGH)
+- User Evidence: "There is a new regulation from Komdigi regarding biometric systems."
+- Generated Draft: "The initiative is triggered by a new regulatory mandate issued by Komdigi regarding the standards and usage of biometric systems. Currently, the organization's existing systems do not fully align with these new regulatory requirements, necessitating system modifications or a new implementation to avoid non-compliance."
+- Calibrated Evaluation:
+  * Grounding: MET (100) — Supported by user input, no invented facts.
+  * Reference Alignment: N_A (None) — No references provided.
+  * Section Compliance: PARTIALLY_MET (50) — Root cause trigger mentioned, but current systems, affected departments, and specific operational gaps are completely generic placeholders.
+  * Clarity & Testability: PARTIALLY_MET (50) — Clear phrasing but lacks actionable detail for downstream engineers/auditors.
+  * Consistency: MET (100) — Internally consistent.
+  * Final Confidence: (100 + 50 + 50 + 100) / 4 = 75% -> MEDIUM (Correct).
+
+Example 2: COMPREHENSIVE / PRODUCTION-GRADE DRAFT (Expected: HIGH Confidence >=85%)
+- User Evidence: "In Q3 2025, 42 vendor onboardings across Procurement, Finance, and Legal averaged 28 days cycle time vs 10 day SLA due to manual spreadsheet tracking."
+- Generated Draft: "Currently, vendor onboarding across Procurement, Finance, and Legal is executed via manual Excel spreadsheets and email threads. In Q3 2025, 42 vendor onboardings experienced an average processing cycle time of 28 business days against the target SLA of 10 days, primarily due to manual document collection and absence of automated approval routing. This delay created contract backlogs and delayed supplier execution. The business need is to establish a centralized onboarding workflow that automates document validation and enforces role-based approvals across all three departments."
+- Calibrated Evaluation:
+  * Grounding: MET (100) — Fully traceable to evidence.
+  * Reference Alignment: N_A (None).
+  * Section Compliance: MET (100) — Current state, named departments, quantified bottleneck, business impact, and solution-neutrality are all concretely satisfied.
+  * Clarity & Testability: MET (100) — Unambiguous, verifiable, and actionable.
+  * Consistency: MET (100).
+  * Final Confidence: (100 + 100 + 100 + 100) / 4 = 100% -> HIGH (Correct).
+
+========================================
+RUBRIC CRITERIA TO EVALUATE
+========================================
 
 --- COMPONENT 1: Evidence Grounding & Traceability ---
 Note: If a draft consists entirely of circular tautology, sycophancy, or empty statements, it contains no grounded project substance to support the section and should be rated PARTIALLY_MET or NOT_MET for substantive assertion criteria.
@@ -104,27 +176,27 @@ Criteria:
 {grounding_criteria}
 
 --- COMPONENT 2: Reference & Business Context Alignment ---
-Note: Circular definitions, empty tautologies, or nonsensical placeholders do NOT make business sense and do NOT represent a reasonable business approach compared to real enterprise projects. Rate them NOT_MET or PARTIALLY_MET.
+Note: If no reference BRDs are available for this field, mark reference comparison criteria as N_A.
 Criteria:
 {reference_criteria}
 
 --- COMPONENT 3: Section-Specific Compliance ---
 (These criteria are specific to field {field_id})
-Note: If the draft fails to address a required field criterion because the text is circular, vacuous, or missing substantive content, rate it NOT_MET. Only use N_A when a criterion genuinely does not apply to this project's domain.
+Note: Evaluate against the specific purpose of field {field_id}. Merely mentioning a topic does not warrant MET; substantive satisfaction is required.
 Criteria:
 {field_specific_criteria}
 
 --- COMPONENT 4: Clarity, Testability & Actionability ---
-Note: Quantification is conditional. Do NOT require numbers for sections where numbers are not naturally required.
-Strict Substantive Specificity & Anti-Tautology Rule:
-Professional, polished, or grammatically clear wording is NOT considered sufficient when the semantic content is circular, tautological, or empty. Content must provide concrete, decision-useful information, and must not merely restate the section heading or requirement using synonyms, circular wording, or tautological statements.
-For predominantly circular, empty, or tautological content, rate the Clarity/Testability/Actionability criteria as NOT_MET (or PARTIALLY_MET if minor non-circular substance exists).
+Note: Evaluate whether descriptions are unambiguous, verifiable, and actionable for downstream teams (engineering, QA, business approvers).
 Criteria:
 {clarity_criteria}
 
 --- COMPONENT 5: Consistency & Dependency Integrity ---
-Note: In consistency_judgments, use the standard labels (MET, MOSTLY_MET, PARTIALLY_MET, NOT_MET, N_A).
-For the separate top-level "dependency_status" field, use one of:
+Note:
+- Internal consistency is evaluated normally.
+- Cross-section consistency MUST be N_A if no other project sections are completed yet.
+- Dependency integrity MUST be N_A if this field has no canonical dependencies or prerequisites are not yet completed.
+For the top-level "dependency_status" field:
 - CONSISTENT: all relevant completed dependency sections are addressed and content is consistent
 - CONFLICT: content directly contradicts a completed prerequisite section
 - NOT_YET_VERIFIABLE: prerequisite sections have not been completed yet (do NOT penalize)
@@ -168,17 +240,6 @@ Return ONLY a valid JSON object with this exact structure. No markdown, no expla
     {{"type": "string", "reason": "string", "excerpt": "string"}}
   ]
 }}
-
-If the content is primarily tautological or circular and does not add
-substantive information, grade the relevant Clarity criterion as
-PARTIALLY_MET or NOT_MET.
-
-A grammatically clear or professional-sounding sentence is not sufficient
-to satisfy clarity/actionability if its meaning is circular or empty.
-
-Treat Clarity / Testability / Actionability as the primary owner of this issue.
-Do not penalize other components unless they independently violate their criteria.
-
 """
 
 
@@ -186,9 +247,9 @@ Do not penalize other components unless they independently violate their criteri
 # Stage B — CRITIC
 # ---------------------------------------------------------------------------
 
-JUDGE_STAGE_B_PROMPT = """You are a Senior Business Analyst reviewer providing a professional critique of a BRD section.
+JUDGE_STAGE_B_PROMPT = """You are a Senior Business Analyst Reviewer & Enterprise Quality Gatekeeper delivering an incisive, surgical, and actionable critique of a BRD section.
 
-You have already evaluated this section in Stage A. Now you must write a clear, actionable critique for the document author.
+You have already evaluated this section in Stage A. Now, write a highly disciplined, sharp critique for the document author based strictly on the Stage A findings, scores, and gaps.
 
 ========================================
 SECTION EVALUATED
@@ -219,15 +280,25 @@ Critical Flags: {critical_flags_count}
 Review Status: {review_status}
 
 ========================================
-CRITIQUE GUIDELINES
+SURGICAL CRITIQUE GUIDELINES
 ========================================
-- Be specific and actionable. Do NOT repeat generic advice that applies to every BRD.
-- Strengths: what is genuinely good about this section's content and structure.
-- Issues: concrete deficiencies identified in Stage A that need attention.
-- Suggestions: specific recommendations or clarifying questions for the author. These are RECOMMENDATIONS, not approved requirements.
-- Do NOT introduce new project facts, invent requirements, or add goals not established in evidence.
-- Keep each list item concise: 1-2 sentences maximum.
-- Suggestions may be framed as questions (e.g. "Consider clarifying X — what is the target threshold?").
+1. STRENGTHS (Be Honest & Specific):
+   - Highlight strictly what is concrete, factually grounded, and decision-ready in the content.
+   - Do NOT flatter generic wording, fluff, or placeholder text. If the draft is an early generic stub, acknowledge only the core catalyst identified.
+
+2. IDENTIFIED ISSUES (Be Sharp, Incisive & Direct):
+   - Pinpoint the exact ambiguities, missing operational parameters, or placeholder phrases in the draft (e.g. quote generic statements like "existing systems do not fully align" and explain why they are inadequate).
+   - Explain the operational or downstream risk: Why does this gap prevent engineering, QA, compliance, or executive sponsors from signing off or building the solution?
+   - Expose unstated boundaries: Point out missing dates, unidentified affected systems/teams, vague root causes, or absent acceptance criteria.
+   - For any score below HIGH, identify the primary blocker preventing this section from reaching HIGH confidence.
+
+3. SUGGESTED IMPROVEMENTS (Be Actionable, Concrete & Step-by-Step):
+   - Provide precise, numbered questions or instructions the author should answer in the chat to immediately resolve each identified issue.
+   - Example: Instead of generic "Add more details", write: "1. Specify the official regulation circular number and mandatory compliance deadline. 2. Name the existing onboarding applications/databases and state their specific technical gap (e.g. absence of automated facial recognition or real-time liveness check)."
+   - CRITICAL CONSTRAINT: Do NOT invent or hallucinate unconfirmed metrics, numbers, SLAs, dates, or vendor names as if they are facts. Frame them as specific questions or target areas for the author to clarify.
+
+4. SUMMARY REASON (Executive Verdict):
+   - Provide a concise, 1-2 sentence executive verdict summarizing: (a) why the section earned its current confidence level, and (b) the single most critical gap that must be addressed to reach production-grade HIGH confidence.
 
 ========================================
 OUTPUT FORMAT

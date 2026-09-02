@@ -693,3 +693,276 @@ def test_build_project_evidence_text_supports_bubbles_and_dicts():
     assert "Draft answer generated" not in evidence
     assert "Draft agent response" not in evidence
 
+
+# ---------------------------------------------------------------------------
+# Task Regression & Calibration Tests
+# ---------------------------------------------------------------------------
+
+@pytest.mark.asyncio
+async def test_judge_vague_grounded_background_regression():
+    """Regression test: Grounded but vague/under-specified background MUST NOT score 100 HIGH."""
+    vague_grounded_text = (
+        "There wasn’t really one specific event that triggered it. "
+        "The vendor onboarding process has just been a bit messy for a while "
+        "because we still rely a lot on email and spreadsheets. "
+        "Sometimes documents get missed or approvals take longer than expected, "
+        "so the team has to follow up manually. "
+        "We basically just want the process to be more organized and easier to track."
+    )
+    user_evidence = (
+        "User stated: The vendor onboarding process is messy, uses email and spreadsheets, "
+        "and we want it to be more organized."
+    )
+
+    # Stage A simulates calibrated BA judgment:
+    # Grounding is MET (claims come from user input)
+    # Reference is N_A (no references)
+    # Section compliance is PARTIALLY_MET (vague trigger, missing organizational impact, superficial cause)
+    # Clarity is PARTIALLY_MET (relies on 'a bit messy', 'easier to track' without operational meaning)
+    # Consistency is MET (internally coherent)
+    stage_a_data = {
+        "grounding_judgments": [
+            {"criterion": "Claims are traceable to user evidence", "label": "MET", "rationale": "Grounded in user chat."}
+        ],
+        "reference_judgments": [
+            {"criterion": "Reasonable business approach compared to references", "label": "N_A", "rationale": "No references."}
+        ],
+        "section_compliance_judgments": [
+            {"criterion": "The current state is concretely described", "label": "PARTIALLY_MET", "rationale": "Mentions email/spreadsheets but lacks process structure."},
+            {"criterion": "A clear problem or bottleneck is articulated", "label": "PARTIALLY_MET", "rationale": "States 'a bit messy' without concrete failure points."},
+            {"criterion": "Business relevance and organizational impact are explained", "label": "NOT_MET", "rationale": "Impact on business is omitted."}
+        ],
+        "clarity_judgments": [
+            {"criterion": "Requirements or descriptions are clearly stated", "label": "PARTIALLY_MET", "rationale": "Uses vague terms like 'a bit messy' and 'easier to track'."},
+            {"criterion": "Statements are actionable", "label": "PARTIALLY_MET", "rationale": "Lacks decision-useful operational context."}
+        ],
+        "consistency_judgments": [
+            {"criterion": "Internally consistent", "label": "MET", "rationale": "No internal self-contradictions."},
+            {"criterion": "Logically consistent with other sections", "label": "N_A", "rationale": "No other sections completed yet."}
+        ],
+        "dependency_status": "NOT_YET_VERIFIABLE",
+        "critical_flags": [],
+    }
+    stage_b_data = {
+        "strengths": ["Grounded in stakeholder communication."],
+        "issues": ["Problem description relies on vague qualitative terms ('messy', 'easier to track')."],
+        "suggestions": ["Clarify specific operational bottlenecks and measurable impact."],
+        "summary_reason": "Grounded but under-specified with MEDIUM confidence.",
+    }
+
+    call_count = 0
+    async def mock_llm(prompt: str, temperature: float = 0.1) -> dict:
+        nonlocal call_count
+        call_count += 1
+        return stage_a_data if call_count == 1 else stage_b_data
+
+    with patch("app.ai.judge.service._call_llm_json", new_callable=AsyncMock, side_effect=mock_llm), \
+         patch("app.ai.judge.service.search_references", return_value=[]):
+        result = await judge.evaluate_section(
+            field_id="1.1.1",
+            section_title="Background",
+            generated_content=vague_grounded_text,
+            project_evidence=user_evidence,
+            context_answers={},
+            missing_items=[],
+        )
+
+    # Core conceptual requirements:
+    # 1. Grounding is high/MET (100) because content was grounded in user input
+    assert result["grounding"]["score"] == 100
+    # 2. Reference alignment is excluded (None) due to no references
+    assert result["reference_context"]["score"] is None
+    # 3. Section compliance and Clarity reflect substantive gaps
+    assert result["section_compliance"]["score"] <= 60
+    assert result["testability"]["score"] <= 60
+    # 4. Final confidence must NOT be 100 HIGH; it should be MEDIUM or LOW
+    assert result["final_confidence"] < 85
+    assert result["confidence_level"] in ("MEDIUM", "LOW")
+
+
+@pytest.mark.asyncio
+async def test_judge_strong_background_calibration():
+    """Calibration test: Strong, substantive, concrete background achieves HIGH confidence."""
+    strong_text = (
+        "Currently, vendor onboarding across Procurement, Finance, and Legal is executed via "
+        "manual Excel spreadsheets and email threads. In Q3 2025, 42 vendor onboardings experienced "
+        "an average cycle time of 28 business days against the target SLA of 10 days, primarily due to "
+        "manual document collection and absence of automated approval routing. This created contract backlogs. "
+        "The business need is to establish a centralized onboarding workflow that automates document validation "
+        "and enforces role-based approvals across all three departments."
+    )
+    user_evidence = (
+        "User stated: We onboarded 42 vendors in Q3 with 28 day average turnaround vs 10 day SLA. "
+        "Process spans Procurement, Finance, and Legal using spreadsheets and email."
+    )
+
+    stage_a_data = {
+        "grounding_judgments": [
+            {"criterion": "Claims are traceable to user evidence", "label": "MET", "rationale": "Fully grounded in project evidence."}
+        ],
+        "reference_judgments": [
+            {"criterion": "Reasonable business approach compared to references", "label": "N_A", "rationale": "No references."}
+        ],
+        "section_compliance_judgments": [
+            {"criterion": "The current state is concretely described", "label": "MET", "rationale": "Current state is clearly detailed with operational context."},
+            {"criterion": "A clear problem or bottleneck is articulated", "label": "MET", "rationale": "Bottleneck and SLA gap clearly articulated."},
+            {"criterion": "Business relevance and organizational impact are explained", "label": "MET", "rationale": "Contract backlog impact articulated."},
+            {"criterion": "Solution-neutrality is maintained", "label": "MET", "rationale": "Frames business capability without prescribing tech stack."}
+        ],
+        "clarity_judgments": [
+            {"criterion": "Requirements or descriptions are clearly stated", "label": "MET", "rationale": "Clear and unambiguous."},
+            {"criterion": "Statements are actionable", "label": "MET", "rationale": "Actionable for requirements definition."}
+        ],
+        "consistency_judgments": [
+            {"criterion": "Internally consistent", "label": "MET", "rationale": "No self-contradictions."},
+            {"criterion": "Logically consistent with other sections", "label": "N_A", "rationale": "No other sections completed yet."}
+        ],
+        "dependency_status": "NOT_YET_VERIFIABLE",
+        "critical_flags": [],
+    }
+    stage_b_data = {
+        "strengths": ["Clear metrics, concrete problem definition, well-articulated SLA impact."],
+        "issues": [],
+        "suggestions": ["Proceed to Section 1.1.2 Business and Market Analysis."],
+        "summary_reason": "Comprehensive and well-grounded with HIGH confidence.",
+    }
+
+    call_count = 0
+    async def mock_llm(prompt: str, temperature: float = 0.1) -> dict:
+        nonlocal call_count
+        call_count += 1
+        return stage_a_data if call_count == 1 else stage_b_data
+
+    with patch("app.ai.judge.service._call_llm_json", new_callable=AsyncMock, side_effect=mock_llm), \
+         patch("app.ai.judge.service.search_references", return_value=[]):
+        result = await judge.evaluate_section(
+            field_id="1.1.1",
+            section_title="Background",
+            generated_content=strong_text,
+            project_evidence=user_evidence,
+            context_answers={},
+            missing_items=[],
+        )
+
+    assert result["grounding"]["score"] == 100
+    assert result["section_compliance"]["score"] == 100
+    assert result["testability"]["score"] == 100
+    assert result["consistency"]["score"] == 100
+    assert result["final_confidence"] >= 85
+    assert result["confidence_level"] == "HIGH"
+    assert result["review_status"] == "PASS"
+
+
+@pytest.mark.asyncio
+async def test_judge_no_references_deterministic_na():
+    """When no references exist, reference_context score is None and judgments are N_A."""
+    stage_a_data = {
+        "grounding_judgments": [{"criterion": "c", "label": "MET", "rationale": "r"}],
+        "reference_judgments": [{"criterion": "c_ref", "label": "MET", "rationale": "LLM erroneously gave MET"}],
+        "section_compliance_judgments": [{"criterion": "c", "label": "MET", "rationale": "r"}],
+        "clarity_judgments": [{"criterion": "c", "label": "MET", "rationale": "r"}],
+        "consistency_judgments": [{"criterion": "c", "label": "MET", "rationale": "r"}],
+        "dependency_status": "NOT_YET_VERIFIABLE",
+        "critical_flags": [],
+    }
+    stage_b_data = {"strengths": [], "issues": [], "suggestions": [], "summary_reason": "OK"}
+
+    call_count = 0
+    async def mock_llm(prompt: str, temperature: float = 0.1) -> dict:
+        nonlocal call_count
+        call_count += 1
+        return stage_a_data if call_count == 1 else stage_b_data
+
+    with patch("app.ai.judge.service._call_llm_json", new_callable=AsyncMock, side_effect=mock_llm), \
+         patch("app.ai.judge.service.search_references", return_value=[]):
+        result = await judge.evaluate_section(
+            field_id="1.1.1",
+            section_title="Background",
+            generated_content="Some content",
+            project_evidence="Evidence",
+            context_answers={},
+            missing_items=[],
+        )
+
+    # Deterministic safeguard must override LLM error and set reference_context score to None
+    assert result["reference_context"]["score"] is None
+    assert "No reference BRDs available" in result["reference_context"]["reason"]
+
+
+@pytest.mark.asyncio
+async def test_judge_early_generic_regulatory_stub_calibration():
+    """Early generic regulatory stub (Komdigi 1-sentence prompt) MUST score MEDIUM (~75%), NOT HIGH."""
+    stub_text = (
+        "The initiative is triggered by a new regulatory mandate issued by Komdigi regarding "
+        "the standards and usage of biometric systems. Currently, the organization's existing "
+        "systems do not fully align with these new regulatory requirements, necessitating "
+        "system modifications or a new implementation to avoid non-compliance."
+    )
+    user_evidence = "There is a new regulation from Komdigi regarding the use of biometric systems"
+
+    stage_a_data = {
+        "grounding_judgments": [
+            {"criterion": "Claims are traceable to user evidence", "label": "MET", "rationale": "Grounded in user input."}
+        ],
+        "reference_judgments": [
+            {"criterion": "Reasonable business approach compared to references", "label": "N_A", "rationale": "No references."}
+        ],
+        "section_compliance_judgments": [
+            {"criterion": "Current state is concretely described", "label": "PARTIALLY_MET", "rationale": "States 'existing systems do not align' without describing actual systems."},
+            {"criterion": "A clear problem or regulatory gap is articulated", "label": "PARTIALLY_MET", "rationale": "Regulation identifier, articles, and specific gap are omitted."},
+            {"criterion": "Affected organizational context is clearly identified", "label": "PARTIALLY_MET", "rationale": "Affected teams, user groups, and business processes are left unspecified."},
+            {"criterion": "Business relevance is explained", "label": "PARTIALLY_MET", "rationale": "Only generic 'avoid non-compliance' stated."},
+            {"criterion": "Cause vs symptom distinction is maintained", "label": "MET", "rationale": "Root trigger of regulation mandate identified."},
+            {"criterion": "Solution-neutrality is maintained", "label": "MET", "rationale": "Does not mandate specific tech vendor."}
+        ],
+        "clarity_judgments": [
+            {"criterion": "Descriptions are clearly stated", "label": "PARTIALLY_MET", "rationale": "Relies on generic phrases without concrete context."},
+            {"criterion": "Statements are actionable", "label": "PARTIALLY_MET", "rationale": "Lacks actionable details for engineering/governance teams."}
+        ],
+        "consistency_judgments": [
+            {"criterion": "Internally consistent", "label": "MET", "rationale": "No self-contradictions."},
+            {"criterion": "Logically consistent with other sections", "label": "N_A", "rationale": "No other sections completed yet."}
+        ],
+        "dependency_status": "NOT_YET_VERIFIABLE",
+        "critical_flags": [],
+    }
+    stage_b_data = {
+        "strengths": ["Identifies new regulatory mandate as catalyst."],
+        "issues": ["Fails to specify existing systems, specific regulation identifier, or affected user groups."],
+        "suggestions": ["Clarify official regulation identifier, deadline, and current system infrastructure."],
+        "summary_reason": "Early-stage generic draft with MEDIUM confidence.",
+    }
+
+    call_count = 0
+    async def mock_llm(prompt: str, temperature: float = 0.1) -> dict:
+        nonlocal call_count
+        call_count += 1
+        return stage_a_data if call_count == 1 else stage_b_data
+
+    with patch("app.ai.judge.service._call_llm_json", new_callable=AsyncMock, side_effect=mock_llm), \
+         patch("app.ai.judge.service.search_references", return_value=[]):
+        result = await judge.evaluate_section(
+            field_id="1.1.1",
+            section_title="Background",
+            generated_content=stub_text,
+            project_evidence=user_evidence,
+            context_answers={},
+            missing_items=[],
+        )
+
+    # Verification:
+    # Grounding: 100%
+    # Reference: None (N_A)
+    # Section Compliance: (50*4 + 100*2)/6 = 400/6 = 67%
+    # Testability: 50%
+    # Consistency: 100%
+    # Final confidence: (100 + 67 + 50 + 100)/4 = 79% -> MEDIUM (NOT HIGH)
+    assert result["grounding"]["score"] == 100
+    assert result["reference_context"]["score"] is None
+    assert result["section_compliance"]["score"] < 75
+    assert result["testability"]["score"] <= 60
+    assert result["final_confidence"] < 85
+    assert result["confidence_level"] == "MEDIUM"
+
+
+

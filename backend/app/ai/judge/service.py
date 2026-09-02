@@ -23,8 +23,6 @@ from datetime import datetime, timezone
 from typing import Any, Sequence
 import litellm
 
-from app.models.bubble import Bubble
-
 from app.ai.rag import (
     CANONICAL_ANSWERABLE_FIELDS,
     CANONICAL_FIELDS_META,
@@ -60,30 +58,14 @@ from app.config import settings
 
 _JUDGE_MODEL = "gemini/gemini-2.5-flash"
 _JUDGE_FALLBACKS = [
-    "gemini/gemini-flash-latest",
-    "gemini/gemini-1.5-flash",
-    "gemini/gemini-1.5-pro",
-    "groq/llama-3.3-70b-versatile",
+    "gemini/gemini-3.5-flash",
+    "gemini/gemini-3.5-flash-lite",
+    "gemini/gemini-3.1-flash-lite",
 ]
 
 # Aliases for direct function calls and tests
 _component_score = calculate_component_score
 _calculate_final_confidence = calculate_final_confidence
-
-
-# ---------------------------------------------------------------------------
-# Deterministic Score Calculation
-# ---------------------------------------------------------------------------
-
-def _calculate_component_scores(stage_a: JudgeStageAOutput) -> dict[str, int | None]:
-    """Map Stage A judgment lists to integer component scores (0-100 or None)."""
-    return {
-        "grounding": calculate_component_score(stage_a.grounding_judgments),
-        "reference_context": calculate_component_score(stage_a.reference_judgments),
-        "section_compliance": calculate_component_score(stage_a.section_compliance_judgments),
-        "testability": calculate_component_score(stage_a.clarity_judgments),
-        "consistency": calculate_component_score(stage_a.consistency_judgments),
-    }
 
 
 # ---------------------------------------------------------------------------
@@ -173,7 +155,7 @@ def _build_context_sections_str(
         title = meta.get("title", fid)
         lines.append(f"[{fid} — {title}]{marker}\n{text[:500]}{'...' if len(text) > 500 else ''}")
 
-    return "\n\n".join(lines) if lines else ""
+    return "\n\n".join(lines) if lines else "(No other sections completed yet — cross-section consistency criteria MUST be marked N_A)"
 
 
 def _build_dependencies_str(field_id: str) -> str:
@@ -181,7 +163,7 @@ def _build_dependencies_str(field_id: str) -> str:
     dep_entry = DEPENDENCY_RULES.get(field_id, {})
     deps_raw = dep_entry.get("dependencies", [])
     if not isinstance(deps_raw, list) or not deps_raw:
-        return ""
+        return "(No canonical dependencies for this field — dependency integrity criteria MUST be marked N_A)"
 
     lines: list[str] = []
     for d in deps_raw:
@@ -192,13 +174,13 @@ def _build_dependencies_str(field_id: str) -> str:
         lines.append(
             f"- [{strength}] {field_id} depends on {d.get('to_id', '?')}: {d.get('reason', '')}"
         )
-    return "\n".join(lines)
+    return "\n".join(lines) if lines else "(No canonical dependencies for this field — dependency integrity criteria MUST be marked N_A)"
 
 
 def _build_reference_excerpts_str(references: list[ReferenceCitation]) -> str:
     """Format retrieved reference BRD excerpts for Stage A context."""
     if not references:
-        return ""
+        return "(No reference BRDs available for this field — all reference comparison criteria MUST be marked N_A)"
     lines: list[str] = []
     for r in references:
         lines.append(
@@ -257,29 +239,30 @@ async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any
     max_attempts = 4
     for attempt in range(max_attempts):
         try:
-            completion: Any = await litellm.acompletion(
+            chat_completion = await litellm.acompletion(
                 model=_JUDGE_MODEL,
                 fallbacks=_JUDGE_FALLBACKS,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
                 response_format={"type": "json_object"},
                 temperature=temperature,
             )
-            print(f"[AGENT 2 JUDGE MODEL]: {getattr(completion, 'model', _JUDGE_MODEL)}")
-            raw = completion.choices[0].message.content or "{}"
-            return json.loads(raw)
+            raw = chat_completion.choices[0].message.content
+            print(f"[AGENT 2 JUDGE MODEL]: {chat_completion.model}")
+            return json.loads(raw or "{}")
         except Exception as exc:
-            err_str = str(exc).lower()
-            if ("rate" in err_str or "quota" in err_str or "429" in err_str or "exhausted" in err_str) and attempt < max_attempts - 1:
-                wait_sec = 8.0 * (attempt + 1)
-                print(f"[LLM RETRY] Hit rate limit, waiting {wait_sec}s before attempt {attempt+2}...")
-                await asyncio.sleep(wait_sec)
-                continue
-            raise
-    raise RuntimeError("Failed to obtain LLM response after retries.")
+            if attempt == max_attempts - 1:
+                raise RuntimeError(f"Agent 2 Judge failed after {max_attempts} attempts: {exc}") from exc
+            await asyncio.sleep(1.0 * (attempt + 1))
+    return {}
 
 
 # ---------------------------------------------------------------------------
-# Main public interface
+# Main Public Entrypoint
 # ---------------------------------------------------------------------------
 
 async def evaluate_section(
@@ -287,31 +270,24 @@ async def evaluate_section(
     field_id: str,
     section_title: str,
     generated_content: str,
-    project_evidence: str,
-    context_answers: dict[str, str],
-    missing_items: list[str],
+    project_evidence: str = "",
+    context_answers: dict[str, str] | None = None,
+    missing_items: Sequence[str] = (),
     validator_findings: str | None = None,
     retrieved_references: list[ReferenceCitation] | None = None,
 ) -> dict[str, Any]:
-    """Run Agent 2 Stage A + B and return the full evaluation result.
+    """Orchestrates Agent 2's two-stage evaluation of a single BRD section.
 
-    Agent 2 is the single source of truth for confidence.
-
-    Returns a dict with:
-    - final_confidence: int (0-100)
-    - confidence_level: str ("HIGH" | "MEDIUM" | "LOW")
-    - confidence_reason: str
-    - component_scores: dict
-    - review_status: str ("PASS" | "REVIEW_REQUIRED")
-    - dependency_status: str
-    - critical_flags: list[dict]
-    - confidence_breakdown: dict (payload for frontend ConfidenceBreakdown component)
+    Agent 2 is the SINGLE SOURCE OF TRUTH for:
+    - final_confidence (0-100)
+    - confidence_level ("HIGH" | "MEDIUM" | "LOW")
+    - confidence_reason (concise summary)
+    - component_scores (dict of 5 dimension scores)
+    - confidence_breakdown (full breakdown payload persisted to DB)
     """
-    if field_id not in CANONICAL_ANSWERABLE_FIELDS:
-        return {}
+    context_answers = context_answers or {}
 
-    # Inject API keys for LiteLLM
-    import os
+    # Inject API Keys into environment for LiteLLM
     if settings.groq_api_key:
         os.environ["GROQ_API_KEY"] = settings.groq_api_key
     if settings.gemini_api_key:
@@ -406,6 +382,14 @@ async def evaluate_section(
 
     # Deterministic backend score calculation (pure Python, no LLM)
     component_scores = _calculate_component_scores(stage_a)
+
+    # Deterministic safeguard: If no reference BRDs were provided/available, ensure reference_context is None (N/A)
+    if not retrieved_references:
+        component_scores["reference_context"] = None
+        for j in stage_a.reference_judgments:
+            j.label = JudgmentLabel.N_A
+            j.rationale = "No reference BRDs available for this field."
+
     final_confidence = calculate_final_confidence(component_scores)
     confidence_level = determine_confidence_level(final_confidence)
     review_status = "REVIEW_REQUIRED" if stage_a.critical_flags else "PASS"
@@ -436,14 +420,17 @@ async def evaluate_section(
         summary_reason = f"Section evaluated with {confidence_level} confidence ({final_confidence}%)."
 
     # Build breakdown dictionary (persisted into JSONB and consumed by ConfidenceBreakdown.jsx)
-    def _score_entry(score: int | None, judgments: list) -> dict[str, Any]:
+    def _score_entry(score: int | None, judgments: list, default_na_reason: str = "No applicable criteria.") -> dict[str, Any]:
         rationales = [
             j.rationale.strip()
             for j in judgments
             if j.label != JudgmentLabel.N_A and j.rationale and j.rationale.strip()
         ]
         if not rationales:
-            return {"score": score, "reason": "No applicable criteria."}
+            na_rationales = [j.rationale.strip() for j in judgments if j.rationale and j.rationale.strip()]
+            if na_rationales and score is None:
+                return {"score": None, "reason": f"{na_rationales[0].rstrip('.; ')}."}
+            return {"score": score, "reason": default_na_reason}
         cleaned = []
         for r in rationales[:3]:
             r_str = r.rstrip(".; ")

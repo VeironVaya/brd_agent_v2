@@ -126,8 +126,10 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
   // its own rename/delete controls.
   const status = fieldState(node.id, answers)
   const answer = answers[node.id] || {}
-  const hasMetrics = answer.completeness != null && answer.confidence != null
-  const tier = hasMetrics ? confidenceTier(answer.confidence) : null
+  const hasCompleteness = answer.completeness != null
+  const hasConfidence = answer.confidence != null
+  const hasMetrics = hasCompleteness || hasConfidence
+  const tier = hasConfidence ? confidenceTier(answer.confidence) : null
   const isFocused = node.id === focusedFieldId
   const hasAnswer = !!answer.answer
   const missingItems = answer.missing || []
@@ -145,7 +147,7 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
             completeness={answer.completeness}
             confidence={answer.confidence}
             tier={tier}
-            flagged={status === 'review'}
+            flagged={status === 'review' || !!answer.flagged}
           />
         ) : (
           <ReadyIcon />
@@ -157,15 +159,19 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
           </span>
           {hasMetrics ? (
             <span className="ml-auto flex items-baseline gap-2 flex-shrink-0">
-              <span className="text-[10.5px] font-semibold text-text-tertiary">
-                {answer.completeness}% complete
-              </span>
-              <span
-                className="text-[10.5px] font-bold uppercase tracking-wide"
-                style={{ color: CONFIDENCE_COLOR_HEX[tier] }}
-              >
-                {answer.confidence}% {TIER_LABEL[tier]}
-              </span>
+              {hasCompleteness && (
+                <span className="text-[10.5px] font-semibold text-text-tertiary">
+                  {answer.completeness}% complete
+                </span>
+              )}
+              {hasConfidence && tier && (
+                <span
+                  className="text-[10.5px] font-bold uppercase tracking-wide"
+                  style={{ color: CONFIDENCE_COLOR_HEX[tier] }}
+                >
+                  {answer.confidence}% {TIER_LABEL[tier]}
+                </span>
+              )}
             </span>
           ) : (
             <span className="ml-auto text-[11px] text-text-tertiary flex-shrink-0">Custom · no fixed checklist</span>

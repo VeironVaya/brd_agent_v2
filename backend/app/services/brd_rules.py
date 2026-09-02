@@ -641,28 +641,28 @@ def get_section_rules_prompt(section_id: str, context_answers: dict[str, str] = 
 
 GLOBAL_GROUNDING_CRITERIA: list[str] = [
     "Claims about facts, numbers, dates, SLA, roles, or vendors are traceable to confirmed user/project evidence",
-    "No values are invented or inferred where project evidence is absent",
+    "No values, rules, policies, or entities are invented or inferred where project evidence is absent",
     "Key assertions are supported by user-stated context, not assumed from general knowledge",
 ]
 
 GLOBAL_REFERENCE_CRITERIA: list[str] = [
-    "The section makes business sense compared with similar projects (reference BRDs used as benchmark only)",
+    "The section represents a reasonable, standard business approach compared to similar enterprise or digital projects (mark N_A if no reference BRDs are available)",
     "No specific number, SLA, role, rule, or vendor from a reference BRD is copied verbatim without project evidence",
-    "The business approach is reasonable compared to similar enterprise or digital projects",
+    "The business approach makes sense in industry context without violating legitimate project-specific deviations (mark N_A if no reference BRDs are available)",
 ]
 
 GLOBAL_CLARITY_CRITERIA: list[str] = [
-    "Requirements or descriptions are clearly and unambiguously stated",
+    "Requirements and descriptions are clearly and unambiguously stated without relying on ungrounded buzzwords",
+    "Qualitative terms (e.g. faster, easier, efficient, secure, real-time, messy) have concrete operational meaning and do not substitute for actionable descriptions",
     "Content is verifiable or testable where the section type naturally warrants it (do not require numbers for sections where numbers are not natural)",
-    "Requirements or statements are actionable — someone can take action based on them",
-    "No unnecessary jargon or vacuous claims that add no verifiable meaning",
+    "Requirements or statements are actionable — downstream teams (engineers, QA, stakeholders) can take concrete action based on them",
     "Content provides substantive specificity that adds concrete, decision-useful information, and does not merely restate the section heading, title, or claim using synonyms, circular wording, or tautological statements",
 ]
 
 GLOBAL_CONSISTENCY_CRITERIA: list[str] = [
     "The section is internally consistent with no self-contradictions",
-    "The section is logically consistent with other completed BRD sections",
-    "Dependencies are properly reflected and no conflict exists with prerequisite section content",
+    "The section is logically consistent with other completed BRD sections (mark N_A if no other sections are completed yet)",
+    "Dependencies are properly reflected and no conflict exists with prerequisite section content (mark N_A if no canonical dependencies exist or prerequisites are pending)",
 ]
 
 
@@ -672,12 +672,12 @@ GLOBAL_CONSISTENCY_CRITERIA: list[str] = [
 
 FIELD_SPECIFIC_RUBRICS: dict[str, list[str]] = {
     "1.1.1": [
-        "The current state of the affected domain or system is described",
-        "A clear problem or business opportunity is articulated",
-        "The affected context (process, users, system, or market) is identified",
-        "Business relevance is explained — why this matters to the organization",
-        "Cause vs symptom distinction is maintained (root cause is presented, not just observable symptom)",
-        "The section is solution-neutral — it does not prescribe a specific technical solution",
+        "The current state of the affected domain, infrastructure, or operational workflow is concretely described (generic placeholders like 'existing systems do not align' without identifying actual systems are PARTIALLY_MET or NOT_MET)",
+        "A clear, specific business problem, regulatory mandate gap, or operational bottleneck is articulated with concrete context",
+        "The affected organizational context (specific processes, teams, user groups, or systems) is clearly identified",
+        "Business relevance and organizational impact are explained (concrete consequences or risks to the organization, not merely generic compliance slogans)",
+        "Cause vs symptom distinction is maintained (underlying operational/regulatory root cause is presented, not just observable friction)",
+        "The section is solution-neutral — it frames the business problem without prescribing a specific technical architecture or solution",
     ],
     "1.1.2": [
         "A clear business driver for the project is identified",

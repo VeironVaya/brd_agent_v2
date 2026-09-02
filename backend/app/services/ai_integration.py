@@ -29,16 +29,6 @@ from app.services.brd_rules import get_section_rules_prompt
 DUMMY_AI_REPLY = "Got it — logged. (Dummy AI: Please set GEMINI_API_KEY or GROQ_API_KEY in .env)"
 
 
-# Hardcoded dummy breakdown — replaced by the AI team with real computed values.
-_DUMMY_CONFIDENCE_BREAKDOWN = {
-    "grounding": {"score": 72, "reason": "[Dummy] Most claims are grounded in provided user inputs, but some numerical targets lack cited sources."},
-    "reference_context": {"score": 85, "reason": "[Dummy] The answer aligns well with prior sections. Minor terminology drift detected."},
-    "section_compliance": {"score": 60, "reason": "[Dummy] Some required sub-fields per the section template are still missing or vague."},
-    "testability": {"score": 50, "reason": "[Dummy] The stated requirements lack measurable acceptance criteria in several places."},
-    "consistency": {"score": 90, "reason": "[Dummy] No logical contradictions detected across the current section content."},
-}
-
-
 @dataclass
 class AgentReply:
     reply_text: str
@@ -156,7 +146,7 @@ async def get_reply(
             confidence=None,
             missing_items=missing_items,
             is_assumption=False,
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
         
     # Inject API Keys into environment for LiteLLM
@@ -185,10 +175,11 @@ async def get_reply(
 
     try:
         chat_completion = await litellm.acompletion(
-            model="groq/llama-3.3-70b-versatile",
+            model="gemini/gemini-2.5-flash",
             fallbacks=[
-                "gemini/gemini-2.0-flash",
-                "gemini/gemini-flash-latest",
+                "gemini/gemini-3.5-flash",
+                "gemini/gemini-3.5-flash-lite",
+                "gemini/gemini-3.1-flash-lite",
             ],
             messages=[
                 {
@@ -223,10 +214,10 @@ async def get_reply(
             reply_text=llm_reply.reply_text,
             answer_text=llm_reply.answer_text,
             completeness=llm_reply.completeness,
-            confidence=llm_reply.confidence,
+            confidence=None,
             missing_items=llm_reply.missing_items,
             is_assumption=llm_reply.is_assumption,
-            confidence_breakdown=llm_reply.confidence_breakdown,
+            confidence_breakdown=None,
         )
         
     except Exception as e:
@@ -235,8 +226,9 @@ async def get_reply(
             reply_text="I'm sorry, I encountered an internal error while processing that.",
             answer_text=current_answer_text,
             completeness=current_completeness,
+            confidence=None,
             missing_items=(current_answer or {}).get("missing_items") or [],
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
 
 GREETING_PROMPT = """
@@ -278,8 +270,8 @@ async def get_greeting(
 
     try:
         chat_completion = await litellm.acompletion(
-            model="groq/llama-3.3-70b-versatile",
-            fallbacks=["gemini/gemini-2.0-flash", "gemini/gemini-flash-latest"],
+            model="gemini/gemini-2.5-flash",
+            fallbacks=["gemini/gemini-3.5-flash", "gemini/gemini-3.5-flash-lite", "gemini/gemini-3.1-flash-lite"],
             messages=[
                 {
                     "role": "system",
@@ -305,10 +297,10 @@ async def get_greeting(
             reply_text=llm_reply.reply_text,
             answer_text="",
             completeness=0,
-            confidence=100,
+            confidence=None,
             missing_items=llm_reply.missing_items,
             is_assumption=False,
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
         
     except Exception as e:
@@ -317,8 +309,9 @@ async def get_greeting(
             reply_text=f"Welcome to {room_title}. Let's get started. What information do you have for this section?",
             answer_text="",
             completeness=0,
+            confidence=None,
             missing_items=[],
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
 
 

@@ -321,7 +321,10 @@ export default function DraftSessionPage() {
         onClose={() => setReviewOpen(false)}
         flaggedItems={conversation.flaggedItems}
         answers={answers}
-        onRecompute={() => api.recomputeReview(id)}
+        onRecompute={async () => {
+          await api.recomputeReview(id)
+          await refreshDetail()
+        }}
         onResolveInChat={handleResolveInChat}
       />
       <AnswerDetailModal
