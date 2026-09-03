@@ -30,7 +30,7 @@ export const CHOICE_SECTIONS = {
     title: 'Program Type',
     groups: {
       selected: {
-        label: 'If IT-led / IT-driven program',
+        label: 'Program Type',
         options: [
           'Automation', 'Audit compliance', 'Business engagement model', 'Capacity expansion', 'Cloud',
           'Digital ways of working', 'End of life replacement', 'End of Support (EoS)', 'Infrastructure',

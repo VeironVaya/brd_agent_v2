@@ -23,6 +23,8 @@ from datetime import datetime, timezone
 from typing import Any, Sequence
 import litellm
 
+from app.models.bubble import Bubble
+
 from app.ai.rag import (
     CANONICAL_ANSWERABLE_FIELDS,
     CANONICAL_FIELDS_META,
@@ -128,8 +130,11 @@ def build_project_evidence_text(
         # Support both Bubble objects and dicts
         role = getattr(msg, "role", None) or (msg.get("role") if isinstance(msg, dict) else None)
         text = getattr(msg, "text", None) or (msg.get("text") if isinstance(msg, dict) else None)
-        if role == "user" and text and text.strip():
-            parts.append(_classify_user_input(text))
+        if text and text.strip():
+            if role == "user":
+                parts.append(_classify_user_input(text))
+            elif role == "agent":
+                parts.append(f"[Agent Context / Question]: {text.strip()}")
 
     if latest_user_message and latest_user_message.strip():
         parts.append(f"{_classify_user_input(latest_user_message)} (Current Message)")

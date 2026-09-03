@@ -10,7 +10,6 @@ export default function CustomSectionsList({
   answers,
   focusedFieldId,
   onFocus,
-  onViewAnswer,
   canEdit = true,
 }) {
   const standalone = standaloneCustomSections(customSections)
@@ -31,7 +30,6 @@ export default function CustomSectionsList({
             answers={answers}
             focusedFieldId={focusedFieldId}
             onFocus={onFocus}
-            onViewAnswer={onViewAnswer}
             canEdit={canEdit}
           />
         ))}

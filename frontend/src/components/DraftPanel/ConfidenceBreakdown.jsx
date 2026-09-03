@@ -1,11 +1,3 @@
-/**
- * ConfidenceBreakdown - displays the 5-dimension AI confidence analysis,
- * critical issue flags, dependency status, and Senior BA critique.
- *
- * Props:
- *   breakdown: ConfidenceBreakdownDto | null | undefined
- */
-
 import React from 'react'
 
 const DIMENSIONS = [
@@ -23,263 +15,159 @@ function scoreTier(score) {
   return 'low'
 }
 
-const TIER_COLORS = {
-  high:   { bar: '#1a7f37', text: '#1a7f37', bg: 'rgba(26,127,55,0.08)' },
-  medium: { bar: '#b45309', text: '#b45309', bg: 'rgba(180,83,9,0.08)' },
-  low:    { bar: '#c13515', text: '#c13515', bg: 'rgba(193,53,21,0.08)' },
-  na:     { bar: '#9ca3af', text: '#6b7280', bg: 'rgba(107,114,128,0.1)' },
+const TIER_STYLES = {
+  high:   { bar: 'bg-green-600', text: 'text-green-700', bg: 'bg-green-100' },
+  medium: { bar: 'bg-amber-600', text: 'text-amber-700', bg: 'bg-amber-100' },
+  low:    { bar: 'bg-red-600',   text: 'text-red-700',   bg: 'bg-red-100' },
+  na:     { bar: 'bg-gray-300',  text: 'text-gray-500',  bg: 'bg-gray-100' },
 }
 
-const DEP_STATUS_STYLES = {
-  CONSISTENT:          { text: '#166534', bg: '#dcfce7', border: '#bbf7d0', label: 'Dependencies Consistent' },
-  CONFLICT:            { text: '#991b1b', bg: '#fee2e2', border: '#fca5a5', label: 'Dependency Conflict' },
-  NOT_YET_VERIFIABLE:  { text: '#475569', bg: '#f1f5f9', border: '#cbd5e1', label: 'Prerequisites Pending' },
+export const DEP_STATUS_STYLES = {
+  CONSISTENT:          { text: 'text-green-700', bg: 'bg-green-50', border: 'border-green-200', label: 'Dependencies Consistent' },
+  CONFLICT:            { text: 'text-red-700',   bg: 'bg-red-50',   border: 'border-red-200',   label: 'Dependency Conflict' },
+  NOT_YET_VERIFIABLE:  { text: 'text-gray-600',  bg: 'bg-gray-50',  border: 'border-gray-200',  label: 'Prerequisites Pending' },
 }
 
 function DimensionCard({ label, score, reason }) {
   const tier = scoreTier(score)
-  const colors = TIER_COLORS[tier]
+  const styles = TIER_STYLES[tier]
   const isNA = score == null
 
   return (
-    <div
-      style={{
-        borderRadius: '8px',
-        border: '1px solid var(--color-border-light, #e5e5e5)',
-        padding: '10px 12px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '6px',
-        background: 'var(--color-bg-subtle, #fafafa)',
-      }}
-    >
-      {/* Header row: label + score badge */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-primary, #111)', lineHeight: 1.3 }}>
+    <div className="flex flex-col gap-2 p-3.5 bg-bg-subtle/40 rounded-xl transition-all duration-200 hover:bg-bg-subtle/80">
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-[11.5px] font-semibold text-text-primary leading-snug">
           {label}
         </span>
         <span
-          style={{
-            fontSize: '11px',
-            fontWeight: 700,
-            color: colors.text,
-            background: colors.bg,
-            borderRadius: '4px',
-            padding: '1px 6px',
-            flexShrink: 0,
-            letterSpacing: '0.02em',
-          }}
+          className={`text-[10.5px] font-bold px-2 py-0.5 rounded-md flex-shrink-0 tracking-wide ${styles.text} ${styles.bg}`}
         >
           {isNA ? 'N/A' : score + '%'}
         </span>
       </div>
-
-      {/* Progress bar - Never 0% bar for N/A */}
-      <div
-        style={{
-          height: '4px',
-          borderRadius: '2px',
-          background: 'var(--color-border-light, #e5e5e5)',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden w-full">
         <div
-          style={{
-            height: '100%',
-            width: isNA ? '0%' : score + '%',
-            background: colors.bar,
-            borderRadius: '2px',
-            transition: 'width 0.4s ease',
-          }}
+          className={`h-full rounded-full transition-all duration-500 ease-out ${styles.bar}`}
+          style={{ width: isNA ? '0%' : score + '%' }}
         />
       </div>
-
-      {/* Reason text */}
-      <p
-        style={{
-          margin: 0,
-          fontSize: '11.5px',
-          color: 'var(--color-text-secondary, #555)',
-          lineHeight: 1.55,
-        }}
-      >
+      <p className="m-0 text-[11.5px] text-text-secondary leading-relaxed mt-1">
         {reason || (isNA ? 'Not applicable for this section.' : '')}
       </p>
     </div>
   )
 }
 
-export default function ConfidenceBreakdown({ breakdown }) {
+export function ReviewRequiredBanner({ breakdown }) {
   if (!breakdown) return null
+  const isReviewRequired = breakdown.review_status === 'REVIEW_REQUIRED' || (breakdown.critical_flags && breakdown.critical_flags.length > 0)
+  if (!isReviewRequired) return null
 
-  // Only render dimensions that actually have data
+  return (
+    <div className="rounded-xl border border-red-200 bg-red-50 p-3.5 shadow-sm mb-4">
+      <div className="flex items-center gap-1.5 text-red-700 font-bold text-xs uppercase tracking-wide">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+          <path d="M12 9v4"/>
+          <path d="M12 17h.01"/>
+        </svg>
+        <span>IMPORTANT: Critical Issues Detected</span>
+      </div>
+      {breakdown.critical_flags && breakdown.critical_flags.length > 0 && (
+        <ul className="mt-2 pl-6 text-[11.5px] text-red-800 leading-relaxed list-disc space-y-1">
+          {breakdown.critical_flags.map((flag, idx) => (
+            <li key={idx}>
+              <strong>[{flag.type || 'CRITICAL_FLAG'}]</strong> {flag.reason}
+              {flag.excerpt && <span className="italic opacity-85"> &ldquo;{flag.excerpt}&rdquo;</span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+export function ScoringCards({ breakdown }) {
+  if (!breakdown) return null
   const populated = DIMENSIONS.filter((d) => breakdown[d.key] != null)
   if (populated.length === 0) return null
 
-  const isReviewRequired = breakdown.review_status === 'REVIEW_REQUIRED' || (breakdown.critical_flags && breakdown.critical_flags.length > 0)
-  const depStyle = breakdown.dependency_status ? DEP_STATUS_STYLES[breakdown.dependency_status] : null
-
-  const hasStrengths = Array.isArray(breakdown.critique_strengths) && breakdown.critique_strengths.length > 0
-  const hasIssues = Array.isArray(breakdown.critique_issues) && breakdown.critique_issues.length > 0
-  const hasSuggestions = Array.isArray(breakdown.critique_suggestions) && breakdown.critique_suggestions.length > 0
-
   return (
-    <div style={{ marginTop: '20px' }}>
-      {/* Critical issue warning banner */}
-      {isReviewRequired && (
-        <div
-          style={{
-            borderRadius: '8px',
-            border: '1px solid #fca5a5',
-            background: '#fef2f2',
-            padding: '10px 12px',
-            marginBottom: '12px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#991b1b', fontWeight: 700, fontSize: '11.5px' }}>
-            <span>⚠️ REVIEW REQUIRED: Critical Issues Detected</span>
-          </div>
-          {breakdown.critical_flags && breakdown.critical_flags.length > 0 && (
-            <ul style={{ margin: '6px 0 0 16px', padding: 0, fontSize: '11px', color: '#7f1d1d', lineHeight: 1.5 }}>
-              {breakdown.critical_flags.map((flag, idx) => (
-                <li key={idx}>
-                  <strong>[{flag.type || 'CRITICAL_FLAG'}]</strong> {flag.reason}
-                  {flag.excerpt && <span style={{ fontStyle: 'italic', opacity: 0.85 }}> &ldquo;{flag.excerpt}&rdquo;</span>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+    <div className="grid grid-cols-1 gap-2 mb-3">
+      {populated.map((d) => (
+        <DimensionCard
+          key={d.key}
+          label={d.label}
+          score={breakdown[d.key].score}
+          reason={breakdown[d.key].reason}
+        />
+      ))}
+    </div>
+  )
+}
 
-      {/* Section header + Dependency badge */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '8px',
-          marginBottom: '10px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flex: 1 }}>
-          <span
-            style={{
-              fontSize: '11px',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              color: 'var(--color-text-primary, #111)',
-            }}
-          >
-            Confidence Breakdown
-          </span>
-          <span
-            style={{
-              flex: 1,
-              height: '1px',
-              background: 'var(--color-border-light, #e5e5e5)',
-            }}
-          />
-        </div>
-
-        {depStyle && (
-          <span
-            style={{
-              fontSize: '10.5px',
-              fontWeight: 600,
-              padding: '2px 8px',
-              borderRadius: '9999px',
-              background: depStyle.bg,
-              color: depStyle.text,
-              border: '1px solid ' + depStyle.border,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {depStyle.label}
-          </span>
-        )}
+export function StrengthsCard({ breakdown }) {
+  if (!breakdown || !Array.isArray(breakdown.critique_strengths) || breakdown.critique_strengths.length === 0) return null
+  return (
+    <div className="rounded-xl bg-green-50/70 p-4 border border-green-100/50 mt-3">
+      <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-green-700 uppercase tracking-wide mb-1.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 6 9 17l-5-5"/>
+        </svg>
+        <span>Key Strengths</span>
       </div>
-
-      {/* 5 Dimension cards */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {populated.map((d) => (
-          <DimensionCard
-            key={d.key}
-            label={d.label}
-            score={breakdown[d.key].score}
-            reason={breakdown[d.key].reason}
-          />
+      <ul className="m-0 pl-6 text-[12px] text-green-900 leading-relaxed list-disc space-y-1.5">
+        {breakdown.critique_strengths.map((str, idx) => (
+          <li key={idx}>{str}</li>
         ))}
+      </ul>
+    </div>
+  )
+}
+
+export function IssuesCard({ breakdown }) {
+  if (!breakdown || !Array.isArray(breakdown.critique_issues) || breakdown.critique_issues.length === 0) return null
+  return (
+    <div className="rounded-xl bg-amber-50/70 p-4 border border-amber-100/50 mt-3">
+      <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-amber-700 uppercase tracking-wide mb-1.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Identified Issues</span>
       </div>
+      <ul className="m-0 pl-6 text-[12px] text-amber-900 leading-relaxed list-disc space-y-1.5">
+        {breakdown.critique_issues.map((issue, idx) => (
+          <li key={idx}>{issue}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
-      {/* Senior BA Critique (Strengths, Issues, Suggestions) */}
-      {(hasStrengths || hasIssues || hasSuggestions) && (
-        <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {/* Strengths */}
-          {hasStrengths && (
-            <div
-              style={{
-                borderRadius: '8px',
-                border: '1px solid #bbf7d0',
-                background: '#f0fdf4',
-                padding: '9px 12px',
-              }}
-            >
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#166534', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
-                ✓ Key Strengths
-              </div>
-              <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11.5px', color: '#14532d', lineHeight: 1.5 }}>
-                {breakdown.critique_strengths.map((str, idx) => (
-                  <li key={idx}>{str}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Issues */}
-          {hasIssues && (
-            <div
-              style={{
-                borderRadius: '8px',
-                border: '1px solid #fed7aa',
-                background: '#fffbeb',
-                padding: '9px 12px',
-              }}
-            >
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#9a3412', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
-                ! Identified Issues
-              </div>
-              <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11.5px', color: '#7c2d12', lineHeight: 1.5 }}>
-                {breakdown.critique_issues.map((issue, idx) => (
-                  <li key={idx}>{issue}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Suggestions */}
-          {hasSuggestions && (
-            <div
-              style={{
-                borderRadius: '8px',
-                border: '1px solid #bfdbfe',
-                background: '#eff6ff',
-                padding: '9px 12px',
-              }}
-            >
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e40af', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
-                💡 Suggested Improvements
-              </div>
-              <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11.5px', color: '#1e3a8a', lineHeight: 1.5 }}>
-                {breakdown.critique_suggestions.map((sug, idx) => (
-                  <li key={idx}>{sug}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
+export function SuggestionsCard({ breakdown }) {
+  if (!breakdown || !Array.isArray(breakdown.critique_suggestions) || breakdown.critique_suggestions.length === 0) return null
+  return (
+    <div className="rounded-xl bg-blue-50/70 p-4 border border-blue-100/50 mt-3">
+      <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-blue-700 uppercase tracking-wide mb-1.5">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2v2"/>
+          <path d="M12 20v2"/>
+          <path d="m4.93 4.93 1.41 1.41"/>
+          <path d="m17.66 17.66 1.41 1.41"/>
+          <path d="M2 12h2"/>
+          <path d="M20 12h2"/>
+          <path d="m6.34 17.66-1.41 1.41"/>
+          <path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+        <span>Suggested Improvements</span>
+      </div>
+      <ul className="m-0 pl-6 text-[12px] text-blue-900 leading-relaxed list-disc space-y-1.5">
+        {breakdown.critique_suggestions.map((sug, idx) => (
+          <li key={idx}>{sug}</li>
+        ))}
+      </ul>
     </div>
   )
 }
