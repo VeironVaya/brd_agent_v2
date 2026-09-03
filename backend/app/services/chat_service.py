@@ -115,7 +115,7 @@ async def post_message(
     # ------------------------------------------------------------------ #
     # 2. AUTONOMOUS REFLECTION LOOP (Agent 2 Judge -> Agent 1 Fix)       #
     # ------------------------------------------------------------------ #
-    if section.is_leaf and reply.completeness and reply.completeness >= 80:
+    if section.is_leaf:
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS and reply.answer_text:
             try:
                 # 2a. Separate Confirmed Project Evidence
@@ -165,48 +165,15 @@ async def post_message(
                     else:
                         print(f"✅ PERFECT SCORE. No reflection needed.")
 
-                # 2e. REFLECTION CHECK
+                # REFLECTION CHECK REMOVED: 
+                # Agent 2's evaluation is directly passed to the frontend sidebar. 
+                # Agent 1's initial draft is retained without regeneration to save inference costs.
                 if agent2_result and agent2_result["final_confidence"] < 100:
                     print("\n" + "="*65)
-                    print("🤖 [AUTONOMOUS REFLECTION LOOP INITIATED]")
-                    print("="*65)
-                    print(f"👉 AGENT 1 generated an initial draft for Section {field_id}.")
-                    print(f"🧐 AGENT 2 (Judge) secretly evaluated the draft and gave a score of: {agent2_result['final_confidence']}/100.")
-                    print(f"❌ AGENT 2 Critique: {agent2_result['confidence_reason']}")
-                    print("🔄 Intercepting message and forcing AGENT 1 to rewrite the draft...")
-                    print("-" * 65)
-                    
-                    # Agent 1 fixes the draft based on Agent 2 critique
-                    reply = await ai_integration.get_reply(
-                        room_id=section.template_key or section.section_id,
-                        room_title=section.title,
-                        room_purpose=section.purpose,
-                        message_text=text,
-                        history=[{"role": b.role, "text": b.text} for b in history],
-                        current_answer=current_answer,
-                        field_id=field_id,
-                        context_answers=context_answers,
-                        judge_critique=agent2_result,
-                    )
-                    
-                    print("✅ AGENT 1 has finished revising the draft based on the critique.")
-                    print("🧐 AGENT 2 is re-evaluating the revised draft...")
-                    
-                    # Run Agent 2 one final time on the corrected draft
-                    agent2_result = await judge.evaluate_section(
-                        field_id=field_id,
-                        section_title=section.title,
-                        generated_content=reply.answer_text,
-                        project_evidence=project_evidence,
-                        context_answers=context_answers,
-                        missing_items=reply.missing_items or [],
-                        validator_findings=validator_findings,
-                        retrieved_references=retrieved_refs,
-                    )
-                    
-                    print(f"🎯 NEW SCORE from AGENT 2: {agent2_result['final_confidence']}/100.")
-                    print("🚀 Reflection Loop Complete. Forwarding finalized text to User.")
+                    print(f"🧐 AGENT 2 (Judge) evaluated the draft: {agent2_result['final_confidence']}/100.")
+                    print("🚀 Forwarding initial draft and Judge evaluation to User sidebar.")
                     print("="*65 + "\n")
+
 
             except Exception as judge_exc:
                 print(f"[AGENT 2 ERROR] field={field_id} section={section.section_id}: {judge_exc}")
