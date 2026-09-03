@@ -41,22 +41,7 @@ export default function ChatHeader({
       </div>
 
       <div className="flex items-center gap-2.5 flex-shrink-0">
-        <div className="flex items-center bg-bg-subtlest rounded-pill p-1 gap-0.5">
-          {['Local', 'Cloud'].map((label) => (
-            <button
-              key={label}
-              type="button"
-              onClick={onToggleModel}
-              className={`px-4 py-1.75 rounded-pill text-sm cursor-pointer ${
-                (label === 'Cloud') === isCloud
-                  ? 'font-semibold text-white bg-text-primary'
-                  : 'font-medium text-text-secondary'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+
 
         <button
           type="button"
