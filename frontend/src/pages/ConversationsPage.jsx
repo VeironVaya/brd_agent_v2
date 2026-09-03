@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import Logo from '../components/common/Logo.jsx'
 import Button from '../components/common/Button.jsx'
@@ -23,8 +23,24 @@ export default function ConversationsPage() {
   const [loading, setLoading] = useState(true)
   const [fetchError, setFetchError] = useState(false)
   const [query, setQuery] = useState('')
-  const [tab, setTab] = useState('owner') // 'owner' | 'shared'
-  const [activeGroupId, setActiveGroupId] = useState(null) // null = root view
+  const [searchParams, setSearchParams] = useSearchParams()
+  const activeGroupId = searchParams.get('group') || null
+  const tab = searchParams.get('tab') || 'owner'
+
+  const setActiveGroupId = (id) => {
+    setSearchParams(prev => {
+      if (id) prev.set('group', id)
+      else prev.delete('group')
+      return prev
+    })
+  }
+
+  const setTab = (newTab) => {
+    setSearchParams(prev => {
+      prev.set('tab', newTab)
+      return prev
+    })
+  }
 
   // Modals
   const [newBrdOpen, setNewBrdOpen] = useState(false)

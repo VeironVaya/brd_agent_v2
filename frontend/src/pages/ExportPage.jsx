@@ -10,6 +10,8 @@ import ConfirmModal from '../components/common/ConfirmModal.jsx'
 import { downloadMarkdown, downloadPdf } from '../utils/documentPdf.js'
 import { downloadDocx } from '../utils/documentDocx.js'
 
+
+
 export default function ExportPage() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -17,7 +19,6 @@ export default function ExportPage() {
   const [format, setFormat] = useState('pdf')
   const [phase, setPhase] = useState('idle') // idle | generating | success | error
   const [confirmOpen, setConfirmOpen] = useState(false)
-  const [activeResultId, setActiveResultId] = useState(null)
   const [result, setResult] = useState(null)
   const [logoutOpen, setLogoutOpen] = useState(false)
 
@@ -64,16 +65,7 @@ export default function ExportPage() {
     }
   }
 
-  const activeTemplateLeaf = activeResultId ? flattenLeaves().find((n) => n.id === activeResultId) : null
-  const activeCustomNode =
-    !activeTemplateLeaf && activeResultId ? findCustomNode(conversation.customSections, activeResultId) : null
-  const activeLeaf =
-    activeTemplateLeaf || (activeCustomNode ? { id: activeCustomNode.id, title: activeCustomNode.title } : null)
-  const activeCode = activeTemplateLeaf
-    ? activeTemplateLeaf.id
-    : activeCustomNode
-      ? getCodeForNode(conversation.customSections, activeCustomNode.id)
-      : null
+  const standaloneCustom = standaloneCustomSections(conversation.customSections)
 
   return (
     <div className="w-full min-h-screen bg-white">
@@ -107,70 +99,79 @@ export default function ExportPage() {
 
       {phase === 'idle' && (
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_340px] gap-8 px-10 pt-8 pb-12 items-start">
+          {/* True Document Preview Panel */}
           <div className="bg-bg-subtle rounded-2xl p-10 flex justify-center">
-            <div className="w-full max-w-160 bg-white border border-border-light rounded-sm shadow-[0_8px_24px_rgba(0,0,0,.06)] px-12 py-14 flex flex-col gap-5.5">
-              <div className="text-center pb-5 border-b border-border-light">
+            <div className="w-full max-w-160 bg-white border border-border-light rounded-sm shadow-[0_8px_24px_rgba(0,0,0,.06)] px-12 py-14 flex flex-col gap-6">
+              
+              <div className="text-center pb-8 border-b border-border-light mb-4">
                 <div className="text-xs font-semibold tracking-widest uppercase text-text-tertiary">
                   Business Requirement Document
                 </div>
-                <div className="text-2xl font-bold mt-2">{conversation.title}</div>
-                <div className="text-[13px] text-text-tertiary mt-1.5">
+                <div className="text-3xl font-extrabold mt-3 text-text-primary">{conversation.title}</div>
+                <div className="text-[13px] text-text-tertiary mt-2">
                   {conversation.docVersion || 'Version 1.0'} · {conversation.docGeneratedLabel || 'Not yet generated'}
                 </div>
               </div>
 
-              {SECTIONS.map((section) => (
-                <div key={section.id}>
-                  <div className="mt-1.5">
-                    <div className="text-[15px] font-bold">
-                      {section.id}. {section.title}
-                    </div>
-                    <div className="text-[13.5px] text-[#3f3f3f] mt-1.5 leading-relaxed">
-                      {sectionDescriptions[section.id] || 'Auto-generated summary of this section.'}
-                    </div>
-                  </div>
-                  {section.children.map((node) =>
-                    isLeaf(node) ? (
-                      <ExportRow key={node.id} id={node.id} title={node.title} onView={setActiveResultId} />
-                    ) : (
-                      <div key={node.id}>
-                        <div className="text-[12.5px] font-bold text-text-secondary mt-1">
-                          {node.id} {node.title}
-                        </div>
-                        {node.children.map((leaf) => (
-                          <ExportRow key={leaf.id} id={leaf.id} title={leaf.title} onView={setActiveResultId} />
-                        ))}
-                        {customChildrenFor(conversation.customSections, node.id).map(({ node: cs, code }) => (
-                          <ExportCustomRow key={cs.id} node={cs} code={code} onView={setActiveResultId} />
-                        ))}
+              {SECTIONS.map((section) => {
+                return (
+                  <div key={section.id} className="mb-10">
+                    <div className="mb-5">
+                      <div className="text-[20px] font-extrabold text-text-primary tracking-tight">
+                        {section.id}. {section.title}
                       </div>
-                    ),
-                  )}
-                  {customChildrenFor(conversation.customSections, section.id).map(({ node: cs, code }) => (
-                    <ExportCustomRow key={cs.id} node={cs} code={code} onView={setActiveResultId} />
-                  ))}
-                </div>
-              ))}
+                      <div className="text-[13.5px] text-text-tertiary mt-1 italic">
+                        {sectionDescriptions[section.id] || 'Auto-generated summary of this section.'}
+                      </div>
+                    </div>
 
-              {standaloneCustomSections(conversation.customSections).length > 0 && (
-                <div>
-                  <div className="mt-1.5">
-                    <div className="text-[15px] font-bold">Custom Sections</div>
+                    {section.children.map((node) => {
+                      if (isLeaf(node)) {
+                        const text = answers[node.id]?.answer
+                        return <PreviewLeaf key={node.id} code={node.id} title={node.title} text={text} />
+                      }
+                      
+                      return (
+                        <div key={node.id} className="mb-8">
+                          <div className="text-[16px] font-bold text-text-primary mb-3">
+                            {node.id} {node.title}
+                          </div>
+                          {node.children.map((leaf) => {
+                            const text = answers[leaf.id]?.answer
+                            return <PreviewLeaf key={leaf.id} code={leaf.id} title={leaf.title} text={text} />
+                          })}
+                          
+                          {customChildrenFor(conversation.customSections, node.id).map(({ node: cs, code }) => (
+                            <PreviewCustomNode key={cs.id} node={cs} code={code} answers={answers} />
+                          ))}
+                        </div>
+                      )
+                    })}
+
+                    {customChildrenFor(conversation.customSections, section.id).map(({ node: cs, code }) => (
+                      <PreviewCustomNode key={cs.id} node={cs} code={code} answers={answers} />
+                    ))}
                   </div>
-                  {standaloneCustomSections(conversation.customSections).map(({ node: cs, code }) => (
-                    <ExportCustomRow key={cs.id} node={cs} code={code} onView={setActiveResultId} />
+                )
+              })}
+
+              {standaloneCustom.length > 0 && (
+                <div className="mt-8 pt-8 border-t border-border-light">
+                  <div className="text-[20px] font-extrabold text-text-primary tracking-tight mb-5">
+                    Custom Sections
+                  </div>
+                  {standaloneCustom.map(({ node: cs, code }) => (
+                    <PreviewCustomNode key={cs.id} node={cs} code={code} answers={answers} />
                   ))}
                 </div>
               )}
 
-              <div className="mt-3 pt-5 border-t border-border-light text-xs text-[#c1c1c1] text-center">
-                Page 1 of 14
-              </div>
             </div>
           </div>
 
+          {/* Export Controls Panel */}
           <div className="flex flex-col gap-5 xl:sticky xl:top-8">
-            <div className="border border-border-light rounded-[14px] p-5.5">
+            <div className="border border-border-light rounded-[14px] p-5.5 bg-white shadow-sm">
               <div className="text-[15px] font-bold">Export as</div>
               <div className="flex flex-col gap-2 mt-3.5">
                 <FormatOption
@@ -207,7 +208,7 @@ export default function ExportPage() {
               <button
                 type="button"
                 onClick={handleGenerateClick}
-                className="flex items-center justify-center gap-2 w-full bg-accent text-white border-none rounded-btn h-12 text-[15px] font-semibold cursor-pointer mt-5"
+                className="flex items-center justify-center gap-2 w-full bg-accent text-white border-none rounded-btn h-12 text-[15px] font-semibold cursor-pointer mt-5 transition-transform active:scale-[0.98]"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 3v13" />
@@ -222,7 +223,7 @@ export default function ExportPage() {
                   api.setForceNextGenerateError(true)
                   handleGenerateClick()
                 }}
-                className="w-full text-center text-xs text-text-tertiary mt-3 cursor-pointer bg-transparent border-none"
+                className="w-full text-center text-xs text-text-tertiary mt-3 cursor-pointer bg-transparent border-none hover:text-text-secondary"
               >
                 Simulate a failed generation (dev)
               </button>
@@ -325,26 +326,6 @@ export default function ExportPage() {
         </div>
       </Modal>
 
-      <Modal open={!!activeResultId} onClose={() => setActiveResultId(null)}>
-        {activeLeaf && (
-          <>
-            <ModalHeader title={`${activeCode} ${activeLeaf.title}`} onClose={() => setActiveResultId(null)} size="sm" />
-            <div className="text-sm mt-4 leading-relaxed">
-              {answers[activeLeaf.id]?.answer || 'No answer recorded yet.'}
-            </div>
-            <div className="flex justify-end mt-5.5">
-              <button
-                type="button"
-                onClick={() => setActiveResultId(null)}
-                className="bg-text-primary text-white border-none rounded-btn h-10 px-5 text-[13px] font-semibold cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </>
-        )}
-      </Modal>
-
       <ConfirmModal
         open={logoutOpen}
         onClose={() => setLogoutOpen(false)}
@@ -360,46 +341,49 @@ export default function ExportPage() {
   )
 }
 
-function ExportRow({ id, code, title, onView }) {
+function PreviewLeaf({ code, title, text }) {
   return (
-    <div className="flex items-baseline justify-between gap-2.5 py-0.75">
-      <span className="text-[13px] text-[#3f3f3f]">
-        {code ?? id} {title}
-      </span>
-      <button
-        type="button"
-        onClick={() => onView(id)}
-        className="bg-transparent border-none text-text-primary text-xs font-semibold underline cursor-pointer flex-shrink-0"
-      >
-        View
-      </button>
+    <div className="mb-6">
+      <div className="text-[14px] font-bold text-text-primary mb-2">
+        {code} {title}
+      </div>
+      {text ? (
+        <div className="text-[13.5px] leading-relaxed text-[#3f3f3f] whitespace-pre-wrap">
+          {text}
+        </div>
+      ) : (
+        <div className="text-[13.5px] italic text-[#a1a1a1]">
+          [Not yet drafted]
+        </div>
+      )}
     </div>
   )
 }
 
-/** Recursive — a custom group renders as a sub-header (like a template's 3.3-style node), a leaf renders like ExportRow. */
-function ExportCustomRow({ node, code, onView }) {
+function PreviewCustomNode({ node, code, answers }) {
   if (node.hasChildren) {
     return (
-      <div>
-        <div className="text-[12.5px] font-bold text-text-secondary mt-1">
+      <div className="mb-8">
+        <div className="text-[16px] font-bold text-text-primary mb-3">
           {code} {node.title}
         </div>
         {node.children.map((child, i) => (
-          <ExportCustomRow key={child.id} node={child} code={`${code}.${i + 1}`} onView={onView} />
+          <PreviewCustomNode key={child.id} node={child} code={`${code}.${i + 1}`} answers={answers} />
         ))}
       </div>
     )
   }
-  return <ExportRow id={node.id} code={code} title={node.title} onView={onView} />
+  
+  const text = answers[node.id]?.answer
+  return <PreviewLeaf code={code} title={node.title} text={text} />
 }
 
 function FormatOption({ active, onClick, label, icon, secondIcon }) {
   return (
     <div
       onClick={onClick}
-      className={`flex items-center justify-between gap-2.5 rounded-[10px] px-3.5 py-3 cursor-pointer ${
-        active ? 'border-[1.5px] border-text-primary bg-bg-subtler' : 'border border-border'
+      className={`flex items-center justify-between gap-2.5 rounded-[10px] px-3.5 py-3 cursor-pointer transition-colors ${
+        active ? 'border-[1.5px] border-text-primary bg-bg-subtler' : 'border border-border hover:bg-bg-subtler'
       }`}
     >
       <div className="flex items-center gap-2.5">

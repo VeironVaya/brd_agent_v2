@@ -18,7 +18,7 @@ export function buildNote(leaf, answers) {
   return note
 }
 
-export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, onViewAnswer, grouped }) {
+export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, grouped }) {
   const status = fieldState(leaf.id, answers)
   const answer = answers[leaf.id] || {}
   const blocked = isBlocked(leaf.id, answers)
@@ -90,46 +90,7 @@ export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, onV
         </div>
       </div>
 
-      {isFocused && (
-        <div className="my-0.5 mb-1.5 px-3 py-2.5 bg-bg-subtle rounded-md">
-          {hasAnswer && (
-            <div className="mb-3 pb-3 border-b border-border-light">
-              <div className="flex items-center justify-between mb-1.25">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-text-primary/80">
-                  Result
-                </span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onViewAnswer(leaf.id)
-                  }}
-                  className="bg-transparent border-none text-text-primary text-[11px] font-semibold cursor-pointer underline whitespace-nowrap"
-                >
-                  See details
-                </button>
-              </div>
-              <div className="text-[13px] leading-relaxed">
-                {answer.answer && answer.answer.length > 120
-                  ? answer.answer.slice(0, 120).trimEnd() + '…'
-                  : answer.answer}
-              </div>
-            </div>
-          )}
-          <div className="text-[11px] font-bold uppercase tracking-wider mb-1.25">What's missing?</div>
-          {missingItems.length > 0 ? (
-            <ul className="m-0 pl-4 list-disc flex flex-col gap-0.75">
-              {missingItems.map((m) => (
-                <li key={m} className="text-[13px] leading-snug">
-                  {m}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-[13px] text-text-tertiary">Nothing outstanding — this answer is complete.</div>
-          )}
-        </div>
-      )}
+
     </div>
   )
 }
