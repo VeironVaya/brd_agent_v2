@@ -22,8 +22,10 @@ export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, onV
   const status = fieldState(leaf.id, answers)
   const answer = answers[leaf.id] || {}
   const blocked = isBlocked(leaf.id, answers)
-  const hasMetrics = answer.completeness != null && answer.confidence != null
-  const tier = hasMetrics ? confidenceTier(answer.confidence) : null
+  const hasCompleteness = answer.completeness != null
+  const hasConfidence = answer.confidence != null
+  const hasMetrics = hasCompleteness || hasConfidence
+  const tier = hasConfidence ? confidenceTier(answer.confidence) : null
   const isFocused = !blocked && leaf.id === focusedFieldId
   const note = buildNote(leaf, answers)
   const hasAnswer = !!answer.answer
@@ -39,26 +41,25 @@ export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, onV
           isFocused ? '-mx-2 px-2 py-2.25 bg-bg-subtler border-l-3 border-text-primary' : 'py-2.25 border-l-3 border-transparent'
         } ${blocked ? 'cursor-default' : 'cursor-pointer'}`}
       >
-        {hasMetrics ? (
+        {status === 'locked' ? (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" strokeWidth="1.8" className="flex-shrink-0 mt-0.5">
+            <rect x="5.5" y="10.5" width="13" height="9" rx="2" />
+            <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
+          </svg>
+        ) : (hasMetrics || status === 'progress' || status === 'done' || status === 'review') ? (
           <DonutBadge
             completeness={answer.completeness}
             confidence={answer.confidence}
             tier={tier}
-            flagged={status === 'review'}
+            flagged={status === 'review' || !!answer.flagged}
           />
         ) : status === 'ready' ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" strokeWidth="1.8" className="flex-shrink-0">
             <circle cx="12" cy="12" r="9" />
           </svg>
-        ) : status === 'locked' ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" strokeWidth="1.8" className="flex-shrink-0 mt-0.5">
-            <rect x="5.5" y="10.5" width="13" height="9" rx="2" />
-            <path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5" />
-          </svg>
         ) : (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c13515" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0 mt-0.5">
-            <path d="M4 22V4" />
-            <path d="M4 4h13l-2.5 4L17 12H4" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#c1c1c1" strokeWidth="1.8" className="flex-shrink-0">
+            <circle cx="12" cy="12" r="9" />
           </svg>
         )}
 
@@ -69,15 +70,19 @@ export default function SectionRow({ leaf, answers, focusedFieldId, onFocus, onV
             </span>
             {hasMetrics && (
               <span className="ml-auto flex items-baseline gap-2 flex-shrink-0">
-                <span className="text-[10.5px] font-semibold text-text-tertiary">
-                  {answer.completeness}% complete
-                </span>
-                <span
-                  className="text-[10.5px] font-bold uppercase tracking-wide"
-                  style={{ color: CONFIDENCE_COLOR_HEX[tier] }}
-                >
-                  {answer.confidence}% {TIER_LABEL[tier]}
-                </span>
+                {hasCompleteness && (
+                  <span className="text-[10.5px] font-semibold text-text-tertiary">
+                    {answer.completeness}% complete
+                  </span>
+                )}
+                {hasConfidence && tier && (
+                  <span
+                    className="text-[10.5px] font-bold uppercase tracking-wide"
+                    style={{ color: CONFIDENCE_COLOR_HEX[tier] }}
+                  >
+                    {answer.confidence}% {TIER_LABEL[tier]}
+                  </span>
+                )}
               </span>
             )}
           </div>

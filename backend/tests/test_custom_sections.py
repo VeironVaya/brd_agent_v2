@@ -1,4 +1,4 @@
-from tests.conftest import create_conversation, register_and_login
+from .helpers import create_conversation, register_and_login
 
 
 async def _get_detail(client, headers, conv_id):

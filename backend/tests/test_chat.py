@@ -1,5 +1,14 @@
+import pytest
+from app.config import settings
 from app.services.ai_integration import DUMMY_AI_REPLY
-from tests.conftest import create_conversation, register_and_login
+from .helpers import create_conversation, register_and_login
+
+
+@pytest.fixture(autouse=True)
+def disable_live_api_keys(monkeypatch):
+    monkeypatch.setattr(settings, "groq_api_key", None)
+    monkeypatch.setattr(settings, "gemini_api_key", None)
+
 
 
 async def test_post_message_returns_user_and_dummy_agent_reply(client):

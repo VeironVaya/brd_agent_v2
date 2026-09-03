@@ -1,8 +1,14 @@
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_ENV_PATH = Path(__file__).resolve().parent.parent / ".env"
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=str(_ENV_PATH) if _ENV_PATH.is_file() else ".env",
+        extra="ignore",
+    )
 
     database_url: str
     jwt_secret: str
@@ -17,3 +23,5 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+

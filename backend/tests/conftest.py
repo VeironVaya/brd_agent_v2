@@ -13,6 +13,8 @@ import uuid
 
 os.environ["DATABASE_URL"] = "postgresql+asyncpg://brdagent:brdagent@127.0.0.1:5432/brdagent_test"
 os.environ.setdefault("JWT_SECRET", "test-secret-at-least-32-bytes-long-for-hs256")
+os.environ["GROQ_API_KEY"] = os.environ.get("TEST_LIVE_GROQ_KEY", "")
+os.environ["GEMINI_API_KEY"] = os.environ.get("TEST_LIVE_GEMINI_KEY", "")
 
 import asyncpg
 import pytest
@@ -56,18 +58,5 @@ async def client():
         yield ac
 
 
-async def register_and_login(client: AsyncClient, *, name: str = "Test User") -> dict:
-    """Registers a fresh unique user and returns {"headers", "user"}."""
-    email = f"{uuid.uuid4()}@example.com"
-    res = await client.post(
-        "/auth/register", json={"email": email, "password": "password123", "name": name}
-    )
-    assert res.status_code == 201, res.text
-    body = res.json()
-    return {"headers": {"Authorization": f"Bearer {body['token']}"}, "user": body["user"], "email": email}
+from .helpers import create_conversation, register_and_login
 
-
-async def create_conversation(client: AsyncClient, headers: dict, title: str = "Test BRD") -> str:
-    res = await client.post("/api/conversations", json={"title": title}, headers=headers)
-    assert res.status_code == 201, res.text
-    return res.json()["id"]

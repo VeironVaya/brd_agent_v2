@@ -2,17 +2,23 @@ import { CONFIDENCE_COLOR_HEX } from '../../utils/confidenceColors.js'
 
 /** Dual-ring donut: outer ring = completeness %, inner disc = confidence %. */
 export default function DonutBadge({ completeness, confidence, tier, flagged }) {
+  const compPct = completeness != null ? completeness : 0
+  const confPct = confidence != null ? confidence : 0
+  const color = (tier && CONFIDENCE_COLOR_HEX[tier]) || CONFIDENCE_COLOR_HEX.NONE
+
   return (
     <div className="relative flex-shrink-0">
       <div
         className="relative w-5 h-5 rounded-full flex-shrink-0"
-        style={{ background: `conic-gradient(#222222 0% ${completeness}%, #eeeeee ${completeness}% 100%)` }}
+        style={{ background: `conic-gradient(#222222 0% ${compPct}%, #eeeeee ${compPct}% 100%)` }}
       >
         <div className="absolute inset-[3px] bg-white rounded-full">
           <div
             className="absolute inset-[3px] rounded-full"
             style={{
-              background: `conic-gradient(${CONFIDENCE_COLOR_HEX[tier]} 0% ${confidence}%, #eeeeee ${confidence}% 100%)`,
+              background: confidence != null
+                ? `conic-gradient(${color} 0% ${confPct}%, #eeeeee ${confPct}% 100%)`
+                : '#eeeeee',
             }}
           />
         </div>

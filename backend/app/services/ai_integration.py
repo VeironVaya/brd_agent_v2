@@ -1,41 +1,32 @@
-"""DUMMY AI — placeholder only, centralized on purpose.
+"""LiteLLM integration — wraps the real LLM call behind a strict prompt.
 
-Nothing in this file is real intelligence. It exists so `chat_service.py`
-has something to call today, with a return shape rich enough that the
-*rest* of the pipeline (Answer updates, status transitions, flagged
-detection, the frontend's DonutBadge/missing-items/assumption-pill
-rendering) can be built and verified for real right now, without waiting
-on the AI team's integration. When that's ready, they replace this
-file's internals (`get_reply`'s body — the deterministic placeholder
-math below) with a real model call; the signature is the actual
-contract other code is written against and is expected to stay stable
-(or change deliberately, in coordination) — see
-`../../../implementation_spin2.md` §1.2 for the fuller writeup of this
-seam.
-
-Search the codebase for "DUMMY_AI" to find every place this is used.
+Follows the design in brainstorming/erd.md:
+- Reads system prompt and per-section context
+- Talks to Groq (llama-3.3-70b-versatile) / Gemini via LiteLLM
+- Expects JSON output conforming to LLMReplySchema
+- Translates the LLM response into an AgentReply dataclass
+- Falls back to a deterministic dummy reply when no API keys are configured
 """
 
-import os
-import json
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from pydantic import BaseModel, Field
+import json
+import os
 import litellm
+from pydantic import BaseModel, Field
+
+try:
+    import litellm.types.utils as _litellm_utils
+    import litellm.types.llms.openai as _litellm_openai
+    _litellm_utils.Message.model_rebuild(_types_namespace=vars(_litellm_openai))
+except Exception:
+    pass
 
 from app.config import settings
 from app.services.brd_rules import get_section_rules_prompt
 
 DUMMY_AI_REPLY = "Got it — logged. (Dummy AI: Please set GEMINI_API_KEY or GROQ_API_KEY in .env)"
-
-
-# Hardcoded dummy breakdown — replaced by the AI team with real computed values.
-_DUMMY_CONFIDENCE_BREAKDOWN = {
-    "grounding": {"score": 72, "reason": "[Dummy] Most claims are grounded in provided user inputs, but some numerical targets lack cited sources."},
-    "reference_context": {"score": 85, "reason": "[Dummy] The answer aligns well with prior sections. Minor terminology drift detected."},
-    "section_compliance": {"score": 60, "reason": "[Dummy] Some required sub-fields per the section template are still missing or vague."},
-    "testability": {"score": 50, "reason": "[Dummy] The stated requirements lack measurable acceptance criteria in several places."},
-    "consistency": {"score": 90, "reason": "[Dummy] No logical contradictions detected across the current section content."},
-}
 
 
 @dataclass
@@ -44,11 +35,10 @@ class AgentReply:
     answer_text: str | None = None
     completeness: int | None = None
     confidence: int | None = None
+    confidence_reason: str | None = None
+    confidence_components: dict | None = None
     missing_items: list[str] = field(default_factory=list)
     is_assumption: bool = False
-    # AI team: populate this with the 5-dimension breakdown dict.
-    # Shape: {"grounding": {"score": int, "reason": str}, ...}
-    # Leave None if not yet computed — the frontend hides the panel gracefully.
     confidence_breakdown: dict | None = None
 
 
@@ -56,7 +46,7 @@ class LLMReplySchema(BaseModel):
     reply_text: str = Field(..., description="The chat reply to the user")
     answer_text: str | None = Field(None, description="The updated formal draft text for this section")
     completeness: int = Field(..., description="Completeness score 0-100")
-    confidence: int = Field(..., description="Confidence score 0-100")
+    confidence: int | None = Field(None, description="Confidence score 0-100")
     missing_items: list[str] = Field(default_factory=list, description="List of missing information")
     is_assumption: bool = Field(default=False, description="True if AI made assumptions")
     confidence_breakdown: dict | None = Field(
@@ -137,23 +127,26 @@ async def get_reply(
     message_text: str,
     history: list[dict],
     current_answer: dict | None,
+    field_id: str | None = None,
     context_answers: dict[str, str] | None = None,
 ) -> AgentReply:
     """Real AI Integration: LiteLLM routing processing room data and outputting AgentReply."""
-    # if not settings.gemini_api_key and not settings.groq_api_key:
-    #     return AgentReply(
-    #         reply_text=DUMMY_AI_REPLY,
-
-    # ini kalo groq dulu baru gemini        
     if not settings.groq_api_key and not settings.gemini_api_key:
+        turns_so_far = len(history) // 2 + 1
+        completeness = min(100, turns_so_far * 34)
+        missing_items = [] if completeness >= 100 else ["More detail needed before this can be marked complete."]
+
+        previous_answer_text = (current_answer or {}).get("answer_text") or ""
+        answer_text = f"{previous_answer_text} {message_text}".strip()
+
         return AgentReply(
-            reply_text="Got it — logged. (Dummy AI: Please set GROQ_API_KEY or GEMINI_API_KEY in .env)",
-            answer_text=(current_answer or {}).get("answer_text") or f"{message_text}",
-            completeness=50,
-            confidence=90,
-            missing_items=["Missing API Key"],
+            reply_text=DUMMY_AI_REPLY,
+            answer_text=answer_text,
+            completeness=completeness,
+            confidence=None,
+            missing_items=missing_items,
             is_assumption=False,
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
         
     # Inject API Keys into environment for LiteLLM
@@ -182,14 +175,11 @@ async def get_reply(
 
     try:
         chat_completion = await litellm.acompletion(
-            # model="gemini/gemini-1.5-flash",
-            # fallbacks=["gemini/gemini-flash-latest"],
-
-            # ini kalo gemini dulu baru groq
-            model="groq/llama-3.3-70b-versatile",
+            model="gemini/gemini-2.5-flash",
             fallbacks=[
+                "gemini/gemini-3.5-flash",
+                "gemini/gemini-3.5-flash-lite",
                 "gemini/gemini-3.1-flash-lite",
-                "gemini/gemini-flash-latest",
             ],
             messages=[
                 {
@@ -224,12 +214,10 @@ async def get_reply(
             reply_text=llm_reply.reply_text,
             answer_text=llm_reply.answer_text,
             completeness=llm_reply.completeness,
-            confidence=llm_reply.confidence,
+            confidence=None,
             missing_items=llm_reply.missing_items,
             is_assumption=llm_reply.is_assumption,
-            # AI team: llm_reply.confidence_breakdown is None until the model
-            # returns it. Fallback to dummy so the UI is always exercisable.
-            confidence_breakdown=llm_reply.confidence_breakdown or _DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
         
     except Exception as e:
@@ -238,8 +226,9 @@ async def get_reply(
             reply_text="I'm sorry, I encountered an internal error while processing that.",
             answer_text=current_answer_text,
             completeness=current_completeness,
+            confidence=None,
             missing_items=(current_answer or {}).get("missing_items") or [],
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
 
 GREETING_PROMPT = """
@@ -281,8 +270,8 @@ async def get_greeting(
 
     try:
         chat_completion = await litellm.acompletion(
-            model="groq/llama-3.3-70b-versatile",
-            fallbacks=["gemini/gemini-3.1-flash-lite", "gemini/gemini-flash-latest"],
+            model="gemini/gemini-2.5-flash",
+            fallbacks=["gemini/gemini-3.5-flash", "gemini/gemini-3.5-flash-lite", "gemini/gemini-3.1-flash-lite"],
             messages=[
                 {
                     "role": "system",
@@ -308,10 +297,10 @@ async def get_greeting(
             reply_text=llm_reply.reply_text,
             answer_text="",
             completeness=0,
-            confidence=100,
+            confidence=None,
             missing_items=llm_reply.missing_items,
             is_assumption=False,
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
         
     except Exception as e:
@@ -320,7 +309,9 @@ async def get_greeting(
             reply_text=f"Welcome to {room_title}. Let's get started. What information do you have for this section?",
             answer_text="",
             completeness=0,
+            confidence=None,
             missing_items=[],
-            confidence_breakdown=_DUMMY_CONFIDENCE_BREAKDOWN,
+            confidence_breakdown=None,
         )
+
 

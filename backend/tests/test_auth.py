@@ -1,6 +1,6 @@
 import uuid
 
-from tests.conftest import register_and_login
+from .helpers import register_and_login
 
 
 async def test_register_returns_user_and_token(client):

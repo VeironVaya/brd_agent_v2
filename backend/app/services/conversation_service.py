@@ -287,7 +287,7 @@ async def delete(session: AsyncSession, *, conversation_id: str, user_id: str) -
 
 
 def _wire_key(section: Section) -> str:
-    return section.template_key if not section.is_custom else section.section_id
+    return (section.template_key if not section.is_custom else None) or section.section_id
 
 
 async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: str) -> dict:
@@ -315,12 +315,15 @@ async def get_detail(session: AsyncSession, *, conversation_id: str, user_id: st
             "status": answer.status,
             "completeness": answer.completeness,
             "confidence": answer.confidence,
+            "confidence_reason": answer.confidence_reason,
+            "confidence_components": answer.confidence_components,
             "answer": answer.answer_text,
             "missing": answer.missing_items or [],
             "flagged": True if answer.section_id in flagged_ids else None,
             "choice_data": answer.choice_data,
             "confidence_breakdown": answer.confidence_breakdown,
         }
+
 
     messages_dict: dict[str, list[dict]] = {}
     for bubble in bubbles:

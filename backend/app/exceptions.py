@@ -65,3 +65,5 @@ class InvalidRoleError(DomainError):
 class InvalidChoiceDataError(DomainError):
     status_code = 400
     error = "invalid_choice_data"
+
+

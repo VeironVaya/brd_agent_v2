@@ -2,7 +2,7 @@
 name = "brd-agent-backend"
 version = "0.1.0"
 description = "BRD-Agent backend — FastAPI + PostgreSQL"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
@@ -16,7 +16,12 @@ dependencies = [
     "pyjwt>=2.9",
     "greenlet>=3.1",
     "litellm>=1.0",
+    "fastembed>=0.8",
+    "psycopg[binary]>=3.2",
+    "python-docx>=1.2",
 ]
+
+
 
 [project.optional-dependencies]
 dev = [
@@ -40,4 +45,14 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
-include = ["app*"]
+include = ["app*", "tests*"]
+
+[tool.pyright]
+extraPaths = ["."]
+
+[tool.pyrefly]
+search-path = ["."]
+extraSearchPaths = ["."]
+
+
+

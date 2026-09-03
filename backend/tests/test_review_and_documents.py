@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 from app.db import SessionLocal
 from app.repositories import answer_repository, section_repository
 from app.services import review_service
-from tests.conftest import create_conversation, register_and_login
+from .helpers import create_conversation, register_and_login
 
 
 async def test_recompute_review_empty_for_fresh_conversation(client):
@@ -39,22 +39,23 @@ async def test_flagged_detection_when_prerequisite_answered_more_recently(client
         later = datetime.now(timezone.utc)
 
         # Dependent answered first (done)...
-        await answer_repository.upsert(
+        dependent_answer = await answer_repository.upsert(
             db, dependent.section_id, status="done", answer_text="Target: Q2 next year.", touch_answered_at=False
         )
-        dependent_answer = await answer_repository.find_by_section_id(db, dependent.section_id)
         dependent_answer.answered_at = earlier
 
         for prereq in (prereq_a, prereq_b):
-            await answer_repository.upsert(db, prereq.section_id, status="done", answer_text="...", touch_answered_at=False)
-            a = await answer_repository.find_by_section_id(db, prereq.section_id)
+            a = await answer_repository.upsert(
+                db, prereq.section_id, status="done", answer_text="...", touch_answered_at=False
+            )
             a.answered_at = earlier
 
         await db.commit()
 
         # ...then one prerequisite (3.3.5) gets updated *after* the dependent was answered.
-        await answer_repository.upsert(db, prereq_a.section_id, status="done", answer_text="Updated plan.", touch_answered_at=False)
-        prereq_a_answer = await answer_repository.find_by_section_id(db, prereq_a.section_id)
+        prereq_a_answer = await answer_repository.upsert(
+            db, prereq_a.section_id, status="done", answer_text="Updated plan.", touch_answered_at=False
+        )
         prereq_a_answer.answered_at = later
         await db.commit()
 
@@ -143,3 +144,6 @@ async def test_generate_for_unowned_conversation_404s(client):
         f"/api/conversations/{conv_id}/generate", json={"format": "markdown"}, headers=other["headers"]
     )
     assert res.status_code == 404
+
+
+

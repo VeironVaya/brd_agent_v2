@@ -1,0 +1,602 @@
+{
+  "1.1.1_GOOD": {
+    "sample_id": "1.1.1_GOOD",
+    "field_id": "1.1.1",
+    "quality_tier": "GOOD",
+    "expected_level": "HIGH",
+    "scores": [
+      100,
+      100,
+      100
+    ],
+    "levels": [
+      "HIGH",
+      "HIGH",
+      "HIGH"
+    ],
+    "mean_score": 100.0,
+    "std_dev": 0.0,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 5.18
+      },
+      {
+        "run": 2,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 3.62
+      },
+      {
+        "run": 3,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 11.87
+      }
+    ]
+  },
+  "1.1.1_POOR": {
+    "sample_id": "1.1.1_POOR",
+    "field_id": "1.1.1",
+    "quality_tier": "POOR",
+    "expected_level": "LOW",
+    "scores": [
+      0,
+      20,
+      0
+    ],
+    "levels": [
+      "LOW",
+      "LOW",
+      "LOW"
+    ],
+    "mean_score": 6.7,
+    "std_dev": 9.43,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 0,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 0,
+          "consistency": null
+        },
+        "elapsed": 32.51
+      },
+      {
+        "run": 2,
+        "confidence": 20,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 0,
+          "consistency": 100
+        },
+        "elapsed": 26.76
+      },
+      {
+        "run": 3,
+        "confidence": 0,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 0,
+          "consistency": null
+        },
+        "elapsed": 28.72
+      }
+    ]
+  },
+  "1.1.2_MEDIUM": {
+    "sample_id": "1.1.2_MEDIUM",
+    "field_id": "1.1.2",
+    "quality_tier": "MEDIUM",
+    "expected_level": "MEDIUM",
+    "scores": [
+      50,
+      62,
+      64
+    ],
+    "levels": [
+      "LOW",
+      "MEDIUM",
+      "MEDIUM"
+    ],
+    "mean_score": 58.7,
+    "std_dev": 6.18,
+    "level_agreement_pct": 33.3,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 50,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 100,
+          "section_compliance": 50,
+          "testability": 0,
+          "consistency": 100
+        },
+        "elapsed": 29.98
+      },
+      {
+        "run": 2,
+        "confidence": 62,
+        "confidence_level": "MEDIUM",
+        "component_scores": {
+          "grounding": 50,
+          "reference_context": 100,
+          "section_compliance": 58,
+          "testability": 0,
+          "consistency": 100
+        },
+        "elapsed": 26.64
+      },
+      {
+        "run": 3,
+        "confidence": 64,
+        "confidence_level": "MEDIUM",
+        "component_scores": {
+          "grounding": 67,
+          "reference_context": 100,
+          "section_compliance": 50,
+          "testability": 40,
+          "consistency": null
+        },
+        "elapsed": 27.96
+      }
+    ]
+  },
+  "1.2_GOOD": {
+    "sample_id": "1.2_GOOD",
+    "field_id": "1.2",
+    "quality_tier": "GOOD",
+    "expected_level": "HIGH",
+    "scores": [
+      100,
+      100,
+      100
+    ],
+    "levels": [
+      "HIGH",
+      "HIGH",
+      "HIGH"
+    ],
+    "mean_score": 100.0,
+    "std_dev": 0.0,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": null
+        },
+        "elapsed": 34.49
+      },
+      {
+        "run": 2,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 29.42
+      },
+      {
+        "run": 3,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 25.42
+      }
+    ]
+  },
+  "2.1_POOR": {
+    "sample_id": "2.1_POOR",
+    "field_id": "2.1",
+    "quality_tier": "POOR",
+    "expected_level": "LOW",
+    "scores": [
+      0,
+      40,
+      12
+    ],
+    "levels": [
+      "LOW",
+      "LOW",
+      "LOW"
+    ],
+    "mean_score": 17.3,
+    "std_dev": 16.76,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 0,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 0,
+          "consistency": null
+        },
+        "elapsed": 20.57
+      },
+      {
+        "run": 2,
+        "confidence": 40,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 33,
+          "section_compliance": 29,
+          "testability": 40,
+          "consistency": 100
+        },
+        "elapsed": 30.73
+      },
+      {
+        "run": 3,
+        "confidence": 12,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 50,
+          "consistency": null
+        },
+        "elapsed": 35.81
+      }
+    ]
+  },
+  "3.1_GOOD": {
+    "sample_id": "3.1_GOOD",
+    "field_id": "3.1",
+    "quality_tier": "GOOD",
+    "expected_level": "HIGH",
+    "scores": [
+      100,
+      100,
+      100
+    ],
+    "levels": [
+      "HIGH",
+      "HIGH",
+      "HIGH"
+    ],
+    "mean_score": 100.0,
+    "std_dev": 0.0,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 23.88
+      },
+      {
+        "run": 2,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 30.21
+      },
+      {
+        "run": 3,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 16.9
+      }
+    ]
+  },
+  "3.1_MEDIUM": {
+    "sample_id": "3.1_MEDIUM",
+    "field_id": "3.1",
+    "quality_tier": "MEDIUM",
+    "expected_level": "MEDIUM",
+    "scores": [
+      81,
+      79,
+      70
+    ],
+    "levels": [
+      "MEDIUM",
+      "MEDIUM",
+      "MEDIUM"
+    ],
+    "mean_score": 76.7,
+    "std_dev": 4.78,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 81,
+        "confidence_level": "MEDIUM",
+        "component_scores": {
+          "grounding": 75,
+          "reference_context": 100,
+          "section_compliance": 79,
+          "testability": 50,
+          "consistency": 100
+        },
+        "elapsed": 27.76
+      },
+      {
+        "run": 2,
+        "confidence": 79,
+        "confidence_level": "MEDIUM",
+        "component_scores": {
+          "grounding": 67,
+          "reference_context": 100,
+          "section_compliance": 67,
+          "testability": 62,
+          "consistency": 100
+        },
+        "elapsed": 31.73
+      },
+      {
+        "run": 3,
+        "confidence": 70,
+        "confidence_level": "MEDIUM",
+        "component_scores": {
+          "grounding": 50,
+          "reference_context": 100,
+          "section_compliance": 50,
+          "testability": 50,
+          "consistency": 100
+        },
+        "elapsed": 27.43
+      }
+    ]
+  },
+  "3.4_GOOD": {
+    "sample_id": "3.4_GOOD",
+    "field_id": "3.4",
+    "quality_tier": "GOOD",
+    "expected_level": "HIGH",
+    "scores": [
+      100,
+      100,
+      100
+    ],
+    "levels": [
+      "HIGH",
+      "HIGH",
+      "HIGH"
+    ],
+    "mean_score": 100.0,
+    "std_dev": 0.0,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 27.44
+      },
+      {
+        "run": 2,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 21.96
+      },
+      {
+        "run": 3,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 35.82
+      }
+    ]
+  },
+  "4.1_POOR": {
+    "sample_id": "4.1_POOR",
+    "field_id": "4.1",
+    "quality_tier": "POOR",
+    "expected_level": "LOW",
+    "scores": [
+      34,
+      0,
+      30
+    ],
+    "levels": [
+      "LOW",
+      "LOW",
+      "LOW"
+    ],
+    "mean_score": 21.3,
+    "std_dev": 15.17,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 34,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 33,
+          "section_compliance": 0,
+          "testability": 38,
+          "consistency": 100
+        },
+        "elapsed": 23.8
+      },
+      {
+        "run": 2,
+        "confidence": 0,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 0,
+          "consistency": null
+        },
+        "elapsed": 24.64
+      },
+      {
+        "run": 3,
+        "confidence": 30,
+        "confidence_level": "LOW",
+        "component_scores": {
+          "grounding": 0,
+          "reference_context": 0,
+          "section_compliance": 0,
+          "testability": 50,
+          "consistency": 100
+        },
+        "elapsed": 35.56
+      }
+    ]
+  },
+  "5.1_GOOD": {
+    "sample_id": "5.1_GOOD",
+    "field_id": "5.1",
+    "quality_tier": "GOOD",
+    "expected_level": "HIGH",
+    "scores": [
+      100,
+      100,
+      100
+    ],
+    "levels": [
+      "HIGH",
+      "HIGH",
+      "HIGH"
+    ],
+    "mean_score": 100.0,
+    "std_dev": 0.0,
+    "level_agreement_pct": 100.0,
+    "runs": [
+      {
+        "run": 1,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 34.07
+      },
+      {
+        "run": 2,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 4.56
+      },
+      {
+        "run": 3,
+        "confidence": 100,
+        "confidence_level": "HIGH",
+        "component_scores": {
+          "grounding": 100,
+          "reference_context": 100,
+          "section_compliance": 100,
+          "testability": 100,
+          "consistency": 100
+        },
+        "elapsed": 21.31
+      }
+    ]
+  }
+}
