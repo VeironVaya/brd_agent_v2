@@ -85,6 +85,7 @@ Your task is to guide the user to complete the current BRD section through a con
    - 0-30: Vague or barely relevant information, or uses unmeasurable language. Ask follow up.
    - 40-70: Good start, but missing key details or concrete numbers. Document them in "missing_items".
    - 80-100: Comprehensive, testable, grounded, and actionable. Acknowledge and move on.
+   - CRITICAL: If you determine that the section is fully complete and "missing_items" is empty, you MUST set "completeness" to exactly 100. Do not use 95 or 99.
 7. If you must make assumptions to format the text, set "is_assumption" to true. CRITICAL: Set "is_assumption" to FALSE if you are simply asking a clarifying question or asking for more information.
 8. EXPLICIT CONTEXT CITATION: When you reject an input or ask for clarification based on a prerequisite dependency (listed in SECTION-SPECIFIC RULES), you MUST explicitly cite the name of that prerequisite section and explicitly quote or summarize its drafted text in your `reply_text`. For example: "Based on the draft of 1.2 Business Objective where you stated 'X', your current input contradicts this because..."
 
@@ -129,6 +130,7 @@ async def get_reply(
     current_answer: dict | None,
     field_id: str | None = None,
     context_answers: dict[str, str] | None = None,
+    judge_critique: dict | None = None,
 ) -> AgentReply:
     """Real AI Integration: LiteLLM routing processing room data and outputting AgentReply."""
     if not settings.groq_api_key and not settings.gemini_api_key:
@@ -173,13 +175,27 @@ async def get_reply(
         history_context=history_context,
     )
 
+    if judge_critique:
+        system_instruction += "\n\n# EVALUATOR FEEDBACK (REFLECTION MODE)\n"
+        system_instruction += "The Senior Reviewer reviewed your draft and found issues. You MUST fix your `answer_text`, ask clarifying questions to the user in `reply_text`, and update `missing_items` based on this feedback:\n"
+        system_instruction += f"- Evaluator Confidence Score: {judge_critique.get('final_confidence', 0)}/100\n"
+        system_instruction += f"- Evaluator Reason: {judge_critique.get('confidence_reason', '')}\n"
+        
+        breakdown = judge_critique.get('confidence_breakdown')
+        if breakdown:
+            system_instruction += "- Detailed Breakdown:\n"
+            for k, v in breakdown.items():
+                if isinstance(v, dict):
+                    system_instruction += f"  * {k.replace('_', ' ').title()} ({v.get('score', 0)}/100): {v.get('reason', '')}\n"
+
+
     try:
         chat_completion = await litellm.acompletion(
-            model="gemini/gemini-2.5-flash",
+            model="gemini/gemini-3.1-flash-lite",
             fallbacks=[
-                "gemini/gemini-3.5-flash",
                 "gemini/gemini-3.5-flash-lite",
-                "gemini/gemini-3.1-flash-lite",
+                "gemini/gemini-3.5-flash",
+                "gemini/gemini-3.6-flash",
             ],
             messages=[
                 {
@@ -267,11 +283,11 @@ async def get_greeting(
         section_rules_prompt=get_section_rules_prompt(room_id, context_answers or {}),
         room_title=room_title,
     )
-
+    
     try:
         chat_completion = await litellm.acompletion(
-            model="gemini/gemini-2.5-flash",
-            fallbacks=["gemini/gemini-3.5-flash", "gemini/gemini-3.5-flash-lite", "gemini/gemini-3.1-flash-lite"],
+            model="gemini/gemini-3.1-flash-lite",
+            fallbacks=["gemini/gemini-3.5-flash-lite", "gemini/gemini-3.5-flash", "gemini/gemini-3.6-flash"],
             messages=[
                 {
                     "role": "system",
