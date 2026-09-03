@@ -58,11 +58,11 @@ from app.config import settings
 # LLM model selection for Agent 2
 # ---------------------------------------------------------------------------
 
-_JUDGE_MODEL = "gemini/gemini-2.5-flash"
+_JUDGE_MODEL = "gemini/gemini-3.5-flash-lite"
 _JUDGE_FALLBACKS = [
-    "gemini/gemini-3.5-flash",
-    "gemini/gemini-3.5-flash-lite",
     "gemini/gemini-3.1-flash-lite",
+    "gemini/gemini-3.5-flash",
+    "gemini/gemini-3.6-flash",
 ]
 
 # Aliases for direct function calls and tests

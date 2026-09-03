@@ -28,7 +28,7 @@ from .ingest.repository import ReferenceRepository
 from .ingest.validator import validate_ingest
 
 
-BACKEND_DIR = Path(__file__).resolve().parents[2]
+BACKEND_DIR = Path(__file__).resolve().parents[3]
 CORPUS_PATH = Path(__file__).resolve().parent / "config" / "reference_corpus.json"
 SOURCE_DIR = BACKEND_DIR / "data" / "reference_brds"
 

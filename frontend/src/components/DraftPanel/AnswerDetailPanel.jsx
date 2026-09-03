@@ -62,14 +62,14 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
     )
   }
 
-  if (!answer || !answer.answer) {
+  if (!answer) {
     return (
       <div className="p-7">
         <div className="text-[22px] font-extrabold text-text-primary tracking-tight mb-1">
           {code} {leaf.title}
         </div>
         <div className="text-[14px] text-text-tertiary mt-6 font-medium">
-          No answer has been drafted for this section yet.
+          No answer has been started for this section yet.
         </div>
       </div>
     )
