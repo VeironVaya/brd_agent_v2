@@ -35,13 +35,13 @@ function RequireGuest({ children }) {
 export default function App() {
   return (
     <Routes>
-      <Route 
-        path="/login" 
+      <Route
+        path="/login"
         element={
           <RequireGuest>
             <LoginPage />
           </RequireGuest>
-        } 
+        }
       />
       <Route
         path="/"
