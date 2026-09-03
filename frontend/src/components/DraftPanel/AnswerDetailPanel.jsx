@@ -155,11 +155,14 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
             <div className="flex flex-col gap-4">
               {/* Missing Items */}
               {missingItems.length > 0 && (
-                <div>
-                  <div className="text-[10.5px] font-bold text-text-tertiary uppercase tracking-wide mb-1.5 mt-2">
-                    What's missing?
+                <div className="rounded-xl bg-orange-50/70 p-4 border border-orange-100/50 mt-3">
+                  <div className="flex items-center gap-1.5 text-[10.5px] font-bold text-orange-700 uppercase tracking-wide mb-1.5">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                    <span>What's missing?</span>
                   </div>
-                  <ul className="m-0 pl-5 list-disc flex flex-col gap-1.5 text-[13px] text-text-primary leading-relaxed opacity-90">
+                  <ul className="m-0 pl-6 text-[12px] text-orange-900 leading-relaxed list-disc space-y-1.5">
                     {missingItems.map((m, idx) => (
                       <li key={idx}>{m}</li>
                     ))}
