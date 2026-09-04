@@ -2,9 +2,9 @@ name: CI/CD
 
 on:
   push:
-    branches: [master, development]
+    branches: [production, development]
   pull_request:
-    branches: [master, development]
+    branches: [production, development]
 
 env:
   REGISTRY: ghcr.io
@@ -16,8 +16,8 @@ env:
 
 jobs:
   # ---------------------------------------------------------------------
-  # Runs on every push/PR to master or development — backend integration
-  # tests against a real Postgres service container (matches
+  # Runs on every push/PR to production or development — backend
+  # integration tests against a real Postgres service container (matches
   # backend/tests/conftest.py's expectations: real HTTP client, real DB,
   # no mocks). Never deploys.
   # ---------------------------------------------------------------------
@@ -60,13 +60,14 @@ jobs:
         run: pytest -q
 
   # ---------------------------------------------------------------------
-  # Only runs on push to master (i.e. after development is merged) —
-  # builds both production images, pushes them to GHCR, then SSHes into
-  # the EC2 instance to pull the new images and restart the stack.
+  # Only runs on push to production (the deploy branch — separate from
+  # GitHub's default branch) — builds both production images, pushes
+  # them to GHCR, then SSHes into the EC2 instance to pull the new images
+  # and restart the stack.
   # ---------------------------------------------------------------------
   build-and-deploy:
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/production'
     runs-on: ubuntu-latest
     permissions:
       contents: read
