@@ -29,10 +29,12 @@ from app.services.brd_rules import get_section_rules_prompt
 
 DUMMY_AI_REPLY = "Got it — logged. (Dummy AI: Please set GEMINI_API_KEY or GROQ_API_KEY in .env)"
 
-DEFAULT_AGENT1_MODEL = "gemini/gemini-2.5-flash"
+DEFAULT_AGENT1_MODEL = "gemini/gemini-3.1-flash-lite"
 DEFAULT_AGENT1_FALLBACKS = [
-    "gemini/gemini-2.0-flash",
-    "gemini/gemini-1.5-flash",
+    "gemini/gemini-3.5-flash-lite",
+    "gemini/gemini-3.5-flash",
+    "gemini/gemini-3.6-flash",
+    "gemini/gemini-2.5-flash",
 ]
 
 
@@ -287,7 +289,6 @@ Respond with a JSON object matching this schema:
 - 'missing_items': [List of strings detailing what specific information or data is required to fulfill this section based on the rules. Since the section is empty, this must list the core requirements.]
 - 'completeness': 0
 - 'confidence': 100
-- 'is_assumption': false
 """
 
 async def get_greeting(
