@@ -304,7 +304,7 @@ through real chat messages.
 | **CustomSection** | A user-added outline node — either a single item (leaf, gets its own chat Room) or a group header with arbitrarily nested children |
 | **Room** | The persistent chat thread for one leaf Section/CustomSection, or the general chat |
 | **Answer** | The current recorded content + quality state for one leaf |
-| **Completeness** | 0-100% — whether the answer meets the quality bar for this section (requires 100% completeness and >= 70% confidence to mark as done) |
+| **Completeness** | 0-100% — whether the answer meets the quality bar for this section (requires 100% completeness, >= 70% confidence, and 0 identified issues to mark as done) |
 | **Confidence** | 0-100%, with 5-dimension breakdown: grounding, reference_context, section_compliance, testability, consistency |
 | **Status** | `locked` / `ready` / `answered` / `needs_review` |
 | **Flagged** | A completed answer that needs re-verification because a section it `dependsOn` changed after it was answered |

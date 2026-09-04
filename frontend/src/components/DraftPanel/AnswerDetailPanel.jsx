@@ -81,12 +81,23 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
   const missingItems = answer.missing || []
   const breakdown = answer.confidence_breakdown
 
-  const depStyle = breakdown?.dependency_status ? DEP_STATUS_STYLES[breakdown.dependency_status] : null
+  const isFiller = (text) => {
+    const t = text.toLowerCase()
+    return t.includes('no critical issues') || t.includes('no issues') || t.includes('no significant issues') || t.includes('no suggestions') || t.trim() === 'none'
+  }
+
+  const cleanBreakdown = breakdown ? {
+    ...breakdown,
+    critique_issues: (breakdown.critique_issues || []).filter(i => !isFiller(i)),
+    critique_suggestions: (breakdown.critique_suggestions || []).filter(s => !isFiller(s))
+  } : null
+
+  const depStyle = cleanBreakdown?.dependency_status ? DEP_STATUS_STYLES[cleanBreakdown.dependency_status] : null
   
   // Calculate action items count
   const missingCount = missingItems.length
-  const issuesCount = breakdown?.critique_issues?.length || 0
-  const suggestionsCount = breakdown?.critique_suggestions?.length || 0
+  const issuesCount = cleanBreakdown?.critique_issues?.length || 0
+  const suggestionsCount = cleanBreakdown?.critique_suggestions?.length || 0
   const hasActionItems = missingCount > 0 || issuesCount > 0 || suggestionsCount > 0
 
   const actionItemsBadge = (
@@ -151,7 +162,7 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
 
       <div className="p-7 pt-4">
         {/* Banner */}
-        <ReviewRequiredBanner breakdown={breakdown} />
+        <ReviewRequiredBanner breakdown={cleanBreakdown} />
 
         {/* Current Draft (Accordion) */}
         {answer.answer && (
@@ -193,8 +204,8 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
               )}
               
               {/* Issues & Suggestions */}
-              <IssuesCard breakdown={breakdown} />
-              <SuggestionsCard breakdown={breakdown} />
+              <IssuesCard breakdown={cleanBreakdown} />
+              <SuggestionsCard breakdown={cleanBreakdown} />
             </div>
           </Accordion>
         )}
@@ -203,9 +214,9 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
         <Accordion title="Confidence & Analysis" icon={<BarChartIcon />}>
           <div className="flex flex-col gap-4">
             <div className="mt-2">
-              <ScoringCards breakdown={breakdown} />
+              <ScoringCards breakdown={cleanBreakdown} />
             </div>
-            <StrengthsCard breakdown={breakdown} />
+            <StrengthsCard breakdown={cleanBreakdown} />
           </div>
         </Accordion>
       </div>

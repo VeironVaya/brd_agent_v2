@@ -27,11 +27,11 @@ from app.services import ai_integration, conversation_service, template_service
 from app.ai import judge
 
 
-def _derive_status(completeness: int | None, confidence: int | None, previous_status: str | None) -> str:
-    """completeness and confidence -> status is a backend rule."""
+def _derive_status(completeness: int | None, confidence: int | None, issues_count: int, previous_status: str | None) -> str:
+    """completeness, confidence, and issues -> status is a backend rule."""
     if completeness is None:
         return previous_status or "ready"
-    if completeness >= 100 and (confidence is None or confidence >= 70):
+    if completeness >= 100 and (confidence is None or confidence >= 70) and issues_count == 0:
         return "done"
     return "progress"
 
@@ -193,7 +193,15 @@ async def post_message(
 
     if section.is_leaf:
         confidence = agent2_result["final_confidence"] if agent2_result else (existing_answer.confidence if existing_answer else None)
-        status = _derive_status(reply.completeness, confidence, existing_answer.status if existing_answer else None)
+        
+        breakdown = agent2_result["confidence_breakdown"] if agent2_result else (existing_answer.confidence_breakdown if existing_answer else None)
+        issues_count = 0
+        if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
+            issues = breakdown.get("critique_issues", [])
+            valid_issues = [i for i in issues if not any(x in i.lower() for x in ['no critical issues', 'no issues', 'no significant issues', 'none'])]
+            issues_count = len(valid_issues)
+            
+        status = _derive_status(reply.completeness, confidence, issues_count, existing_answer.status if existing_answer else None)
         
         upsert_kwargs = {
             "status": status,
@@ -261,7 +269,15 @@ async def init_chat_room(
     
     if section.is_leaf:
         existing_answer = await answer_repository.find_by_section_id(session, section.section_id)
-        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
+        
+        breakdown = reply.confidence_breakdown or (existing_answer.confidence_breakdown if existing_answer else None)
+        issues_count = 0
+        if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
+            issues = breakdown.get("critique_issues", [])
+            valid_issues = [i for i in issues if not any(x in i.lower() for x in ['no critical issues', 'no issues', 'no significant issues', 'none'])]
+            issues_count = len(valid_issues)
+            
+        status = _derive_status(reply.completeness, reply.confidence, issues_count, existing_answer.status if existing_answer else None)
         await answer_repository.upsert(
             session,
             section.section_id,

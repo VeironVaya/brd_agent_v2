@@ -291,6 +291,7 @@ SURGICAL CRITIQUE GUIDELINES
    - Explain the operational or downstream risk: Why does this gap prevent engineering, QA, compliance, or executive sponsors from signing off or building the solution?
    - Expose unstated boundaries: Point out missing dates, unidentified affected systems/teams, vague root causes, or absent acceptance criteria.
    - For any score below HIGH, identify the primary blocker preventing this section from reaching HIGH confidence.
+   - CRITICAL CONSTRAINT: If there are absolutely no issues, return an empty array `[]`. DO NOT insert generic filler strings like "No critical issues identified" or "None".
 
 3. SUGGESTED IMPROVEMENTS (Be Actionable, Concrete & Step-by-Step):
    - Provide precise, numbered questions or instructions the author should answer in the chat to immediately resolve each identified issue.
