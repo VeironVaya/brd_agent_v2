@@ -40,8 +40,6 @@ CLAUDE.md
 /brainstorming
 /out
 
-# Terraform (infra/terraform-iam) — local provider cache/state, never commit.
-# .terraform.lock.hcl IS tracked on purpose (pins provider versions).
 .terraform/
 *.tfstate
 *.tfstate.*
@@ -49,7 +47,5 @@ CLAUDE.md
 *.tfvars.json
 crash.log
 crash.*.log
-
-# Terraform-generated SSH private key (infra/terraform-ec2) — never commit.
 *.pem
 *-deployer-key*

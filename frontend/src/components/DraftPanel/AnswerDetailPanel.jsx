@@ -2,6 +2,7 @@ import { CONFIDENCE_COLOR_HEX } from '../../utils/confidenceColors.js'
 import { FIELD_META, confidenceTier } from '../../utils/draftFields.js'
 import { findCustomNode, getCodeForNode } from '../../utils/customSectionTree.js'
 import Accordion from '../common/Accordion.jsx'
+import { isChoiceSection } from '../../utils/choiceSections.js'
 import { 
   ReviewRequiredBanner, 
   ScoringCards, 
@@ -81,14 +82,47 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
   const missingItems = answer.missing || []
   const breakdown = answer.confidence_breakdown
 
-  const depStyle = breakdown?.dependency_status ? DEP_STATUS_STYLES[breakdown.dependency_status] : null
+  const isFiller = (text) => {
+    const t = text.toLowerCase()
+    return t.includes('no critical issues') || t.includes('no issues') || t.includes('no significant issues') || t.includes('no suggestions') || t.trim() === 'none'
+  }
+
+  const cleanBreakdown = breakdown ? {
+    ...breakdown,
+    critique_issues: (breakdown.critique_issues || []).filter(i => !isFiller(i)),
+    critique_suggestions: (breakdown.critique_suggestions || []).filter(s => !isFiller(s))
+  } : null
+
+  const depStyle = cleanBreakdown?.dependency_status ? DEP_STATUS_STYLES[cleanBreakdown.dependency_status] : null
   
   // Calculate action items count
-  let actionItemsCount = missingItems.length
-  if (breakdown?.critique_issues?.length) actionItemsCount += breakdown.critique_issues.length
-  if (breakdown?.critique_suggestions?.length) actionItemsCount += breakdown.critique_suggestions.length
+  const missingCount = missingItems.length
+  const issuesCount = cleanBreakdown?.critique_issues?.length || 0
+  const suggestionsCount = cleanBreakdown?.critique_suggestions?.length || 0
+  const hasActionItems = missingCount > 0 || issuesCount > 0 || suggestionsCount > 0
 
-  const hasActionItems = actionItemsCount > 0
+  const actionItemsBadge = (
+    <>
+      {missingCount > 0 && (
+        <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-orange-100 text-orange-700 rounded-full border border-orange-200" title="Missing Items">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          {missingCount}
+        </span>
+      )}
+      {issuesCount > 0 && (
+        <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 rounded-full border border-amber-200" title="Issues">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          {issuesCount}
+        </span>
+      )}
+      {suggestionsCount > 0 && (
+        <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded-full border border-blue-200" title="Suggestions">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v2M12 20v2m-7.07-15.07 1.41 1.41m12.72 12.72 1.41 1.41M2 12h2m16 0h2m-13.66 5.66-1.41 1.41m12.72-12.72-1.41 1.41"></path></svg>
+          {suggestionsCount}
+        </span>
+      )}
+    </>
+  )
 
   return (
     <div className="flex flex-col h-full overflow-y-auto relative">
@@ -129,7 +163,23 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
 
       <div className="p-7 pt-4">
         {/* Banner */}
-        <ReviewRequiredBanner breakdown={breakdown} />
+        <ReviewRequiredBanner breakdown={cleanBreakdown} />
+
+        {isChoiceSection(fieldId) && (
+          <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 mb-4 text-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto mb-3 text-slate-400">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h4 className="text-[13px] font-bold text-slate-700 mb-1">Structured Choice Section</h4>
+            <p className="text-[12.5px] text-slate-500 leading-relaxed">
+              This is a rigid choice section. You can use the chat to brainstorm, but you must click the <strong>"Choose options"</strong> button on the left to officially record your answer. The AI Quality Reviewer does not evaluate choice sections.
+            </p>
+          </div>
+        )}
 
         {/* Current Draft (Accordion) */}
         {answer.answer && (
@@ -145,12 +195,12 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
         )}
 
         {/* Accordion 1: Action Items */}
-        {hasActionItems && (
+        {hasActionItems && !isChoiceSection(fieldId) && (
           <Accordion 
             title="Action Items" 
             icon={<AlertTriangleIcon />} 
-            badge={actionItemsCount}
-            defaultOpen={actionItemsCount > 0}
+            badge={actionItemsBadge}
+            defaultOpen={hasActionItems}
           >
             <div className="flex flex-col gap-4">
               {/* Missing Items */}
@@ -171,21 +221,23 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
               )}
               
               {/* Issues & Suggestions */}
-              <IssuesCard breakdown={breakdown} />
-              <SuggestionsCard breakdown={breakdown} />
+              <IssuesCard breakdown={cleanBreakdown} />
+              <SuggestionsCard breakdown={cleanBreakdown} />
             </div>
           </Accordion>
         )}
 
         {/* Accordion 2: Scoring & Strengths */}
-        <Accordion title="Confidence & Analysis" icon={<BarChartIcon />}>
-          <div className="flex flex-col gap-4">
-            <div className="mt-2">
-              <ScoringCards breakdown={breakdown} />
+        {!isChoiceSection(fieldId) && (
+          <Accordion title="Confidence & Analysis" icon={<BarChartIcon />}>
+            <div className="flex flex-col gap-4">
+              <div className="mt-2">
+                <ScoringCards breakdown={cleanBreakdown} />
+              </div>
+              <StrengthsCard breakdown={cleanBreakdown} />
             </div>
-            <StrengthsCard breakdown={breakdown} />
-          </div>
-        </Accordion>
+          </Accordion>
+        )}
       </div>
     </div>
   )

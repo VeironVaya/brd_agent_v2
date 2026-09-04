@@ -583,7 +583,7 @@ async def test_agent1_generation_returns_bubbles_on_judge_error(monkeypatch):
     mock_reply.confidence_reason = "test"
     mock_reply.confidence_components = {}
     mock_reply.missing_items = []
-    mock_reply.is_assumption = False
+
     mock_reply.confidence_breakdown = {}
 
     existing_answer = MagicMock()

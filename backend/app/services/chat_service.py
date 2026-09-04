@@ -24,14 +24,17 @@ from app.repositories import answer_repository, bubble_repository, conversation_
 from app.ai.rag import CANONICAL_ANSWERABLE_FIELDS, ReferenceCitation, search_references
 from app.ai.validator import validate_project_facts
 from app.services import ai_integration, conversation_service, template_service
+from app.services.choice_section_service import CHOICE_SECTIONS
 from app.ai import judge
 
 
-def _derive_status(completeness: int | None, previous_status: str | None) -> str:
-    """completeness -> status is a backend rule."""
+def _derive_status(completeness: int | None, confidence: int | None, issues_count: int, previous_status: str | None) -> str:
+    """completeness, confidence, and issues -> status is a backend rule."""
     if completeness is None:
         return previous_status or "ready"
-    return "done" if completeness >= 100 else "progress"
+    if completeness >= 100 and (confidence is None or confidence >= 70) and issues_count == 0:
+        return "done"
+    return "progress"
 
 
 async def _resolve_room_section(session: AsyncSession, conversation_id: str, room_id: str) -> Section:
@@ -96,7 +99,17 @@ async def post_message(
     )
     await bubble_repository.insert(session, user_bubble)
 
+    project_evidence = judge.build_project_evidence_text(
+        conversation_context=conversation.context,
+        requestor_directorate=conversation.requestor_directorate,
+        impacted_stakeholders=conversation.impacted_stakeholders,
+        history=history,
+        latest_user_message=text,
+    )
+
     # ------------------------------------------------------------------ #
+    is_choice_section = field_id in CHOICE_SECTIONS if field_id else False
+
     # 1. AGENT 1: Generate or revise section draft content               #
     # ------------------------------------------------------------------ #
     reply = await ai_integration.get_reply(
@@ -108,6 +121,8 @@ async def post_message(
         current_answer=current_answer,
         field_id=field_id,
         context_answers=context_answers,
+        project_evidence=project_evidence,
+        is_choice_section=is_choice_section,
     )
 
     agent2_result = None
@@ -115,18 +130,9 @@ async def post_message(
     # ------------------------------------------------------------------ #
     # 2. AUTONOMOUS REFLECTION LOOP (Agent 2 Judge -> Agent 1 Fix)       #
     # ------------------------------------------------------------------ #
-    if section.is_leaf:
+    if section.is_leaf and not is_choice_section:
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS and reply.answer_text:
             try:
-                # 2a. Separate Confirmed Project Evidence
-                project_evidence = judge.build_project_evidence_text(
-                    conversation_context=conversation.context,
-                    requestor_directorate=conversation.requestor_directorate,
-                    impacted_stakeholders=conversation.impacted_stakeholders,
-                    history=history,
-                    latest_user_message=text,
-                )
-
                 # 2b. Hard Validator
                 val_result = validate_project_facts(reply.answer_text, project_evidence)
                 if not val_result.is_safe:
@@ -183,14 +189,23 @@ async def post_message(
     # ------------------------------------------------------------------ #
     agent_bubble = Bubble(
         section_id=section.section_id,
-        role="assumption" if reply.is_assumption else "agent",
+        role="agent",
         text=reply.reply_text,
         created_at=datetime.now(timezone.utc),
     )
     await bubble_repository.insert(session, agent_bubble)
 
     if section.is_leaf:
-        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
+        confidence = agent2_result["final_confidence"] if agent2_result else (existing_answer.confidence if existing_answer else None)
+        
+        breakdown = agent2_result["confidence_breakdown"] if agent2_result else (existing_answer.confidence_breakdown if existing_answer else None)
+        issues_count = 0
+        if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
+            issues = breakdown.get("critique_issues", [])
+            valid_issues = [i for i in issues if not any(x in i.lower() for x in ['no critical issues', 'no issues', 'no significant issues', 'none'])]
+            issues_count = len(valid_issues)
+            
+        status = _derive_status(reply.completeness, confidence, issues_count, existing_answer.status if existing_answer else None)
         
         upsert_kwargs = {
             "status": status,
@@ -258,7 +273,15 @@ async def init_chat_room(
     
     if section.is_leaf:
         existing_answer = await answer_repository.find_by_section_id(session, section.section_id)
-        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
+        
+        breakdown = reply.confidence_breakdown or (existing_answer.confidence_breakdown if existing_answer else None)
+        issues_count = 0
+        if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
+            issues = breakdown.get("critique_issues", [])
+            valid_issues = [i for i in issues if not any(x in i.lower() for x in ['no critical issues', 'no issues', 'no significant issues', 'none'])]
+            issues_count = len(valid_issues)
+            
+        status = _derive_status(reply.completeness, reply.confidence, issues_count, existing_answer.status if existing_answer else None)
         await answer_repository.upsert(
             session,
             section.section_id,

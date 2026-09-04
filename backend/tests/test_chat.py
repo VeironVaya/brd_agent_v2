@@ -83,21 +83,26 @@ async def test_post_message_to_nonexistent_room_404s(client):
 async def test_message_in_leaf_room_updates_the_answer(client):
     """The real pipeline the dummy AI now drives end to end: a message
     to a leaf room should actually create/update that leaf's Answer —
-    this used to be an explicit no-op (see chat_service.py's history)."""
+    this used to be an explicit no-op (see chat_service.py's history).
+
+    Uses "1.1.1" (Background) rather than "3.2" — "3.2" became a choice
+    section (see app/services/choice_section_service.py's CHOICE_SECTIONS),
+    which intentionally skips the Agent 2 Judge entirely and therefore
+    never sets a confidence score."""
     session = await register_and_login(client)
     conv_id = await create_conversation(client, session["headers"])
 
     before = (await client.get(f"/api/conversations/{conv_id}", headers=session["headers"])).json()
-    assert "3.2" not in before["answers"]  # nothing recorded yet
+    assert "1.1.1" not in before["answers"]  # nothing recorded yet
 
     await client.post(
-        f"/api/conversations/{conv_id}/rooms/3.2/messages",
+        f"/api/conversations/{conv_id}/rooms/1.1.1/messages",
         json={"text": "Vendor master data lives in SAP Ariba."},
         headers=session["headers"],
     )
 
     after = (await client.get(f"/api/conversations/{conv_id}", headers=session["headers"])).json()
-    answer = after["answers"]["3.2"]
+    answer = after["answers"]["1.1.1"]
     assert answer["status"] == "progress"
     assert answer["completeness"] > 0
     assert answer["confidence"] is not None

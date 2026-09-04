@@ -15,11 +15,6 @@ terraform {
       version = "~> 2.5"
     }
   }
-
-  # State TERPISAH dari infra/terraform-iam dan dari infra aurika -- ini
-  # hanya provisioning EC2 instance + Elastic IP + security group untuk
-  # project brd-agent-v2, menggunakan kredensial IAM user
-  # "brd-agent-v2-ec2-deployer" (bukan operator aurika-prod).
 }
 
 provider "aws" {

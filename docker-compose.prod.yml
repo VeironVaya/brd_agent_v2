@@ -1,11 +1,5 @@
 name: brdagent
 
-# Production compose file — deployed as /opt/brd-agent-v2/docker-compose.prod.yml
-# on the EC2 instance. Images are pulled from GHCR (built by the CI/CD
-# workflow), not built on the server. Postgres persists to a named volume
-# and gets the pgvector schema (migrations_rag/*.sql) applied automatically
-# on its FIRST boot only, via docker-entrypoint-initdb.d.
-
 services:
   postgres:
     image: pgvector/pgvector:pg16
@@ -15,11 +9,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-brdagent}
     volumes:
       - brdagent_pgdata:/var/lib/postgresql/data
-      # Runs once, only against a freshly-initialized data directory —
-      # creates the reference_documents/reference_chunks tables and the
-      # pgvector extension + embedding column used by the RAG retrieval
-      # path (app/ai/rag/semantic.py). This is NOT covered by
-      # `alembic upgrade head` (that only manages backend/migrations/).
       - ./backend/migrations_rag:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-brdagent}"]
@@ -35,9 +24,6 @@ services:
       RAG_DATABASE_URL: postgresql://${POSTGRES_USER:-brdagent}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-brdagent}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRY_HOURS: ${JWT_EXPIRY_HOURS:-168}
-      # Same-origin deploy (nginx proxies /api and /auth to this
-      # container) — the browser never calls this origin directly, so
-      # this is mostly a safety net, not the primary access path.
       CORS_ORIGINS: http://${PUBLIC_IP}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GROQ_API_KEY: ${GROQ_API_KEY:-}

@@ -152,7 +152,12 @@ export default function ConversationsPage() {
       ...g,
       brdCount: conversations.filter(c => c.groupId === g.id).length
     }))
-    .filter((g) => g.title.toLowerCase().includes(query.toLowerCase()))
+    .filter((g) => {
+      const q = query.toLowerCase()
+      const titleMatches = g.title.toLowerCase().includes(q)
+      const hasMatchingBrd = conversations.some(c => c.groupId === g.id && c.title.toLowerCase().includes(q))
+      return titleMatches || hasMatchingBrd
+    })
   
   const filteredBrds = activeBrdList.filter((c) => c.title.toLowerCase().includes(query.toLowerCase()))
   

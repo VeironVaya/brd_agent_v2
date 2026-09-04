@@ -8,19 +8,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Hardcoded lowercase — GHCR rejects uppercase in image paths, and
-  # ${{ github.repository_owner }} resolves to "VeironVaya" (mixed
-  # case), which would break the push. Must match docker-compose.prod.yml.
   BACKEND_IMAGE: ghcr.io/veironvaya/brd-agent-v2-backend
   FRONTEND_IMAGE: ghcr.io/veironvaya/brd-agent-v2-frontend
 
 jobs:
-  # ---------------------------------------------------------------------
-  # Runs on every push/PR to production or development — backend
-  # integration tests against a real Postgres service container (matches
-  # backend/tests/conftest.py's expectations: real HTTP client, real DB,
-  # no mocks). Never deploys.
-  # ---------------------------------------------------------------------
   test:
     runs-on: ubuntu-latest
     services:
@@ -52,19 +43,11 @@ jobs:
       - name: Run backend tests
         working-directory: backend
         env:
-          # test/CI-only credentials against the ephemeral service
-          # container above — never used outside this workflow run.
           JWT_SECRET: test-secret-at-least-32-bytes-long-for-hs256
           TEST_LIVE_GROQ_KEY: ""
           TEST_LIVE_GEMINI_KEY: ""
         run: pytest -q
 
-  # ---------------------------------------------------------------------
-  # Only runs on push to production (the deploy branch — separate from
-  # GitHub's default branch) — builds both production images, pushes
-  # them to GHCR, then SSHes into the EC2 instance to pull the new images
-  # and restart the stack.
-  # ---------------------------------------------------------------------
   build-and-deploy:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/production'
