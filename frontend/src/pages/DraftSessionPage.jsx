@@ -258,6 +258,20 @@ export default function DraftSessionPage() {
             <ProgressHeader percent={percent} buckets={buckets} />
           </div>
           <div className="flex-1 min-h-0 overflow-y-auto">
+            {canEdit && (
+              <div className="px-7 pt-5 pb-2">
+                <button
+                  type="button"
+                  onClick={() => setAddSectionOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 border-[1.5px] border-dashed border-border rounded-btn px-3.5 py-2 text-[13px] font-medium text-text-tertiary hover:border-text-primary hover:text-[#3f3f3f] cursor-pointer bg-transparent transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Add custom section
+                </button>
+              </div>
+            )}
             <SectionTree
               answers={answers}
               focusedFieldId={focusedFieldId}

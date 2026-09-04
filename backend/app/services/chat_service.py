@@ -27,11 +27,13 @@ from app.services import ai_integration, conversation_service, template_service
 from app.ai import judge
 
 
-def _derive_status(completeness: int | None, previous_status: str | None) -> str:
-    """completeness -> status is a backend rule."""
+def _derive_status(completeness: int | None, confidence: int | None, previous_status: str | None) -> str:
+    """completeness and confidence -> status is a backend rule."""
     if completeness is None:
         return previous_status or "ready"
-    return "done" if completeness >= 100 else "progress"
+    if completeness >= 100 and (confidence is None or confidence >= 70):
+        return "done"
+    return "progress"
 
 
 async def _resolve_room_section(session: AsyncSession, conversation_id: str, room_id: str) -> Section:
@@ -96,6 +98,14 @@ async def post_message(
     )
     await bubble_repository.insert(session, user_bubble)
 
+    project_evidence = judge.build_project_evidence_text(
+        conversation_context=conversation.context,
+        requestor_directorate=conversation.requestor_directorate,
+        impacted_stakeholders=conversation.impacted_stakeholders,
+        history=history,
+        latest_user_message=text,
+    )
+
     # ------------------------------------------------------------------ #
     # 1. AGENT 1: Generate or revise section draft content               #
     # ------------------------------------------------------------------ #
@@ -108,6 +118,7 @@ async def post_message(
         current_answer=current_answer,
         field_id=field_id,
         context_answers=context_answers,
+        project_evidence=project_evidence,
     )
 
     agent2_result = None
@@ -118,15 +129,6 @@ async def post_message(
     if section.is_leaf:
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS and reply.answer_text:
             try:
-                # 2a. Separate Confirmed Project Evidence
-                project_evidence = judge.build_project_evidence_text(
-                    conversation_context=conversation.context,
-                    requestor_directorate=conversation.requestor_directorate,
-                    impacted_stakeholders=conversation.impacted_stakeholders,
-                    history=history,
-                    latest_user_message=text,
-                )
-
                 # 2b. Hard Validator
                 val_result = validate_project_facts(reply.answer_text, project_evidence)
                 if not val_result.is_safe:
@@ -183,14 +185,15 @@ async def post_message(
     # ------------------------------------------------------------------ #
     agent_bubble = Bubble(
         section_id=section.section_id,
-        role="assumption" if reply.is_assumption else "agent",
+        role="agent",
         text=reply.reply_text,
         created_at=datetime.now(timezone.utc),
     )
     await bubble_repository.insert(session, agent_bubble)
 
     if section.is_leaf:
-        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
+        confidence = agent2_result["final_confidence"] if agent2_result else (existing_answer.confidence if existing_answer else None)
+        status = _derive_status(reply.completeness, confidence, existing_answer.status if existing_answer else None)
         
         upsert_kwargs = {
             "status": status,
