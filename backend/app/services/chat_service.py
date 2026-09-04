@@ -24,6 +24,7 @@ from app.repositories import answer_repository, bubble_repository, conversation_
 from app.ai.rag import CANONICAL_ANSWERABLE_FIELDS, ReferenceCitation, search_references
 from app.ai.validator import validate_project_facts
 from app.services import ai_integration, conversation_service, template_service
+from app.services.choice_section_service import CHOICE_SECTIONS
 from app.ai import judge
 
 
@@ -107,6 +108,8 @@ async def post_message(
     )
 
     # ------------------------------------------------------------------ #
+    is_choice_section = field_id in CHOICE_SECTIONS if field_id else False
+
     # 1. AGENT 1: Generate or revise section draft content               #
     # ------------------------------------------------------------------ #
     reply = await ai_integration.get_reply(
@@ -119,6 +122,7 @@ async def post_message(
         field_id=field_id,
         context_answers=context_answers,
         project_evidence=project_evidence,
+        is_choice_section=is_choice_section,
     )
 
     agent2_result = None
@@ -126,7 +130,7 @@ async def post_message(
     # ------------------------------------------------------------------ #
     # 2. AUTONOMOUS REFLECTION LOOP (Agent 2 Judge -> Agent 1 Fix)       #
     # ------------------------------------------------------------------ #
-    if section.is_leaf:
+    if section.is_leaf and not is_choice_section:
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS and reply.answer_text:
             try:
                 # 2b. Hard Validator
