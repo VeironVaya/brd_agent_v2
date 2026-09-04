@@ -1,5 +1,6 @@
 """BRD Dependency Rules Engine."""
 
+
 DEPENDENCY_RULES = {
     "1.1": {
         "title": "Overview",

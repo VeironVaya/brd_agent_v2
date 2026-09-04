@@ -27,11 +27,13 @@ from app.services import ai_integration, conversation_service, template_service
 from app.ai import judge
 
 
-def _derive_status(completeness: int | None, previous_status: str | None) -> str:
-    """completeness -> status is a backend rule."""
+def _derive_status(completeness: int | None, confidence: int | None, previous_status: str | None) -> str:
+    """completeness and confidence -> status is a backend rule."""
     if completeness is None:
         return previous_status or "ready"
-    return "done" if completeness >= 100 else "progress"
+    if completeness >= 100 and (confidence is None or confidence >= 70):
+        return "done"
+    return "progress"
 
 
 async def _resolve_room_section(session: AsyncSession, conversation_id: str, room_id: str) -> Section:
@@ -96,6 +98,14 @@ async def post_message(
     )
     await bubble_repository.insert(session, user_bubble)
 
+    project_evidence = judge.build_project_evidence_text(
+        conversation_context=conversation.context,
+        requestor_directorate=conversation.requestor_directorate,
+        impacted_stakeholders=conversation.impacted_stakeholders,
+        history=history,
+        latest_user_message=text,
+    )
+
     # ------------------------------------------------------------------ #
     # 1. AGENT 1: Generate or revise section draft content               #
     # ------------------------------------------------------------------ #
@@ -108,34 +118,15 @@ async def post_message(
         current_answer=current_answer,
         field_id=field_id,
         context_answers=context_answers,
+        project_evidence=project_evidence,
     )
 
-    agent_bubble = Bubble(
-        section_id=section.section_id,
-        role="assumption" if reply.is_assumption else "agent",
-        text=reply.reply_text,
-        created_at=datetime.now(timezone.utc),
-    )
-    await bubble_repository.insert(session, agent_bubble)
+    agent2_result = None
 
     # ------------------------------------------------------------------ #
-    # 2. Persist Agent 1 draft content and completeness                  #
+    # 2. AUTONOMOUS REFLECTION LOOP (Agent 2 Judge -> Agent 1 Fix)       #
     # ------------------------------------------------------------------ #
     if section.is_leaf:
-        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
-        # Note: Do not write any old confidence here. Agent 2 is the single source of truth.
-        await answer_repository.upsert(
-            session,
-            section.section_id,
-            status=status,
-            completeness=reply.completeness,
-            answer_text=reply.answer_text,
-            missing_items=reply.missing_items,
-        )
-
-        # -------------------------------------------------------------- #
-        # 3. AGENT 2: Senior BA Reviewer / Judge                         #
-        # -------------------------------------------------------------- #
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS:
             if not reply.answer_text or not reply.answer_text.strip():
                 # Draft is empty or has been reset by user/Agent 1.
@@ -143,23 +134,13 @@ async def post_message(
                 await answer_repository.upsert(
                     session,
                     section.section_id,
-                    status=status,
+                    status=existing_answer.status if existing_answer else "ready",
                     clear_confidence=True,
                     touch_answered_at=False,
                 )
             else:
                 try:
-                    # 3a. Separate Confirmed Project Evidence (HUMAN INPUTS ONLY)
-                    # Generated draft answers must NEVER be treated as project evidence.
-                    project_evidence = judge.build_project_evidence_text(
-                        conversation_context=conversation.context,
-                        requestor_directorate=conversation.requestor_directorate,
-                        impacted_stakeholders=conversation.impacted_stakeholders,
-                        history=history,
-                        latest_user_message=text,
-                    )
-
-                    # 3b. Hard Validator (anti-hallucination fact check)
+                    # 2b. Hard Validator (anti-hallucination fact check)
                     val_result = validate_project_facts(reply.answer_text, project_evidence)
                     if not val_result.is_safe:
                         claims_str = ", ".join(val_result.unsupported_claims)
@@ -167,7 +148,7 @@ async def post_message(
                     else:
                         validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
 
-                    # 3c. RAG Reference Retrieval (used as benchmark context for Agent 2 only)
+                    # 2c. RAG Reference Retrieval
                     try:
                         raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
                         retrieved_refs = [
@@ -178,7 +159,7 @@ async def post_message(
                         print(f"[RAG SEARCH NOTE] {rag_err}")
                         retrieved_refs = []
 
-                    # 3d. Agent 2 Evaluation (Stage A Grader + Stage B Critic)
+                    # 2d. Initial Agent 2 Evaluation (Stage A Grader + Stage B Critic)
                     agent2_result = await judge.evaluate_section(
                         field_id=field_id,
                         section_title=section.title,
@@ -190,30 +171,47 @@ async def post_message(
                         retrieved_references=retrieved_refs,
                     )
 
-                    # 3e. PERSIST AGENT 2 CONFIDENCE AS SINGLE SOURCE OF TRUTH
-                    # Overwrites answer.confidence, answer.confidence_reason,
-                    # answer.confidence_components, and answer.confidence_breakdown.
                     if agent2_result:
-                        await answer_repository.upsert(
-                            session,
-                            section.section_id,
-                            status=status,
-                            confidence=agent2_result["final_confidence"],
-                            confidence_reason=agent2_result["confidence_reason"],
-                            confidence_components=agent2_result["component_scores"],
-                            confidence_breakdown=agent2_result["confidence_breakdown"],
-                            touch_answered_at=False,
-                        )
-                        print(
-                            f"[AGENT 2 EVALUATION PERSISTED] field={field_id} "
-                            f"confidence={agent2_result['final_confidence']}% "
-                            f"level={agent2_result['confidence_level']} "
-                            f"review_status={agent2_result['review_status']}"
-                        )
+                        print(f"📊 AGENT 2 INITIAL SCORE: {agent2_result['final_confidence']}/100")
+                        if agent2_result['final_confidence'] < 100:
+                            print(f"❌ Reason: {agent2_result['confidence_reason']}")
+                        else:
+                            print("✅ PERFECT SCORE. No reflection needed.")
 
                 except Exception as judge_exc:
-                    # Agent 2 failure is non-fatal — log and keep chat uninterrupted
                     print(f"[AGENT 2 ERROR] field={field_id} section={section.section_id}: {judge_exc}")
+
+    # ------------------------------------------------------------------ #
+    # 3. Persist Final Bubble and Answer                                 #
+    # ------------------------------------------------------------------ #
+    agent_bubble = Bubble(
+        section_id=section.section_id,
+        role="agent",
+        text=reply.reply_text,
+        created_at=datetime.now(timezone.utc),
+    )
+    await bubble_repository.insert(session, agent_bubble)
+
+    if section.is_leaf:
+        confidence = agent2_result["final_confidence"] if agent2_result else (existing_answer.confidence if existing_answer else None)
+        status = _derive_status(reply.completeness, confidence, existing_answer.status if existing_answer else None)
+        
+        upsert_kwargs = {
+            "status": status,
+            "completeness": reply.completeness,
+            "answer_text": reply.answer_text,
+            "missing_items": reply.missing_items,
+        }
+        
+        if agent2_result:
+            upsert_kwargs.update({
+                "confidence": agent2_result["final_confidence"],
+                "confidence_reason": agent2_result["confidence_reason"],
+                "confidence_components": agent2_result["component_scores"],
+                "confidence_breakdown": agent2_result["confidence_breakdown"],
+            })
+            
+        await answer_repository.upsert(session, section.section_id, **upsert_kwargs)
 
     if not section.is_general:
         conversation.focused_section_id = section.section_id

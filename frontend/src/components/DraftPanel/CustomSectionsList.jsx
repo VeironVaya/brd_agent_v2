@@ -10,7 +10,6 @@ export default function CustomSectionsList({
   answers,
   focusedFieldId,
   onFocus,
-  onViewAnswer,
   canEdit = true,
 }) {
   const standalone = standaloneCustomSections(customSections)
@@ -31,18 +30,9 @@ export default function CustomSectionsList({
             answers={answers}
             focusedFieldId={focusedFieldId}
             onFocus={onFocus}
-            onViewAnswer={onViewAnswer}
             canEdit={canEdit}
           />
         ))}
-        {canEdit && (
-          <div
-            onClick={onAddClick}
-            className="mt-2 border-[1.5px] border-dashed border-border rounded-btn px-3.5 py-3 text-[13px] text-text-tertiary text-center cursor-pointer hover:border-text-primary hover:text-[#3f3f3f]"
-          >
-            + Add custom section
-          </div>
-        )}
       </div>
     </div>
   )

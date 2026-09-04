@@ -26,7 +26,7 @@ import BoilerplateSection from '../components/DraftPanel/BoilerplateSection.jsx'
 import CustomSectionsList from '../components/DraftPanel/CustomSectionsList.jsx'
 import AddCustomSectionModal from '../components/DraftPanel/AddCustomSectionModal.jsx'
 import ReviewFlaggedModal from '../components/DraftPanel/ReviewFlaggedModal.jsx'
-import AnswerDetailModal from '../components/DraftPanel/AnswerDetailModal.jsx'
+import AnswerDetailPanel from '../components/DraftPanel/AnswerDetailPanel.jsx'
 import SectionCompleteModal from '../components/DraftPanel/SectionCompleteModal.jsx'
 import ConfirmModal from '../components/common/ConfirmModal.jsx'
 import ShareModal from '../components/common/ShareModal.jsx'
@@ -44,7 +44,6 @@ export default function DraftSessionPage() {
 
   const [reviewOpen, setReviewOpen] = useState(false)
   const [addSectionOpen, setAddSectionOpen] = useState(false)
-  const [viewAnswerFieldId, setViewAnswerFieldId] = useState(null)
   const [logoutOpen, setLogoutOpen] = useState(false)
   const [shareOpen, setShareOpen] = useState(false)
   const [choiceSectionId, setChoiceSectionId] = useState(null)
@@ -252,7 +251,57 @@ export default function DraftSessionPage() {
         />
       </div>
 
-      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1.4fr)_minmax(320px,440px)]">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(280px,340px)_minmax(0,1fr)_minmax(300px,400px)]">
+        {/* Left: Section Management */}
+        <div className="bg-white flex flex-col min-w-0 min-h-0 border-r border-divider">
+          <div className="flex-shrink-0">
+            <ProgressHeader percent={percent} buckets={buckets} />
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {canEdit && (
+              <div className="px-7 pt-5 pb-2">
+                <button
+                  type="button"
+                  onClick={() => setAddSectionOpen(true)}
+                  className="w-full flex items-center justify-center gap-2 border-[1.5px] border-dashed border-border rounded-btn px-3.5 py-2 text-[13px] font-medium text-text-tertiary hover:border-text-primary hover:text-[#3f3f3f] cursor-pointer bg-transparent transition-colors"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                    <path d="M12 5v14M5 12h14" />
+                  </svg>
+                  Add custom section
+                </button>
+              </div>
+            )}
+            <SectionTree
+              answers={answers}
+              focusedFieldId={focusedFieldId}
+              onFocus={(fieldId) => {
+                handleFocus(fieldId)
+              }}
+              customSections={conversation.customSections}
+              onRenameCustomNode={handleRenameCustomNode}
+              onRemoveCustomNode={handleRemoveCustomNode}
+              canEdit={canEdit}
+            />
+            <div className="px-7 pb-7 flex flex-col gap-5">
+              <BoilerplateSection />
+              <CustomSectionsList
+                customSections={conversation.customSections}
+                onRenameNode={handleRenameCustomNode}
+                onRemoveNode={handleRemoveCustomNode}
+                onAddClick={() => setAddSectionOpen(true)}
+                answers={answers}
+                focusedFieldId={focusedFieldId}
+                onFocus={(fieldId) => {
+                  handleFocus(fieldId)
+                }}
+                canEdit={canEdit}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Center: Chat */}
         <div className="bg-bg-subtle flex flex-col min-w-0 min-h-0">
           <div className="flex-shrink-0">
             <FocusBar
@@ -273,40 +322,13 @@ export default function DraftSessionPage() {
           </div>
         </div>
 
+        {/* Right: Details */}
         <div className="bg-white flex flex-col min-w-0 min-h-0 border-l border-divider">
-          <div className="flex-shrink-0">
-            <ProgressHeader percent={percent} buckets={buckets} />
-          </div>
-          <div className="flex-1 min-h-0 overflow-y-auto">
-            <SectionTree
-              answers={answers}
-              focusedFieldId={focusedFieldId}
-              onFocus={(fieldId) => {
-                handleFocus(fieldId)
-              }}
-              onViewAnswer={setViewAnswerFieldId}
-              customSections={conversation.customSections}
-              onRenameCustomNode={handleRenameCustomNode}
-              onRemoveCustomNode={handleRemoveCustomNode}
-              canEdit={canEdit}
-            />
-            <div className="px-7 pb-7 flex flex-col gap-5">
-              <BoilerplateSection />
-              <CustomSectionsList
-                customSections={conversation.customSections}
-                onRenameNode={handleRenameCustomNode}
-                onRemoveNode={handleRemoveCustomNode}
-                onAddClick={() => setAddSectionOpen(true)}
-                answers={answers}
-                focusedFieldId={focusedFieldId}
-                onFocus={(fieldId) => {
-                  handleFocus(fieldId)
-                }}
-                onViewAnswer={setViewAnswerFieldId}
-                canEdit={canEdit}
-              />
-            </div>
-          </div>
+          <AnswerDetailPanel
+            fieldId={focusedFieldId}
+            answers={answers}
+            customSections={conversation.customSections}
+          />
         </div>
       </div>
 
@@ -321,18 +343,7 @@ export default function DraftSessionPage() {
         onClose={() => setReviewOpen(false)}
         flaggedItems={conversation.flaggedItems}
         answers={answers}
-        onRecompute={async () => {
-          await api.recomputeReview(id)
-          await refreshDetail()
-        }}
         onResolveInChat={handleResolveInChat}
-      />
-      <AnswerDetailModal
-        open={!!viewAnswerFieldId}
-        onClose={() => setViewAnswerFieldId(null)}
-        fieldId={viewAnswerFieldId}
-        answers={answers}
-        customSections={conversation.customSections}
       />
       <ConfirmModal
         open={logoutOpen}

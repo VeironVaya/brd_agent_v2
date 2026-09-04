@@ -48,7 +48,7 @@ function ReadyIcon() {
 }
 
 /** Recursively renders one custom section node and its children, at any depth. */
-export default function CustomSectionRow({ node, code, onRename, onRemove, answers, focusedFieldId, onFocus, onViewAnswer, indent = false, canEdit = true }) {
+export default function CustomSectionRow({ node, code, onRename, onRemove, answers, focusedFieldId, onFocus, indent = false, canEdit = true }) {
   const [renameOpen, setRenameOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
 
@@ -97,7 +97,6 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
             answers={answers}
             focusedFieldId={focusedFieldId}
             onFocus={onFocus}
-            onViewAnswer={onViewAnswer}
             indent
             canEdit={canEdit}
           />
@@ -190,40 +189,6 @@ export default function CustomSectionRow({ node, code, onRename, onRemove, answe
         )}
       </div>
 
-      {isFocused && (
-        <div className="my-0.5 mb-1.5 px-3 py-2.5 bg-bg-subtle rounded-md">
-          {hasAnswer && (
-            <div className="mb-3 pb-3 border-b border-border-light">
-              <div className="flex items-center justify-between mb-1.25">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-text-primary/80">Result</span>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onViewAnswer(node.id)
-                  }}
-                  className="bg-transparent border-none text-text-primary text-[11px] font-semibold cursor-pointer underline whitespace-nowrap"
-                >
-                  See details
-                </button>
-              </div>
-              <div className="text-[13px] leading-relaxed">{answer.answer}</div>
-            </div>
-          )}
-          <div className="text-[11px] font-bold uppercase tracking-wider mb-1.25">What's missing?</div>
-          {missingItems.length > 0 ? (
-            <ul className="m-0 pl-4 flex flex-col gap-0.75">
-              {missingItems.map((m) => (
-                <li key={m} className="text-[13px] leading-snug">
-                  {m}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="text-[13px] text-text-tertiary">Nothing outstanding — this answer is complete.</div>
-          )}
-        </div>
-      )}
 
       {renameModal}
       <ConfirmModal

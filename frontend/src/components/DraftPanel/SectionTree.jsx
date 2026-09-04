@@ -7,7 +7,6 @@ export default function SectionTree({
   answers,
   focusedFieldId,
   onFocus,
-  onViewAnswer,
   customSections,
   onRenameCustomNode,
   onRemoveCustomNode,
@@ -43,7 +42,6 @@ export default function SectionTree({
                     answers={answers}
                     focusedFieldId={focusedFieldId}
                     onFocus={onFocus}
-                    onViewAnswer={onViewAnswer}
                     grouped={false}
                   />
                 ) : (
@@ -63,7 +61,6 @@ export default function SectionTree({
                         answers={answers}
                         focusedFieldId={focusedFieldId}
                         onFocus={onFocus}
-                        onViewAnswer={onViewAnswer}
                         grouped
                       />
                     ))}
@@ -77,7 +74,6 @@ export default function SectionTree({
                         answers={answers}
                         focusedFieldId={focusedFieldId}
                         onFocus={onFocus}
-                        onViewAnswer={onViewAnswer}
                         indent
                         canEdit={canEdit}
                       />
@@ -95,7 +91,6 @@ export default function SectionTree({
                   answers={answers}
                   focusedFieldId={focusedFieldId}
                   onFocus={onFocus}
-                  onViewAnswer={onViewAnswer}
                   canEdit={canEdit}
                 />
               ))}
