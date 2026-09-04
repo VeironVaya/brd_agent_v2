@@ -114,7 +114,7 @@ async def test_agent1_drafting_contract_returns_draft_without_confidence():
         "answer_text": "The system shall automatically retry failed recurring subscription payments.",
         "completeness": 80,
         "missing_items": ["Specific retry timing"],
-        "is_assumption": False,
+
     }
 
     mock_chat_completion = AsyncMock()
@@ -172,7 +172,7 @@ async def test_safe_canonical_section_orchestrates_rag_and_agent2_confidence(cli
         confidence=None,
         confidence_reason=None,
         missing_items=["Specific retry timing"],
-        is_assumption=False,
+
     )
 
     mock_search_results = [
@@ -295,7 +295,7 @@ async def test_unsupported_fact_passes_findings_to_agent2_and_persists_review_re
         confidence=None,
         confidence_reason=None,
         missing_items=[],
-        is_assumption=False,
+
     )
 
     mock_search_results = []
@@ -399,7 +399,7 @@ async def test_general_chat_skips_rag_and_agent2_evaluation(client: AsyncClient)
         confidence=None,
         confidence_reason=None,
         missing_items=[],
-        is_assumption=False,
+
     )
 
     with patch("app.services.chat_service.ai_integration.get_reply", new=AsyncMock(return_value=mock_agent1_reply)) as mock_agent1, \

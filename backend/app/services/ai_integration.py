@@ -38,7 +38,6 @@ class AgentReply:
     confidence_reason: str | None = None
     confidence_components: dict | None = None
     missing_items: list[str] = field(default_factory=list)
-    is_assumption: bool = False
     confidence_breakdown: dict | None = None
 
 
@@ -48,7 +47,6 @@ class LLMReplySchema(BaseModel):
     completeness: int = Field(..., description="Completeness score 0-100")
     confidence: int | None = Field(None, description="Confidence score 0-100")
     missing_items: list[str] = Field(default_factory=list, description="List of missing information")
-    is_assumption: bool = Field(default=False, description="True if AI made assumptions")
     confidence_breakdown: dict | None = Field(
         None,
         description=(
@@ -72,6 +70,9 @@ Your task is to guide the user to complete the current BRD section through a con
 - If the user hasn't told you something and there's no way to reasonably infer it, ASK a clarifying question instead of inventing an answer.
 - You are in GROUNDED mode: Never invent plausible-sounding statistics, datasets, or sources. If a number is needed, ask the user.
 
+# PROJECT CONTEXT
+{project_evidence}
+
 # SECTION-SPECIFIC RULES
 {section_rules_prompt}
 
@@ -86,8 +87,7 @@ Your task is to guide the user to complete the current BRD section through a con
    - 40-70: Good start, but missing key details or concrete numbers. Document them in "missing_items".
    - 80-100: Comprehensive, testable, grounded, and actionable. Acknowledge and move on.
    - CRITICAL: If you determine that the section is fully complete and "missing_items" is empty, you MUST set "completeness" to exactly 100. Do not use 95 or 99.
-7. If you must make assumptions to format the text, set "is_assumption" to true. CRITICAL: Set "is_assumption" to FALSE if you are simply asking a clarifying question or asking for more information.
-8. EXPLICIT CONTEXT CITATION: When you reject an input or ask for clarification based on a prerequisite dependency (listed in SECTION-SPECIFIC RULES), you MUST explicitly cite the name of that prerequisite section and explicitly quote or summarize its drafted text in your `reply_text`. For example: "Based on the draft of 1.2 Business Objective where you stated 'X', your current input contradicts this because..."
+7. EXPLICIT CONTEXT CITATION: When you reject an input or ask for clarification based on a prerequisite dependency (listed in SECTION-SPECIFIC RULES), you MUST explicitly cite the name of that prerequisite section and explicitly quote or summarize its drafted text in your `reply_text`. For example: "Based on the draft of 1.2 Business Objective where you stated 'X', your current input contradicts this because..."
 
 # CURRENT SECTION CONTEXT
 - Section Title: {room_title}
@@ -106,7 +106,6 @@ Respond with a JSON object matching the exact schema.
 - 'missing_items': A JSON array of strings detailing what is still needed. MUST be an array `[]` if empty.
 - 'completeness': Integer 0-100.
 - 'confidence': Integer 0-100.
-- 'is_assumption': Boolean.
 
 Example Output:
 {{
@@ -114,8 +113,7 @@ Example Output:
   "answer_text": "The system shall reduce cart abandonment rate by 15% in Q3.",
   "completeness": 50,
   "confidence": 90,
-  "missing_items": ["Specific metric for customer satisfaction", "Target value"],
-  "is_assumption": false
+  "missing_items": ["Specific metric for customer satisfaction", "Target value"]
 }}
 """
 
@@ -131,6 +129,7 @@ async def get_reply(
     field_id: str | None = None,
     context_answers: dict[str, str] | None = None,
     judge_critique: dict | None = None,
+    project_evidence: str | None = None,
 ) -> AgentReply:
     """Real AI Integration: LiteLLM routing processing room data and outputting AgentReply."""
     if not settings.groq_api_key and not settings.gemini_api_key:
@@ -147,7 +146,6 @@ async def get_reply(
             completeness=completeness,
             confidence=None,
             missing_items=missing_items,
-            is_assumption=False,
             confidence_breakdown=None,
         )
         
@@ -166,6 +164,7 @@ async def get_reply(
     current_missing_items = json.dumps((current_answer or {}).get("missing_items") or [])
 
     system_instruction = SYSTEM_PROMPT.format(
+        project_evidence=project_evidence or "Not provided",
         section_rules_prompt=get_section_rules_prompt(room_id, context_answers or {}),
         room_title=room_title,
         room_purpose=room_purpose or "Not specified",
@@ -232,7 +231,6 @@ async def get_reply(
             completeness=llm_reply.completeness,
             confidence=None,
             missing_items=llm_reply.missing_items,
-            is_assumption=llm_reply.is_assumption,
             confidence_breakdown=None,
         )
         

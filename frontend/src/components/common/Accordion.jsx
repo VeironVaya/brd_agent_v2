@@ -23,9 +23,15 @@ export default function Accordion({ title, icon, defaultOpen = false, children, 
           {icon}
           <span className="text-[11px] font-bold text-text-primary uppercase tracking-wide">{title}</span>
           {badge && (
-            <span className="ml-2 px-2 py-0.5 text-[9px] font-bold bg-text-primary text-white rounded-full">
-              {badge}
-            </span>
+            <div className="ml-2 flex items-center gap-1.5">
+              {typeof badge === 'number' || typeof badge === 'string' ? (
+                <span className="px-2 py-0.5 text-[9px] font-bold bg-text-primary text-white rounded-full">
+                  {badge}
+                </span>
+              ) : (
+                badge
+              )}
+            </div>
           )}
         </div>
         <svg

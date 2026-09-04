@@ -84,11 +84,33 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
   const depStyle = breakdown?.dependency_status ? DEP_STATUS_STYLES[breakdown.dependency_status] : null
   
   // Calculate action items count
-  let actionItemsCount = missingItems.length
-  if (breakdown?.critique_issues?.length) actionItemsCount += breakdown.critique_issues.length
-  if (breakdown?.critique_suggestions?.length) actionItemsCount += breakdown.critique_suggestions.length
+  const missingCount = missingItems.length
+  const issuesCount = breakdown?.critique_issues?.length || 0
+  const suggestionsCount = breakdown?.critique_suggestions?.length || 0
+  const hasActionItems = missingCount > 0 || issuesCount > 0 || suggestionsCount > 0
 
-  const hasActionItems = actionItemsCount > 0
+  const actionItemsBadge = (
+    <>
+      {missingCount > 0 && (
+        <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-orange-100 text-orange-700 rounded-full border border-orange-200" title="Missing Items">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          {missingCount}
+        </span>
+      )}
+      {issuesCount > 0 && (
+        <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-700 rounded-full border border-amber-200" title="Issues">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          {issuesCount}
+        </span>
+      )}
+      {suggestionsCount > 0 && (
+        <span className="flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold bg-blue-100 text-blue-700 rounded-full border border-blue-200" title="Suggestions">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v2M12 20v2m-7.07-15.07 1.41 1.41m12.72 12.72 1.41 1.41M2 12h2m16 0h2m-13.66 5.66-1.41 1.41m12.72-12.72-1.41 1.41"></path></svg>
+          {suggestionsCount}
+        </span>
+      )}
+    </>
+  )
 
   return (
     <div className="flex flex-col h-full overflow-y-auto relative">
@@ -149,8 +171,8 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
           <Accordion 
             title="Action Items" 
             icon={<AlertTriangleIcon />} 
-            badge={actionItemsCount}
-            defaultOpen={actionItemsCount > 0}
+            badge={actionItemsBadge}
+            defaultOpen={hasActionItems}
           >
             <div className="flex flex-col gap-4">
               {/* Missing Items */}
