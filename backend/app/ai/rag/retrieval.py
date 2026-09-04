@@ -41,7 +41,10 @@ class PostgresSemanticStore:
         rag_url = None
         try:
             from app.config import settings
-            rag_url = getattr(settings, "rag_database_url", None) or getattr(settings, "database_url", None)
+            db_url = getattr(settings, "database_url", None)
+            rag_url = getattr(settings, "rag_database_url", None)
+            if db_url:
+                rag_url = db_url.replace("postgresql+asyncpg://", "postgresql://")
         except Exception:
             pass
 
