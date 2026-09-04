@@ -1,0 +1,551 @@
+{
+  "info": {
+    "_postman_id": "bca53c2c-76e9-4dff-b469-ce6252e51667",
+    "name": "Hitakari LLM Marketplace",
+    "description": "Ready-to-import Postman collection for the OpenAI-compatible endpoints exposed by the Hitakari LLM Gateway.\n\nAuthentication: Bearer {{apiKey}}\nBase URL: {{baseUrl}}\n\nStart with `List Available Models`, then replace the model variables with IDs available to your key.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{apiKey}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const apiKey = pm.environment.get(\"apiKey\") || pm.collectionVariables.get(\"apiKey\");",
+          "if (!apiKey || apiKey === 'sk-your-hitakari-key') {",
+          "    console.warn(\"Set the apiKey variable before sending authenticated requests.\");",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "OpenAI Proxy",
+      "item": [
+        {
+          "name": "List Available Models",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/models",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "models"
+              ]
+            },
+            "description": "Returns model IDs available to the current Hitakari API key. Run this request first, then update the model variables in the collection or environment."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});",
+                  "",
+                  "try {",
+                  "    const payload = pm.response.json();",
+                  "    const models = Array.isArray(payload.data) ? payload.data.map(item => item.id) : [];",
+                  "    console.log(\"Available Hitakari models:\", models);",
+                  "} catch (error) {",
+                  "    console.warn(\"Response is not valid JSON:\", error.message);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chat Completions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{chatModel}}\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a helpful assistant.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Jelaskan AI generatif dalam satu paragraf singkat.\"\n    }\n  ],\n  \"temperature\": 0.7,\n  \"max_tokens\": 300,\n  \"stream\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/chat/completions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "chat",
+                "completions"
+              ]
+            },
+            "description": "OpenAI-compatible chat completion endpoint. Use a chat-capable model ID returned by GET /v1/models."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Legacy Completions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{completionModel}}\",\n  \"prompt\": \"Write a short introduction about generative AI.\",\n  \"temperature\": 0.7,\n  \"max_tokens\": 150\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/completions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "completions"
+              ]
+            },
+            "description": "Legacy text completion endpoint. The configured model must support the completions API."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Text Embeddings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{embeddingModel}}\",\n  \"input\": \"Hitakari LLM Marketplace is an OpenAI-compatible AI gateway.\",\n  \"encoding_format\": \"float\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/embeddings",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "embeddings"
+              ]
+            },
+            "description": "Creates a vector embedding. Use an embedding-capable model ID."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Image Generation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{imageModel}}\",\n  \"prompt\": \"A premium futuristic AI gateway dashboard, clean enterprise UI\",\n  \"size\": \"1024x1024\",\n  \"n\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/images/generations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "images",
+                "generations"
+              ]
+            },
+            "description": "Generates an image. Use an image-generation model configured in the Hitakari LLM Gateway."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Text-to-Speech",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "audio/mpeg",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{ttsModel}}\",\n  \"voice\": \"alloy\",\n  \"input\": \"Halo, ini adalah pengujian text-to-speech melalui Hitakari LLM Marketplace.\",\n  \"response_format\": \"mp3\",\n  \"speed\": 1.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/audio/speech",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "audio",
+                "speech"
+              ]
+            },
+            "description": "Converts text to speech. Postman will display or save the binary audio response."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Speech-to-Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "Select an audio file before sending the request."
+                },
+                {
+                  "key": "model",
+                  "value": "{{transcriptionModel}}",
+                  "type": "text"
+                },
+                {
+                  "key": "language",
+                  "value": "id",
+                  "type": "text"
+                },
+                {
+                  "key": "response_format",
+                  "value": "json",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/audio/transcriptions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "audio",
+                "transcriptions"
+              ]
+            },
+            "description": "Transcribes an audio file. Open Body → form-data and select the local file for the `file` field. Do not manually add Content-Type; Postman adds the multipart boundary."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Content Moderation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{moderationModel}}\",\n  \"input\": \"This is a sample message for content moderation testing.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/moderations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "moderations"
+              ]
+            },
+            "description": "Checks input content using a moderation-capable model configured in the Hitakari LLM Gateway."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Rerank Documents",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"model\": \"{{rerankModel}}\",\n  \"query\": \"What is the capital of the United States?\",\n  \"documents\": [\n    \"Carson City is the capital city of the American state of Nevada.\",\n    \"Washington, D.C. is the capital of the United States.\",\n    \"Capital punishment has existed in the United States since before it was a country.\"\n  ],\n  \"top_n\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rerank",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "rerank"
+              ]
+            },
+            "description": "Reranks documents by relevance to a query. Useful in RAG pipelines to improve retrieval quality."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 2xx\", function () {",
+                  "    pm.expect(pm.response.code).to.be.within(200, 299);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://hitakari.co.id/v1",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "sk-your-hitakari-key",
+      "type": "string"
+    },
+    {
+      "key": "chatModel",
+      "value": "replace-with-chat-model-id",
+      "type": "string"
+    },
+    {
+      "key": "completionModel",
+      "value": "replace-with-completion-model-id",
+      "type": "string"
+    },
+    {
+      "key": "embeddingModel",
+      "value": "replace-with-embedding-model-id",
+      "type": "string"
+    },
+    {
+      "key": "imageModel",
+      "value": "replace-with-image-model-id",
+      "type": "string"
+    },
+    {
+      "key": "ttsModel",
+      "value": "replace-with-tts-model-id",
+      "type": "string"
+    },
+    {
+      "key": "transcriptionModel",
+      "value": "replace-with-transcription-model-id",
+      "type": "string"
+    },
+    {
+      "key": "moderationModel",
+      "value": "replace-with-moderation-model-id",
+      "type": "string"
+    },
+    {
+      "key": "rerankModel",
+      "value": "replace-with-rerank-model-id",
+      "type": "string"
+    }
+  ]
+}

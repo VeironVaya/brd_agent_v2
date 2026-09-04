@@ -38,3 +38,13 @@ desktop.ini
 CLAUDE.md
 /brainstorming
 /out
+
+# Terraform (infra/terraform-iam) — local provider cache/state, never commit.
+# .terraform.lock.hcl IS tracked on purpose (pins provider versions).
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+crash.log
+crash.*.log
