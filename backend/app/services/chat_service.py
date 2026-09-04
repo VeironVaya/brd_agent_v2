@@ -261,7 +261,7 @@ async def init_chat_room(
     
     if section.is_leaf:
         existing_answer = await answer_repository.find_by_section_id(session, section.section_id)
-        status = _derive_status(reply.completeness, existing_answer.status if existing_answer else None)
+        status = _derive_status(reply.completeness, None, existing_answer.status if existing_answer else None)
         await answer_repository.upsert(
             session,
             section.section_id,

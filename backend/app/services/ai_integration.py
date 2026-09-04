@@ -315,7 +315,6 @@ async def get_greeting(
             completeness=0,
             confidence=None,
             missing_items=llm_reply.missing_items,
-            is_assumption=False,
             confidence_breakdown=None,
         )
         
