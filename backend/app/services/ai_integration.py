@@ -264,7 +264,6 @@ Respond with a JSON object matching this schema:
 - 'missing_items': [List of strings detailing what specific information or data is required to fulfill this section based on the rules. Since the section is empty, this must list the core requirements.]
 - 'completeness': 0
 - 'confidence': 100
-- 'is_assumption': false
 """
 
 async def get_greeting(
