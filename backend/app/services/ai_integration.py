@@ -72,6 +72,8 @@ Your task is to guide the user to complete the current BRD section through a con
 
 # PROJECT CONTEXT
 {project_evidence}
+- IMPORTANT: If any information in the PROJECT CONTEXT (such as Impacted Stakeholders or Requestor Directorate) is relevant to the current section's requirements, you MUST proactively incorporate it into your generated `answer_text`.
+- DO NOT ask the user to provide information that is already present in the PROJECT CONTEXT.
 
 # SECTION-SPECIFIC RULES
 {section_rules_prompt}
