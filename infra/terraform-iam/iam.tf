@@ -56,6 +56,10 @@ resource "aws_iam_policy" "brd_agent_v2_ec2_only" {
           "ec2:RunInstances",
           "ec2:CreateSecurityGroup",
           "ec2:CreateKeyPair",
+          # Terraform's aws_key_pair (given a public_key, as opposed to
+          # having AWS generate one) calls ImportKeyPair, not
+          # CreateKeyPair -- confirmed via a real 403 during apply.
+          "ec2:ImportKeyPair",
           "ec2:CreateVolume",
           "ec2:CreateTags",
         ]
@@ -69,9 +73,12 @@ resource "aws_iam_policy" "brd_agent_v2_ec2_only" {
       },
       {
         # RunInstances juga menyentuh resource yang SUDAH ada (AMI, subnet
-        # default, security group yang baru dibuat, key pair) -- resource
-        # ini tidak perlu/bisa dibatasi tag karena bukan resource yang baru
-        # dibuat pada request ini. Dibatasi ke region saja.
+        # default, network interface, DAN security group default VPC yang
+        # dipakai instance) -- resource ini tidak perlu/bisa dibatasi tag
+        # karena bukan resource yang baru dibuat pada request ini.
+        # Dibatasi ke region saja. (security-group ditambahkan setelah
+        # 403 nyata saat RunInstances mencoba memakai default security
+        # group VPC yang belum bertag Project.)
         Sid    = "Ec2RunInstancesSupportingResources"
         Effect = "Allow"
         Action = [
@@ -81,6 +88,39 @@ resource "aws_iam_policy" "brd_agent_v2_ec2_only" {
           "arn:aws:ec2:${var.aws_region}::image/*",
           "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:subnet/*",
           "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:network-interface/*",
+          "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:security-group/*",
+          # Root/attached EBS volume created as part of the same
+          # RunInstances call -- confirmed via a real 403 during apply
+          # ("no identity-based policy allows ec2:RunInstances" on
+          # resource volume/*). It DOES get the RequestTag/Project tag
+          # (via CreateTags propagation from the instance's TagSpecifications),
+          # but RunInstances itself still needs an unconditional grant here
+          # because the volume doesn't exist yet at authorization time.
+          "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:volume/*",
+          # The (pre-existing) key pair referenced by RunInstances also
+          # needs its own grant here -- confirmed via a real 403
+          # ("no identity-based policy allows ec2:RunInstances" on
+          # resource key-pair/*).
+          "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:key-pair/*",
+        ]
+        Condition = {
+          StringEquals = { "aws:RequestedRegion" = var.aws_region }
+        }
+      },
+      {
+        # CreateSecurityGroup butuh izin pada VPC yang SUDAH ADA (tempat
+        # security group itu dibuat), bukan hanya pada security group yang
+        # baru dibuat -- VPC ini tidak bisa/tidak perlu dibatasi tag karena
+        # bukan resource baru pada request ini. Dibatasi ke region saja.
+        # (Ditambahkan setelah 403 nyata: "no identity-based policy allows
+        # ec2:CreateSecurityGroup" pada resource vpc/vpc-xxx.)
+        Sid    = "Ec2CreateSecurityGroupOnExistingVpc"
+        Effect = "Allow"
+        Action = [
+          "ec2:CreateSecurityGroup",
+        ]
+        Resource = [
+          "arn:aws:ec2:${var.aws_region}:${data.aws_caller_identity.current.account_id}:vpc/*",
         ]
         Condition = {
           StringEquals = { "aws:RequestedRegion" = var.aws_region }

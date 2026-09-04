@@ -130,11 +130,12 @@ def build_project_evidence_text(
         # Support both Bubble objects and dicts
         role = getattr(msg, "role", None) or (msg.get("role") if isinstance(msg, dict) else None)
         text = getattr(msg, "text", None) or (msg.get("text") if isinstance(msg, dict) else None)
-        if text and text.strip():
-            if role == "user":
-                parts.append(_classify_user_input(text))
-            elif role == "agent":
-                parts.append(f"[Agent Context / Question]: {text.strip()}")
+        # Only human/user messages count as project evidence — agent
+        # outputs (Agent 1's own drafts/questions) must NEVER be included
+        # here (see docstring); including them would let Agent 1 "confirm"
+        # its own unverified claims by citing itself as evidence.
+        if role == "user" and text and text.strip():
+            parts.append(_classify_user_input(text))
 
     if latest_user_message and latest_user_message.strip():
         parts.append(f"{_classify_user_input(latest_user_message)} (Current Message)")

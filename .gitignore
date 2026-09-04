@@ -11,6 +11,7 @@ out/
 .env
 .env.local
 .env.*.local
+.env.prod
 
 # Bruno's Local environment holds real (if throwaway/dev-only) JWTs written
 # by test runs — same reasoning as .env above. See bruno/environments/Local.example.bru.
@@ -48,3 +49,7 @@ CLAUDE.md
 *.tfvars.json
 crash.log
 crash.*.log
+
+# Terraform-generated SSH private key (infra/terraform-ec2) — never commit.
+*.pem
+*-deployer-key*
