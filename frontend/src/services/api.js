@@ -4,7 +4,15 @@
 // translation boundary CLAUDE.md's "Mocking strategy" always intended —
 // components never see snake_case field names.
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+// NOTE: intentionally NOT `import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'` —
+// `||` treats an explicitly-set empty string as falsy, which broke prod:
+// the Docker build sets VITE_API_BASE_URL="" on purpose (same-origin,
+// nginx proxies /api and /auth to the backend — see frontend/Dockerfile),
+// but `"" || fallback` always evaluated to the fallback, so the browser
+// tried to fetch http://localhost:8000 directly and got blocked by CORS.
+// `??` only falls back when the value is null/undefined (unset), not on
+// an intentional empty string.
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000'
 const TOKEN_KEY = 'brdAgentToken'
 
 export function getToken() {
