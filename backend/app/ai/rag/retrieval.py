@@ -1,6 +1,6 @@
 """
-app/rag/semantic.py
-===================
+app/ai/rag/retrieval.py
+=======================
 Production Semantic pgvector Retrieval Engine.
 Executes cosine similarity vector searches against PostgreSQL reference chunks.
 Exposes the single official contract: search_references(query, field_id=None, top_k=3).
@@ -9,9 +9,10 @@ Exposes the single official contract: search_references(query, field_id=None, to
 from __future__ import annotations
 
 import os
+from typing import Any
 import psycopg
 
-from .embeddings import EmbeddingGenerator
+from .embeddings import EmbeddingGenerator, get_default_embedder
 from .models import SearchResult
 
 
@@ -22,14 +23,25 @@ class PostgresSemanticStore:
 
     def __init__(self, conn: psycopg.Connection, embedder: EmbeddingGenerator | None = None) -> None:
         self._conn = conn
-        self._embedder = embedder or EmbeddingGenerator()
+        self._embedder = embedder or get_default_embedder()
+
+    def close(self) -> None:
+        """Safely close underlying PostgreSQL connection."""
+        if hasattr(self, "_conn") and self._conn and not self._conn.closed:
+            self._conn.close()
+
+    def __enter__(self) -> PostgresSemanticStore:
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        self.close()
 
     @classmethod
     def from_env(cls) -> PostgresSemanticStore:
         rag_url = None
         try:
             from app.config import settings
-            rag_url = settings.rag_database_url or settings.database_url
+            rag_url = getattr(settings, "rag_database_url", None) or getattr(settings, "database_url", None)
         except Exception:
             pass
 
@@ -135,7 +147,10 @@ def search_references(
     """
     Official single production retrieval contract function.
     FastEmbed query embedding -> pgvector cosine similarity -> Top-K SearchResult.
+    Ensures connection is safely closed when instantiating from environment.
     """
-    if store is None:
-        store = PostgresSemanticStore.from_env()
-    return store.search_references(query=query, field_id=field_id, top_k=top_k)
+    if store is not None:
+        return store.search_references(query=query, field_id=field_id, top_k=top_k)
+
+    with PostgresSemanticStore.from_env() as local_store:
+        return local_store.search_references(query=query, field_id=field_id, top_k=top_k)

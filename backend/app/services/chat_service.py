@@ -136,73 +136,84 @@ async def post_message(
         # -------------------------------------------------------------- #
         # 3. AGENT 2: Senior BA Reviewer / Judge                         #
         # -------------------------------------------------------------- #
-        if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS and reply.answer_text:
-            try:
-                # 3a. Separate Confirmed Project Evidence (HUMAN INPUTS ONLY)
-                # Generated draft answers must NEVER be treated as project evidence.
-                project_evidence = judge.build_project_evidence_text(
-                    conversation_context=conversation.context,
-                    requestor_directorate=conversation.requestor_directorate,
-                    impacted_stakeholders=conversation.impacted_stakeholders,
-                    history=history,
-                    latest_user_message=text,
+        if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS:
+            if not reply.answer_text or not reply.answer_text.strip():
+                # Draft is empty or has been reset by user/Agent 1.
+                # Stale confidence metrics from prior turns must be cleared.
+                await answer_repository.upsert(
+                    session,
+                    section.section_id,
+                    status=status,
+                    clear_confidence=True,
+                    touch_answered_at=False,
                 )
-
-                # 3b. Hard Validator (anti-hallucination fact check)
-                val_result = validate_project_facts(reply.answer_text, project_evidence)
-                if not val_result.is_safe:
-                    claims_str = ", ".join(val_result.unsupported_claims)
-                    validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
-                else:
-                    validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
-
-                # 3c. RAG Reference Retrieval (used as benchmark context for Agent 2 only)
+            else:
                 try:
-                    raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
-                    retrieved_refs = [
-                        ReferenceCitation.from_search_result(f"R{i}", r)
-                        for i, r in enumerate(raw_results, start=1)
-                    ]
-                except Exception as rag_err:
-                    print(f"[RAG SEARCH NOTE] {rag_err}")
-                    retrieved_refs = []
-
-                # 3d. Agent 2 Evaluation (Stage A Grader + Stage B Critic)
-                agent2_result = await judge.evaluate_section(
-                    field_id=field_id,
-                    section_title=section.title,
-                    generated_content=reply.answer_text,
-                    project_evidence=project_evidence,
-                    context_answers=context_answers,
-                    missing_items=reply.missing_items or [],
-                    validator_findings=validator_findings,
-                    retrieved_references=retrieved_refs,
-                )
-
-                # 3e. PERSIST AGENT 2 CONFIDENCE AS SINGLE SOURCE OF TRUTH
-                # Overwrites answer.confidence, answer.confidence_reason,
-                # answer.confidence_components, and answer.confidence_breakdown.
-                if agent2_result:
-                    await answer_repository.upsert(
-                        session,
-                        section.section_id,
-                        status=status,
-                        confidence=agent2_result["final_confidence"],
-                        confidence_reason=agent2_result["confidence_reason"],
-                        confidence_components=agent2_result["component_scores"],
-                        confidence_breakdown=agent2_result["confidence_breakdown"],
-                        touch_answered_at=False,
-                    )
-                    print(
-                        f"[AGENT 2 EVALUATION PERSISTED] field={field_id} "
-                        f"confidence={agent2_result['final_confidence']}% "
-                        f"level={agent2_result['confidence_level']} "
-                        f"review_status={agent2_result['review_status']}"
+                    # 3a. Separate Confirmed Project Evidence (HUMAN INPUTS ONLY)
+                    # Generated draft answers must NEVER be treated as project evidence.
+                    project_evidence = judge.build_project_evidence_text(
+                        conversation_context=conversation.context,
+                        requestor_directorate=conversation.requestor_directorate,
+                        impacted_stakeholders=conversation.impacted_stakeholders,
+                        history=history,
+                        latest_user_message=text,
                     )
 
-            except Exception as judge_exc:
-                # Agent 2 failure is non-fatal — log and keep chat uninterrupted
-                print(f"[AGENT 2 ERROR] field={field_id} section={section.section_id}: {judge_exc}")
+                    # 3b. Hard Validator (anti-hallucination fact check)
+                    val_result = validate_project_facts(reply.answer_text, project_evidence)
+                    if not val_result.is_safe:
+                        claims_str = ", ".join(val_result.unsupported_claims)
+                        validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
+                    else:
+                        validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
+
+                    # 3c. RAG Reference Retrieval (used as benchmark context for Agent 2 only)
+                    try:
+                        raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
+                        retrieved_refs = [
+                            ReferenceCitation.from_search_result(f"R{i}", r)
+                            for i, r in enumerate(raw_results, start=1)
+                        ]
+                    except Exception as rag_err:
+                        print(f"[RAG SEARCH NOTE] {rag_err}")
+                        retrieved_refs = []
+
+                    # 3d. Agent 2 Evaluation (Stage A Grader + Stage B Critic)
+                    agent2_result = await judge.evaluate_section(
+                        field_id=field_id,
+                        section_title=section.title,
+                        generated_content=reply.answer_text,
+                        project_evidence=project_evidence,
+                        context_answers=context_answers,
+                        missing_items=reply.missing_items or [],
+                        validator_findings=validator_findings,
+                        retrieved_references=retrieved_refs,
+                    )
+
+                    # 3e. PERSIST AGENT 2 CONFIDENCE AS SINGLE SOURCE OF TRUTH
+                    # Overwrites answer.confidence, answer.confidence_reason,
+                    # answer.confidence_components, and answer.confidence_breakdown.
+                    if agent2_result:
+                        await answer_repository.upsert(
+                            session,
+                            section.section_id,
+                            status=status,
+                            confidence=agent2_result["final_confidence"],
+                            confidence_reason=agent2_result["confidence_reason"],
+                            confidence_components=agent2_result["component_scores"],
+                            confidence_breakdown=agent2_result["confidence_breakdown"],
+                            touch_answered_at=False,
+                        )
+                        print(
+                            f"[AGENT 2 EVALUATION PERSISTED] field={field_id} "
+                            f"confidence={agent2_result['final_confidence']}% "
+                            f"level={agent2_result['confidence_level']} "
+                            f"review_status={agent2_result['review_status']}"
+                        )
+
+                except Exception as judge_exc:
+                    # Agent 2 failure is non-fatal — log and keep chat uninterrupted
+                    print(f"[AGENT 2 ERROR] field={field_id} section={section.section_id}: {judge_exc}")
 
     if not section.is_general:
         conversation.focused_section_id = section.section_id

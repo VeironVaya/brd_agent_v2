@@ -47,3 +47,17 @@ class EmbeddingGenerator:
         with _EMBED_LOCK:
             embeddings = list(model.embed(non_empty_texts))
         return [[float(x) for x in emb] for emb in embeddings]
+
+
+_DEFAULT_EMBEDDER: EmbeddingGenerator | None = None
+
+
+def get_default_embedder() -> EmbeddingGenerator:
+    """Returns singleton default EmbeddingGenerator to prevent re-loading weights."""
+    global _DEFAULT_EMBEDDER
+    if _DEFAULT_EMBEDDER is None:
+        with _EMBED_LOCK:
+            if _DEFAULT_EMBEDDER is None:
+                _DEFAULT_EMBEDDER = EmbeddingGenerator()
+    return _DEFAULT_EMBEDDER
+

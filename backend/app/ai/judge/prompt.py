@@ -12,6 +12,8 @@ Use low temperature (0.1 for Stage A, 0.3 for Stage B).
 
 from __future__ import annotations
 
+from app.ai.utils import sanitize_prompt_input
+
 # ---------------------------------------------------------------------------
 # Stage A — VERIFIER + GRADER
 # ---------------------------------------------------------------------------
@@ -334,9 +336,9 @@ def build_stage_a_context(
     return JUDGE_STAGE_A_PROMPT.format(
         field_id=field_id,
         section_title=section_title,
-        generated_content=generated_content or "(No content generated yet)",
-        project_evidence=project_evidence or "(No explicit user evidence captured)",
-        context_sections=context_sections or "(No other sections completed yet)",
+        generated_content=sanitize_prompt_input(generated_content) if generated_content else "(No content generated yet)",
+        project_evidence=sanitize_prompt_input(project_evidence) if project_evidence else "(No explicit user evidence captured)",
+        context_sections=sanitize_prompt_input(context_sections) if context_sections else "(No other sections completed yet)",
         canonical_dependencies=canonical_dependencies or "(No canonical dependencies for this field)",
         reference_excerpts=reference_excerpts or "(No reference BRDs available for this field)",
         validator_findings=validator_findings or "(No hard validator findings)",
@@ -371,7 +373,7 @@ def build_stage_b_context(
     return JUDGE_STAGE_B_PROMPT.format(
         field_id=field_id,
         section_title=section_title,
-        generated_content=generated_content or "(No content generated yet)",
+        generated_content=sanitize_prompt_input(generated_content) if generated_content else "(No content generated yet)",
         stage_a_summary=stage_a_summary,
         grounding_score=fmt(grounding_score),
         reference_score=fmt(reference_score),

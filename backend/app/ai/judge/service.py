@@ -23,12 +23,8 @@ from datetime import datetime, timezone
 from typing import Any, Sequence
 import litellm
 
-from app.ai.rag import (
-    CANONICAL_ANSWERABLE_FIELDS,
-    CANONICAL_FIELDS_META,
-    ReferenceCitation,
-    search_references,
-)
+from app.ai.rag.models import ReferenceCitation
+from app.ai.rag.retrieval import search_references
 from app.services.brd_rules import DEPENDENCY_RULES
 from app.ai.judge.scoring import (
     calculate_component_score,
@@ -50,6 +46,8 @@ from app.services.brd_rules import (
 )
 from app.ai.judge.prompt import build_stage_a_context, build_stage_b_context
 from app.config import settings
+from app.models.bubble import Bubble
+from app.ai.utils import parse_llm_json
 
 
 # ---------------------------------------------------------------------------
@@ -58,9 +56,8 @@ from app.config import settings
 
 _JUDGE_MODEL = "gemini/gemini-2.5-flash"
 _JUDGE_FALLBACKS = [
-    "gemini/gemini-3.5-flash",
-    "gemini/gemini-3.5-flash-lite",
-    "gemini/gemini-3.1-flash-lite",
+    "gemini/gemini-2.0-flash",
+    "gemini/gemini-1.5-flash",
 ]
 
 # Aliases for direct function calls and tests
@@ -142,6 +139,8 @@ def _build_context_sections_str(
     context_answers: dict[str, str],
 ) -> str:
     """Format completed sections (excluding the current field) for injection."""
+    from app.ai.rag.generator import CANONICAL_FIELDS_META
+
     lines: list[str] = []
     dep_entry = DEPENDENCY_RULES.get(field_id, {})
     deps: list[dict[str, Any]] = [d for d in dep_entry.get("dependencies", []) if isinstance(d, dict)]
@@ -228,13 +227,9 @@ def _build_stage_a_summary(stage_a: JudgeStageAOutput) -> str:
 
 async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any]:
     """Call LiteLLM with Gemini for Agent 2 Judge and return parsed JSON dict."""
-    if not settings.groq_api_key and not settings.gemini_api_key:
+    api_key = settings.gemini_api_key or settings.groq_api_key
+    if not api_key:
         raise RuntimeError("No API key configured for LiteLLM.")
-
-    if settings.gemini_api_key:
-        os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
-    if settings.groq_api_key:
-        os.environ["GROQ_API_KEY"] = settings.groq_api_key
 
     max_attempts = 4
     for attempt in range(max_attempts):
@@ -248,12 +243,13 @@ async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any
                         "content": prompt,
                     }
                 ],
+                api_key=api_key,
                 response_format={"type": "json_object"},
                 temperature=temperature,
             )
             raw = chat_completion.choices[0].message.content
             print(f"[AGENT 2 JUDGE MODEL]: {chat_completion.model}")
-            return json.loads(raw or "{}")
+            return parse_llm_json(raw or "{}")
         except Exception as exc:
             if attempt == max_attempts - 1:
                 raise RuntimeError(f"Agent 2 Judge failed after {max_attempts} attempts: {exc}") from exc
@@ -286,12 +282,6 @@ async def evaluate_section(
     - confidence_breakdown (full breakdown payload persisted to DB)
     """
     context_answers = context_answers or {}
-
-    # Inject API Keys into environment for LiteLLM
-    if settings.groq_api_key:
-        os.environ["GROQ_API_KEY"] = settings.groq_api_key
-    if settings.gemini_api_key:
-        os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
 
     # Retrieve same-field references if not provided (benchmark context only)
     if retrieved_references is None:
