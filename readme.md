@@ -191,23 +191,48 @@ through the LLM.
 Every chat reply goes through `backend/app/services/ai_integration.py`, which
 uses **LiteLLM** to route to:
 
-- **Primary**: `groq/llama-3.3-70b-versatile`
-- **Fallbacks**: `gemini/gemini-3.1-flash-lite`, `gemini/gemini-flash-latest`
+- **Primary**: `gemini/gemini-3.1-flash-lite`
+- **Fallbacks**: `gemini/gemini-3.5-flash-lite`, `gemini/gemini-3.5-flash`, `gemini/gemini-3.6-flash`, `gemini/gemini-2.5-flash`
 
-The AI acts as a strict senior Business Analyst. It:
+The AI operates under a **Dual-Agent Architecture**:
+1. **Agent 1 (Drafter)**: Acts as an expert, disciplined Business Analyst consultant that guides the user, filters out unmeasurable buzzwords, structures formal draft sections, and generates clarifying questions.
+2. **Agent 2 (Judge / Senior BA Reviewer)**: Implements an impartial 2-stage verification engine (Stage A Grader + Stage B Critic) that evaluates drafts against 5 rubric dimensions, detects critical flags, and calculates a deterministic confidence score.
 
-- Enforces a quality bar (no vague/unmeasurable language)
-- Stays scoped to the currently focused section
-- Injects context from prerequisite sections (via `brd_rules.py`) into its system prompt
-- Returns structured JSON conforming to `LLMReplySchema`:
-  `reply_text`, `answer_text`, `completeness` (0-100), `confidence` (0-100),
-  `missing_items`, `is_assumption`, and an optional 5-dimension
-  `confidence_breakdown` (`grounding`, `reference_context`, `section_compliance`,
-  `testability`, `consistency`)
-- Generates a contextual greeting when a user first opens a section
+If no API key is configured, a deterministic fallback reply and stub scoring keep the rest of the app testable without external LLM access.
 
-If neither `GROQ_API_KEY` nor `GEMINI_API_KEY` is set, a deterministic fallback
-reply is returned so the rest of the app remains testable without model access.
+---
+
+## AI Scoring & Confidence System (LOW vs MEDIUM vs HIGH)
+
+The system enforces a strict quality bar to guarantee enterprise-grade BRDs. Two independent metrics govern section completion:
+- **Completeness (0–100%)**: Tracks whether all required information points for the section have been captured.
+- **Confidence (0–100%)**: Measures the factual validity, evidence grounding, and logical consistency of the drafted content.
+- **Status Rule**: A section only reaches **`Done`** (green checkmark) when **`Completeness == 100%` AND `Confidence >= 70%`**.
+
+### 5-Dimension Scoring Engine
+
+Agent 2 scores the draft across 5 weighted dimensions (20% each):
+1. **Evidence Grounding (`grounding`, 20%)**: Every metric, SLA, entity, or claim must be traceable to confirmed user evidence or explicitly flagged as an unverified assumption (`[Assumption: ...]`).
+2. **Reference & Context Alignment (`reference_context`, 20%)**: Benchmarks against historical reference BRD corpora (via pgvector semantic search) without verbatim copying.
+3. **Section-Specific Compliance (`section_compliance`, 20%)**: Fulfills the explicit canonical rules and required questions of the specific template section.
+4. **Clarity & Testability (`testability`, 20%)**: Rejects qualitative buzzwords (*"fast"*, *"seamless"*, *"robust"*) in favor of concrete, testable criteria.
+5. **Consistency & Dependency Integrity (`consistency`, 20%)**: Validates cross-section logical coherence against preceding approved sections.
+
+Each criterion is scored deterministically: `MET = 100`, `MOSTLY_MET = 75`, `PARTIALLY_MET = 50`, `NOT_MET = 0` (`N_A` is dynamically excluded from the denominator).
+
+### When does Confidence become HIGH, MEDIUM, or LOW?
+
+```
+Confidence Score:
+  0% ---------------- 60% ---------------- 84% ---------------- 100%
+      [    LOW    ]         [   MEDIUM   ]         [   HIGH   ]
+```
+
+| Confidence Level | Score Range | When it Triggers (Conditions & Examples) |
+|---|---|---|
+| 🟢 **HIGH** | **85% – 100%** | **Production-Ready & Fully Grounded Draft:**<br>• All numbers, dates, SLAs, and facts are directly supported by user evidence.<br>• If required data is not yet available, the gap is honestly disclosed and explicitly marked as an assumption (e.g., `[Assumption: ...]`), compliant with section rules.<br>• 100% consistent with preceding sections (`Dependencies Consistent`).<br>• Measurable, clear, and actionable acceptance criteria with zero vague buzzwords.<br>• *Example: Providing verified queue numbers (45 customers), handling times (15 mins), and official audit reports.* |
+| 🟡 **MEDIUM** | **60% – 84%** | **Partially Specified or Under-Grounded Draft:**<br>• The core narrative is relevant and directed, but lacks precision or verifiable data sources.<br>• Minor grounding ambiguities or unverified metrics that have not yet caused direct contradictions.<br>• Partial adherence to section rubric (e.g., competitor actions identified, but failure rate comparisons omitted).<br>• Requires minor user clarification before it can be recommended for executive sign-off.<br>• *Example: Citing competitive trends qualitatively without providing industry failure rate comparisons.* |
+| 🔴 **LOW** | **< 60%** | **Critical Conflict, Hallucination, or Vague Speculation:**<br>• **Direct Dependency Contradiction (`[HARD_DEPENDENCY_CONFLICT]`)**: The user directly contradicts established foundational facts from preceding approved sections (e.g., pivoting project scope from *SIM e-KYC* to *HR attendance*).<br>• **Fact Reversal (`[CONTRADICTORY_CONFIRMED_FACT]`)**: Denying facts that were previously verified and locked.<br>• **Unsupported Speculation**: Inserting ungrounded wild estimates (*"millions of dollars maybe"*) as settled truth without assumption disclaimers.<br>• **Pure Buzzword/Emotional Input**: Unsubstantiated complaints (*"tons of money"*, *"super messy"*) that fail testability completely.<br>• Triggers prominent red warning banners in the UI and blocks downstream sections. |
 
 ---
 
