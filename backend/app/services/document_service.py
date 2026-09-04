@@ -4,6 +4,7 @@ of frontend/src/utils/documentMarkdown.js. Deterministic, no AI call
 CLAUDE.md NFR-1 — the frontend converts markdown -> PDF client-side,
 never talks to a model directly)."""
 
+import re
 from datetime import datetime, timezone
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,23 +15,39 @@ from app.services import conversation_service, section_tree_service, template_se
 DOCUMENT_VERSION = "Version 1.0"
 
 
-def _append_leaf(lines: list[str], template_key: str, title: str, answer_text: str | None) -> None:
-    lines.append(f"**{template_key} {title}**")
+def sanitize_answer(answer_text: str | None, title: str) -> str | None:
+    """Strips leading headers from the AI's generated answer if they identically match the section title."""
+    if not answer_text:
+        return answer_text
+    
+    # Try to match an optional section number prefix like "3.3.2 " then the exact title.
+    # The title regex is escaped. It looks for 1 to 6 hash marks, whitespace, optional numbering, title, and newlines.
+    escaped_title = re.escape(title)
+    pattern = rf'^(?:#{{1,6}}\s+(?:[\d\.]+\s+)?{escaped_title}\s*\n+)'
+    
+    sanitized = re.sub(pattern, '', answer_text, flags=re.IGNORECASE).strip()
+    return sanitized
+
+
+def _append_leaf(lines: list[str], template_key: str, title: str, answer_text: str | None, depth: int) -> None:
+    header_prefix = "#" * depth
+    lines.append(f"{header_prefix} {template_key} {title}")
     lines.append("")
-    lines.append(answer_text or "_Not yet answered._")
+    lines.append(sanitize_answer(answer_text, title) or "_Not yet answered._")
     lines.append("")
 
 
-def _append_custom_node(lines: list[str], node: dict, code: str, codes: dict[str, str], answers_by_section: dict) -> None:
-    lines.append(f"**{code} {node['title']}**")
+def _append_custom_node(lines: list[str], node: dict, code: str, codes: dict[str, str], answers_by_section: dict, depth: int) -> None:
+    header_prefix = "#" * depth
+    lines.append(f"{header_prefix} {code} {node['title']}")
     lines.append("")
     if node["has_children"]:
         for i, child in enumerate(node["children"]):
             child_code = codes.get(child["id"], f"{code}.{i + 1}")
-            _append_custom_node(lines, child, child_code, codes, answers_by_section)
+            _append_custom_node(lines, child, child_code, codes, answers_by_section, depth + 1)
     else:
         answer = answers_by_section.get(node["id"])
-        lines.append((answer.answer_text if answer else None) or "_Not yet answered._")
+        lines.append(sanitize_answer(answer.answer_text if answer else None, node["title"]) or "_Not yet answered._")
         lines.append("")
 
 
@@ -76,18 +93,18 @@ async def build_markdown(session: AsyncSession, *, conversation_id: str, user_id
             if node.is_leaf:
                 section = by_template_key.get(node.id)
                 answer = answers_by_section.get(section.section_id) if section else None
-                _append_leaf(lines, node.id, node.title, answer.answer_text if answer else None)
+                _append_leaf(lines, node.id, node.title, answer.answer_text if answer else None, 3)
             else:
                 lines.append(f"### {node.id} {node.title}")
                 lines.append("")
                 for leaf in node.children:
                     section = by_template_key.get(leaf.id)
                     answer = answers_by_section.get(section.section_id) if section else None
-                    _append_leaf(lines, leaf.id, leaf.title, answer.answer_text if answer else None)
+                    _append_leaf(lines, leaf.id, leaf.title, answer.answer_text if answer else None, 4)
                 for custom_node in custom_by_nest_under.get(node.id, []):
-                    _append_custom_node(lines, custom_node, codes.get(custom_node["id"], ""), codes, answers_by_section)
+                    _append_custom_node(lines, custom_node, codes.get(custom_node["id"], ""), codes, answers_by_section, 4)
         for custom_node in custom_by_nest_under.get(top.id, []):
-            _append_custom_node(lines, custom_node, codes.get(custom_node["id"], ""), codes, answers_by_section)
+            _append_custom_node(lines, custom_node, codes.get(custom_node["id"], ""), codes, answers_by_section, 3)
 
     lines.append(f"## {template_service.BOILERPLATE_SECTION['title']}")
     lines.append("")
@@ -99,7 +116,7 @@ async def build_markdown(session: AsyncSession, *, conversation_id: str, user_id
         lines.append("## Custom Sections")
         lines.append("")
         for custom_node in standalone:
-            _append_custom_node(lines, custom_node, codes.get(custom_node["id"], ""), codes, answers_by_section)
+            _append_custom_node(lines, custom_node, codes.get(custom_node["id"], ""), codes, answers_by_section, 3)
 
     return "\n".join(lines)
 
