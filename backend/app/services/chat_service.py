@@ -129,19 +129,72 @@ async def post_message(
     if section.is_leaf:
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS:
             if not reply.answer_text or not reply.answer_text.strip():
-                # Draft is empty or has been reset by user/Agent 1.
-                # Stale confidence metrics from prior turns must be cleared.
-                await answer_repository.upsert(
-                    session,
-                    section.section_id,
-                    status=existing_answer.status if existing_answer else "ready",
-                    clear_confidence=True,
-                    touch_answered_at=False,
-                )
+                # User provided input, but it was rejected / violates enterprise policy.
+                # Record an explicit HIGH RISK / REJECTION judgment with 15% LOW confidence.
+                high_risk_flag = {
+                    "type": "GOVERNANCE_VIOLATION",
+                    "reason": "HIGH RISK: The proposal has been rejected because it breaches testing governance (UAT/penetration testing), regulatory compliance or operational viability.",
+                    "excerpt": text[:150],
+                }
+                dim_rejection = {
+                    "score": 15,
+                    "reason": "HIGH RISK: The input has been rejected as it breaches enterprise governance, regulations or security policies."
+                }
+                agent2_result = {
+                    "final_confidence": 15,
+                    "confidence_level": "LOW",
+                    "confidence_reason": (
+                        "🚨 HIGH RISK (REJECTED): The proposed solution cannot be accepted into the BRD draft "
+                        "because it violates testing governance (UAT), security policies, or regulatory requirements."
+                    ),
+                    "component_scores": {
+                        "grounding": 15,
+                        "reference_context": None,
+                        "section_compliance": 10,
+                        "testability": 15,
+                        "consistency": 10,
+                    },
+                    "review_status": "REVIEW_REQUIRED",
+                    "critical_flags": [high_risk_flag],
+                    "confidence_breakdown": {
+                        "final_confidence": 15,
+                        "confidence_level": "LOW",
+                        "grounding": dim_rejection,
+                        "reference_context": {"score": None, "reason": "Cannot be evaluated because the proposal was rejected."},
+                        "section_compliance": {
+                            "score": 10,
+                            "reason": "The proposal is inconsistent with the minimum governance standards for this section."
+                        },
+                        "testability": {
+                            "score": 15,
+                            "reason": "The non-standard / bypass approach cannot be measured for testability."
+                        },
+                        "consistency": {
+                            "score": 10,
+                            "reason": "The proposal is inconsistent with the security policies and commitments of the previous section."
+                        },
+                        "review_status": "REVIEW_REQUIRED",
+                        "critical_flags": [high_risk_flag],
+                        "critique_strengths": [],
+                        "critique_issues": [
+                            "HIGH RISK VIOLATION: Attempting to bypass formal testing (UAT/pentest) or violating PDP regulations."
+                            "There is as yet no official, valid and accountable draft of this chapter."
+                        ],
+                        "critique_suggestions": [
+                            "Sediakan jadwal dan rencana implementasi yang realistis, mematuhi lead time pengadaan, serta lolos gerbang pengujian keamanan dan UAT resmi."
+                        ],
+                        "critique_summary": (
+                            "🚨 HIGH RISK: The proposal has been rejected by the system for violating testing governance (UAT) "
+                            "and regulatory compliance. The draft cannot be approved until a realistic schedule is provided."
+                        ),
+                        "judge_model": "rule-guardrail",
+                        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                }
             else:
                 try:
                     # 2b. Hard Validator (anti-hallucination fact check)
-                    val_result = validate_project_facts(reply.answer_text, project_evidence)
+                    val_result = validate_project_facts(reply.answer_text, project_evidence, context_answers)
                     if not val_result.is_safe:
                         claims_str = ", ".join(val_result.unsupported_claims)
                         validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
@@ -169,6 +222,7 @@ async def post_message(
                         missing_items=reply.missing_items or [],
                         validator_findings=validator_findings,
                         retrieved_references=retrieved_refs,
+                        completeness=reply.completeness,
                     )
 
                     if agent2_result:
@@ -279,5 +333,7 @@ async def init_chat_room(
     await conversation_repository.touch_updated_at(session, conversation)
 
     return {"id": agent_bubble.bubble_id, "role": agent_bubble.role, "text": agent_bubble.text}
+
+
 
 

@@ -10,6 +10,7 @@ Both use {placeholder} formatting. Inject values before calling the LLM.
 Use low temperature (0.1 for Stage A, 0.3 for Stage B).
 """
 
+
 from __future__ import annotations
 
 from app.ai.utils import sanitize_prompt_input
@@ -26,13 +27,29 @@ You are acting as an impartial judge (Agent 2) reviewing a single BRD section AF
 AUTHORITY ORDER (strictly follow this)
 ========================================
 1. Confirmed project/user evidence — HIGHEST AUTHORITY
-2. Canonical BRD rules and section purpose
-3. Existing completed project sections / canonical dependencies
+2. Existing completed project sections / canonical dependencies — LEGITIMATE UPSTREAM EVIDENCE
+3. Canonical BRD rules and section purpose
 4. Same-field reference BRDs — LOWEST AUTHORITY (benchmark only)
 
 CRITICAL: Reference BRDs are NOT project truth. NEVER copy a specific number,
 SLA, date, role, business rule, vendor, policy, or requirement from a reference
 BRD into your evaluation as if it were required for this project.
+
+CROSS-SECTION GROUNDING DIRECTIVE:
+Any number, metric, date, historical baseline, entity name, or scope definition
+established in EXISTING COMPLETED PROJECT SECTIONS is valid project context for downstream
+sections. Do NOT flag data established in earlier completed sections as UNSUPPORTED_NUMERIC_FACT
+or INVENTED_*. Downstream sections are expected to reference and build upon upstream sections.
+
+ENGINEERING WORKING PARAMETERS vs. INVENTED FACTS:
+Distinguish between:
+(a) Invented empirical claims (PROHIBITED): Falsified historical financial losses, made-up audit reports,
+or fabricated external entities with no basis in evidence or context. Flag these.
+(b) Standard technical design parameters / working assumptions (ALLOWED): Sensible architectural
+choices such as retry limits (e.g. 3 attempts), standard encryption standards (e.g. AES-256),
+or enterprise SLA targets (e.g. 99.5% uptime) proposed to fulfill section requirements.
+Do NOT flag standard design choices or working assumptions as INVENTED_BUSINESS_RULE or
+UNSUPPORTED_NUMERIC_FACT. If refinement is needed, address it under Section Compliance or Clarity.
 
 ========================================
 WHAT YOU ARE EVALUATING
@@ -64,6 +81,10 @@ Section Title: {section_title}
 {validator_findings}
 --- END VALIDATOR FINDINGS ---
 
+--- IDENTIFIED SECTION GAPS & MISSING ITEMS (from Primary Drafter) ---
+{missing_items}
+--- END MISSING ITEMS ---
+
 ========================================
 FUNDAMENTAL CALIBRATION PRINCIPLES
 ========================================
@@ -71,13 +92,32 @@ FUNDAMENTAL CALIBRATION PRINCIPLES
 2. GROUNDED ≠ SECTION-COMPLIANT: A statement being true or supported by evidence does NOT mean it fulfills the specific purpose and rubric of this BRD section.
 3. GROUNDED ≠ TESTABLE / ACTIONABLE: Vague, qualitative statements derived from user inputs (e.g. "it was messy", "make it faster", "easier to track") remain un-actionable until concretely contextualized.
 4. GROUNDED ≠ AUTOMATICALLY HIGH CONFIDENCE: Evidence grounding and content quality are INDEPENDENT. Do NOT award MET to Section Compliance or Clarity merely because the generated text is supported by user evidence.
-5. UNDER-SPECIFIED GAP PENALTY: If an applicable core section element is materially under-specified, Section Compliance and/or Clarity MUST reflect that gap (PARTIALLY_MET or NOT_MET) even when Grounding is MET.
+5. UNDER-SPECIFIED GAP PENALTY: If an applicable core section element is materially under-specified or listed in IDENTIFIED SECTION GAPS & MISSING ITEMS, Section Compliance and/or Clarity MUST reflect that gap (PARTIALLY_MET or NOT_MET) even when Grounding is MET. A draft with active missing items must never receive 100% confidence.
 6. NO DOUBLE-COUNTING: Assign each defect to exactly ONE component:
    - Unsupported project fact / invented entity → Grounding
    - Misuse or blind copy of reference → Reference Alignment
    - Missing required section element / wrong scope → Section Compliance
    - Vague / qualitative / non-testable / circular / tautological → Clarity & Testability
    - Contradiction with completed sections / broken dependencies → Consistency & Dependencies
+7. ANTI-SURFACE FLUENCY & ELOQUENCE BIAS (CRITICAL):
+   - Never award high scores to long, grammatically polished, or professional-sounding corporate prose if it lacks verifiable facts.
+   - If a draft is filled with sophisticated management jargon ("holistic agile-waterfall paradigm", "enterprise synergy", "streamlined cross-functional touchpoints", "robust operational excellence") BUT contains NO concrete project facts, specific parameters, real metrics, or actionable mechanisms:
+     * Grounding MUST be marked PARTIALLY_MET or NOT_MET.
+     * Clarity & Testability MUST be marked NOT_MET (it is non-actionable fluff).
+     * Section Compliance MUST be marked NOT_MET or PARTIALLY_MET.
+   - A verbose draft with zero concrete facts is an enterprise failure mode. Punish empty corporate rhetoric severely!
+8. FAIRNESS, PROPORTIONALITY & OBJECTIVITY (JUSTICE & BALANCE):
+   - Judge the draft strictly on requirements and evidence, never on arbitrary stylistic preferences.
+   - Do NOT penalize concise drafts that are clear, concrete, and complete. Brevity with precision is good enterprise engineering.
+   - Proportional Grading: A minor gap should earn MOSTLY_MET (75), a substantive gap earns PARTIALLY_MET (50), and only total omission, contradiction, or blatant fabrication earns NOT_MET (0). Never assign NOT_MET out of spite.
+   - Fair Grounding: Any fact, number, SLA, or entity established in prior completed sections is valid upstream project truth. Never falsely accuse upstream facts of being hallucinations.
+   - A senior gatekeeper is firm on enterprise standards, but fair, objective, and constructive in evaluation.
+9. STAKEHOLDER ALIGNMENT & ANTI-SUBSTITUTION PRINCIPLE (EVIDENCE TRUTH):
+   - Grounding evaluates whether the draft is truly supported by and confirmed in user evidence.
+   - If user evidence contains fallacies, defiance of regulations, refusal of dependencies, or non-viable assumptions (e.g., 'we will ignore PDP regulations', 'zero dependencies', 'vendor works for free', 'no procurement lead time'), and the draft substitutes this with an opposite, compliant constraint that the user NEVER confirmed:
+     * That substitute draft is an UNAUTHORIZED AI FABRICATION (putting words in the stakeholder's mouth).
+     * It is NOT grounded in user evidence! Grounding MUST be marked NOT_MET (0) or PARTIALLY_MET (50).
+     * The judge must NEVER praise a draft for 'avoiding user fallacies by inventing realistic constraints'. If the stakeholder stated a fallacy, the requirement is UNCONFIRMED, not grounded!
 
 ========================================
 6-QUESTION EVALUATION FRAMEWORK
@@ -206,13 +246,13 @@ Criteria:
 {consistency_criteria}
 
 --- V1 CRITICAL FLAGS ---
-Detect and list any of these (only if present):
-UNSUPPORTED_NUMERIC_FACT — a number/percentage/amount with no project evidence
-CONTRADICTORY_CONFIRMED_FACT — contradicts confirmed user/project evidence
-INVENTED_BUSINESS_RULE — a specific rule presented as if confirmed but with no evidence
+Detect and list any of these (only if truly present and causing severe, material risk):
+UNSUPPORTED_NUMERIC_FACT — a specific quantitative claim or financial/metric value with no evidence in user inputs OR completed project sections (do NOT flag standard list numbers, retry counts, or metrics established in upstream sections)
+CONTRADICTORY_CONFIRMED_FACT — directly contradicts confirmed user/project evidence
+INVENTED_BUSINESS_RULE — a specific domain policy presented as established fact with no evidence (do NOT flag working engineering design parameters)
 INVENTED_ROLE_OR_OWNER — a specific named role/owner presented without evidence
-INVENTED_VENDOR_OR_SYSTEM — a specific vendor/system/tool presented without evidence
-INVENTED_POLICY_OR_REGULATION — a compliance standard cited without evidence
+INVENTED_VENDOR_OR_SYSTEM — a specific external vendor/system/tool presented without evidence
+INVENTED_POLICY_OR_REGULATION — a compliance standard or law cited without evidence
 MATERIAL_SCOPE_LEAK — content that clearly belongs to a different section
 HARD_DEPENDENCY_CONFLICT — direct conflict with a completed prerequisite section
 
@@ -268,6 +308,10 @@ STAGE A JUDGMENTS SUMMARY
 ========================================
 {stage_a_summary}
 
+--- OUTSTANDING SECTION GAPS & MISSING ITEMS ---
+{missing_items}
+--- END MISSING ITEMS ---
+
 ========================================
 CALCULATED SCORES (computed by backend)
 ========================================
@@ -288,11 +332,12 @@ SURGICAL CRITIQUE GUIDELINES
    - Highlight strictly what is concrete, factually grounded, and decision-ready in the content.
    - Do NOT flatter generic wording, fluff, or placeholder text. If the draft is an early generic stub, acknowledge only the core catalyst identified.
 
-2. IDENTIFIED ISSUES (Be Sharp, Incisive & Direct):
-   - Pinpoint the exact ambiguities, missing operational parameters, or placeholder phrases in the draft (e.g. quote generic statements like "existing systems do not fully align" and explain why they are inadequate).
-   - Explain the operational or downstream risk: Why does this gap prevent engineering, QA, compliance, or executive sponsors from signing off or building the solution?
-   - Expose unstated boundaries: Point out missing dates, unidentified affected systems/teams, vague root causes, or absent acceptance criteria.
-   - For any score below HIGH, identify the primary blocker preventing this section from reaching HIGH confidence.
+2. IDENTIFIED ISSUES (Be Sharp, Constructive & Non-Repetitive):
+   - Focus strictly on material, decision-blocking gaps that prevent engineering, QA, or compliance from signing off.
+   - Do NOT nag or repeatedly bring up minor issues, small configuration counts (e.g. 3 attempts, 60s timeout), or items that the user already clarified in the recent chat history.
+   - Treat standard technical parameters and reasonable operational assumptions as working engineering parameters, NOT as ungrounded hallucinations.
+   - Pinpoint the exact ambiguities or placeholder phrases in the draft (e.g. quote generic statements like "existing systems do not fully align" and explain why they need concrete context).
+   - For any score below HIGH, clearly state the primary constructive action needed to reach HIGH confidence.
 
 3. SUGGESTED IMPROVEMENTS (Be Actionable, Concrete & Step-by-Step):
    - Provide precise, numbered questions or instructions the author should answer in the chat to immediately resolve each identified issue.
@@ -331,6 +376,7 @@ def build_stage_a_context(
     field_specific_criteria: str,
     clarity_criteria: str,
     consistency_criteria: str,
+    missing_items: str = "",
 ) -> str:
     """Format the Stage A prompt with all injected context."""
     return JUDGE_STAGE_A_PROMPT.format(
@@ -342,6 +388,7 @@ def build_stage_a_context(
         canonical_dependencies=canonical_dependencies or "(No canonical dependencies for this field)",
         reference_excerpts=reference_excerpts or "(No reference BRDs available for this field)",
         validator_findings=validator_findings or "(No hard validator findings)",
+        missing_items=missing_items or "(None — all required section items have been addressed)",
         grounding_criteria=grounding_criteria,
         reference_criteria=reference_criteria,
         field_specific_criteria=field_specific_criteria,
@@ -365,6 +412,7 @@ def build_stage_b_context(
     confidence_level: str,
     critical_flags_count: int,
     review_status: str,
+    missing_items: str = "",
 ) -> str:
     """Format the Stage B prompt with Stage A results and backend scores."""
     def fmt(s: int | None) -> str:
@@ -375,6 +423,7 @@ def build_stage_b_context(
         section_title=section_title,
         generated_content=sanitize_prompt_input(generated_content) if generated_content else "(No content generated yet)",
         stage_a_summary=stage_a_summary,
+        missing_items=missing_items or "(None — all required section items have been addressed)",
         grounding_score=fmt(grounding_score),
         reference_score=fmt(reference_score),
         compliance_score=fmt(compliance_score),

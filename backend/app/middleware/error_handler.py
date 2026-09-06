@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.exceptions import DomainError
@@ -9,6 +10,29 @@ logger = logging.getLogger("brdagent")
 
 
 def register_error_handlers(app: FastAPI) -> None:
+    @app.exception_handler(RequestValidationError)
+    async def handle_validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+        error_details = []
+        for err in exc.errors():
+            loc = " -> ".join(str(l) for l in err.get("loc", []))
+            msg = err.get("msg", "Validation error")
+            error_details.append(f"{loc}: {msg}")
+        readable_message = "; ".join(error_details) if error_details else "Invalid request data."
+        logger.warning(
+            "Request validation error on %s %s: %s",
+            request.method,
+            request.url.path,
+            readable_message,
+        )
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": "validation_error",
+                "message": readable_message,
+                "detail": exc.errors(),
+            },
+        )
+
     @app.exception_handler(DomainError)
     async def handle_domain_error(_request: Request, exc: DomainError) -> JSONResponse:
         return JSONResponse(

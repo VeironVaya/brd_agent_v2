@@ -3,11 +3,15 @@ import { useState } from 'react'
 export default function MessageInput({ onSend, disabled }) {
   const [value, setValue] = useState('')
 
-  function handleSend() {
+  async function handleSend() {
     const text = value.trim()
     if (!text || disabled) return
-    onSend(text)
-    setValue('')
+    try {
+      await onSend(text)
+      setValue('')
+    } catch {
+      // Keep value so the user doesn't lose their input on failure
+    }
   }
 
   return (
