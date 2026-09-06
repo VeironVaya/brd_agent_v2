@@ -2,6 +2,7 @@ import { CONFIDENCE_COLOR_HEX } from '../../utils/confidenceColors.js'
 import { FIELD_META, confidenceTier } from '../../utils/draftFields.js'
 import { findCustomNode, getCodeForNode } from '../../utils/customSectionTree.js'
 import Accordion from '../common/Accordion.jsx'
+import { isChoiceSection } from '../../utils/choiceSections.js'
 import { 
   ReviewRequiredBanner, 
   ScoringCards, 
@@ -81,12 +82,23 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
   const missingItems = answer.missing || []
   const breakdown = answer.confidence_breakdown
 
-  const depStyle = breakdown?.dependency_status ? DEP_STATUS_STYLES[breakdown.dependency_status] : null
+  const isFiller = (text) => {
+    const t = text.toLowerCase()
+    return t.includes('no critical issues') || t.includes('no issues') || t.includes('no significant issues') || t.includes('no suggestions') || t.trim() === 'none'
+  }
+
+  const cleanBreakdown = breakdown ? {
+    ...breakdown,
+    critique_issues: (breakdown.critique_issues || []).filter(i => !isFiller(i)),
+    critique_suggestions: (breakdown.critique_suggestions || []).filter(s => !isFiller(s))
+  } : null
+
+  const depStyle = cleanBreakdown?.dependency_status ? DEP_STATUS_STYLES[cleanBreakdown.dependency_status] : null
   
   // Calculate action items count
   const missingCount = missingItems.length
-  const issuesCount = breakdown?.critique_issues?.length || 0
-  const suggestionsCount = breakdown?.critique_suggestions?.length || 0
+  const issuesCount = cleanBreakdown?.critique_issues?.length || 0
+  const suggestionsCount = cleanBreakdown?.critique_suggestions?.length || 0
   const hasActionItems = missingCount > 0 || issuesCount > 0 || suggestionsCount > 0
 
   const actionItemsBadge = (
@@ -151,7 +163,23 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
 
       <div className="p-7 pt-4">
         {/* Banner */}
-        <ReviewRequiredBanner breakdown={breakdown} />
+        <ReviewRequiredBanner breakdown={cleanBreakdown} />
+
+        {isChoiceSection(fieldId) && (
+          <div className="rounded-xl bg-slate-50 border border-slate-200 p-5 mb-4 text-center">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mx-auto mb-3 text-slate-400">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <h4 className="text-[13px] font-bold text-slate-700 mb-1">Structured Choice Section</h4>
+            <p className="text-[12.5px] text-slate-500 leading-relaxed">
+              This is a rigid choice section. You can use the chat to brainstorm, but you must click the <strong>"Choose options"</strong> button on the left to officially record your answer. The AI Quality Reviewer does not evaluate choice sections.
+            </p>
+          </div>
+        )}
 
         {/* Current Draft (Accordion) */}
         {answer.answer && (
@@ -167,7 +195,7 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
         )}
 
         {/* Accordion 1: Action Items */}
-        {hasActionItems && (
+        {hasActionItems && !isChoiceSection(fieldId) && (
           <Accordion 
             title="Action Items" 
             icon={<AlertTriangleIcon />} 
@@ -193,21 +221,23 @@ export default function AnswerDetailPanel({ fieldId, answers, customSections = [
               )}
               
               {/* Issues & Suggestions */}
-              <IssuesCard breakdown={breakdown} />
-              <SuggestionsCard breakdown={breakdown} />
+              <IssuesCard breakdown={cleanBreakdown} />
+              <SuggestionsCard breakdown={cleanBreakdown} />
             </div>
           </Accordion>
         )}
 
         {/* Accordion 2: Scoring & Strengths */}
-        <Accordion title="Confidence & Analysis" icon={<BarChartIcon />}>
-          <div className="flex flex-col gap-4">
-            <div className="mt-2">
-              <ScoringCards breakdown={breakdown} />
+        {!isChoiceSection(fieldId) && (
+          <Accordion title="Confidence & Analysis" icon={<BarChartIcon />}>
+            <div className="flex flex-col gap-4">
+              <div className="mt-2">
+                <ScoringCards breakdown={cleanBreakdown} />
+              </div>
+              <StrengthsCard breakdown={cleanBreakdown} />
             </div>
-            <StrengthsCard breakdown={breakdown} />
-          </div>
-        </Accordion>
+          </Accordion>
+        )}
       </div>
     </div>
   )

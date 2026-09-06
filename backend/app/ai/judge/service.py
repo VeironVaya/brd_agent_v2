@@ -125,8 +125,6 @@ def build_project_evidence_text(
         if text and text.strip():
             if role == "user":
                 parts.append(_classify_user_input(text))
-            elif role == "agent":
-                parts.append(f"[Agent Context / Question]: {text.strip()}")
 
     if latest_user_message and latest_user_message.strip():
         parts.append(f"{_classify_user_input(latest_user_message)} (Current Message)")

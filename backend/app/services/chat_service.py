@@ -24,14 +24,15 @@ from app.repositories import answer_repository, bubble_repository, conversation_
 from app.ai.rag import CANONICAL_ANSWERABLE_FIELDS, ReferenceCitation, search_references
 from app.ai.validator import validate_project_facts
 from app.services import ai_integration, conversation_service, template_service
+from app.services.choice_section_service import CHOICE_SECTIONS
 from app.ai import judge
 
 
-def _derive_status(completeness: int | None, confidence: int | None, previous_status: str | None) -> str:
-    """completeness and confidence -> status is a backend rule."""
+def _derive_status(completeness: int | None, confidence: int | None, issues_count: int, previous_status: str | None) -> str:
+    """completeness, confidence, and issues -> status is a backend rule."""
     if completeness is None:
         return previous_status or "ready"
-    if completeness >= 100 and (confidence is None or confidence >= 70):
+    if completeness >= 100 and (confidence is None or confidence >= 70) and issues_count == 0:
         return "done"
     return "progress"
 
@@ -107,6 +108,8 @@ async def post_message(
     )
 
     # ------------------------------------------------------------------ #
+    is_choice_section = field_id in CHOICE_SECTIONS if field_id else False
+
     # 1. AGENT 1: Generate or revise section draft content               #
     # ------------------------------------------------------------------ #
     reply = await ai_integration.get_reply(
@@ -119,6 +122,7 @@ async def post_message(
         field_id=field_id,
         context_answers=context_answers,
         project_evidence=project_evidence,
+        is_choice_section=is_choice_section,
     )
 
     agent2_result = None
@@ -126,7 +130,7 @@ async def post_message(
     # ------------------------------------------------------------------ #
     # 2. AUTONOMOUS REFLECTION LOOP (Agent 2 Judge -> Agent 1 Fix)       #
     # ------------------------------------------------------------------ #
-    if section.is_leaf:
+    if section.is_leaf and not is_choice_section:
         if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS:
             if not reply.answer_text or not reply.answer_text.strip():
                 # User provided input, but it was rejected / violates enterprise policy.
@@ -177,7 +181,7 @@ async def post_message(
                         "critical_flags": [high_risk_flag],
                         "critique_strengths": [],
                         "critique_issues": [
-                            "HIGH RISK VIOLATION: Attempting to bypass formal testing (UAT/pentest) or violating PDP regulations."
+                            "HIGH RISK VIOLATION: Attempting to bypass formal testing (UAT/pentest) or violating PDP regulations.",
                             "There is as yet no official, valid and accountable draft of this chapter."
                         ],
                         "critique_suggestions": [
@@ -198,9 +202,6 @@ async def post_message(
                     if not val_result.is_safe:
                         claims_str = ", ".join(val_result.unsupported_claims)
                         validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
-                    else:
-                        validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
-
                     # 2c. RAG Reference Retrieval
                     try:
                         raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
@@ -248,7 +249,15 @@ async def post_message(
 
     if section.is_leaf:
         confidence = agent2_result["final_confidence"] if agent2_result else (existing_answer.confidence if existing_answer else None)
-        status = _derive_status(reply.completeness, confidence, existing_answer.status if existing_answer else None)
+        
+        breakdown = agent2_result["confidence_breakdown"] if agent2_result else (existing_answer.confidence_breakdown if existing_answer else None)
+        issues_count = 0
+        if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
+            issues = breakdown.get("critique_issues", [])
+            valid_issues = [i for i in issues if not any(x in i.lower() for x in ['no critical issues', 'no issues', 'no significant issues', 'none'])]
+            issues_count = len(valid_issues)
+            
+        status = _derive_status(reply.completeness, confidence, issues_count, existing_answer.status if existing_answer else None)
         
         upsert_kwargs = {
             "status": status,
@@ -316,7 +325,14 @@ async def init_chat_room(
     
     if section.is_leaf:
         existing_answer = await answer_repository.find_by_section_id(session, section.section_id)
-        status = _derive_status(reply.completeness, reply.confidence, existing_answer.status if existing_answer else None)
+        breakdown = reply.confidence_breakdown or (existing_answer.confidence_breakdown if existing_answer else None)
+        issues_count = 0
+        if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
+            issues = breakdown.get("critique_issues", [])
+            valid_issues = [i for i in issues if not any(x in i.lower() for x in ['no critical issues', 'no issues', 'no significant issues', 'none'])]
+            issues_count = len(valid_issues)
+            
+        status = _derive_status(reply.completeness, reply.confidence, issues_count, existing_answer.status if existing_answer else None)
         await answer_repository.upsert(
             session,
             section.section_id,

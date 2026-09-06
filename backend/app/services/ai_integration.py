@@ -81,6 +81,8 @@ Your task is to guide the user to complete the current BRD section through a con
 
 # PROJECT CONTEXT
 {project_evidence}
+- IMPORTANT: If any information in the PROJECT CONTEXT (such as Impacted Stakeholders or Requestor Directorate) is relevant to the current section's requirements, you MUST proactively incorporate it into your generated `answer_text`.
+- DO NOT ask the user to provide information that is already present in the PROJECT CONTEXT.
 
 # SECTION-SPECIFIC RULES
 {section_rules_prompt}
@@ -96,13 +98,15 @@ Your task is to guide the user to complete the current BRD section through a con
    - 40-70: Good start, but missing key details or concrete numbers. Document them in "missing_items".
    - 80-100: Comprehensive, testable, grounded, and actionable. Acknowledge and move on.
    - CRITICAL: If you determine that the section is fully complete and "missing_items" is empty, you MUST set "completeness" to exactly 100. Do not use 95 or 99.
-7. EXPLICIT CONTEXT CITATION: When you reject an input or ask for clarification based on a prerequisite dependency (listed in SECTION-SPECIFIC RULES), you MUST explicitly cite the name of that prerequisite section and explicitly quote or summarize its drafted text in your `reply_text`. For example: "Based on the draft of 1.2 Business Objective where you stated 'X', your current input contradicts this because..."
-8. CRITICAL ANTI-FABRICATION & STAKEHOLDER CONTRADICTION DIRECTIVE:
+7. DEFER TO QUALITY REVIEWER: Even if you set completeness to 100, DO NOT tell the user they are done or that they can proceed to the next section. Your work is subject to review by the Quality Gatekeeper (Agent 2), who may find issues you missed. Instead, say something like: 'I\'ve incorporated your details into the draft. Please check the right panel to see if the Quality Reviewer has flagged any final issues before we move on.'
+8. EXPLICIT CONTEXT CITATION: When you reject an input or ask for clarification based on a prerequisite dependency (listed in SECTION-SPECIFIC RULES), you MUST explicitly cite the name of that prerequisite section and explicitly quote or summarize its drafted text in your `reply_text`. For example: "Based on the draft of 1.2 Business Objective where you stated 'X', your current input contradicts this because..."
+9. CRITICAL ANTI-FABRICATION & STAKEHOLDER CONTRADICTION DIRECTIVE:
    - NEVER invent or draft positive compliant requirements or realistic operational constraints that directly contradict what the user explicitly stated or rejected.
    - If the user explicitly asserts a fallacy, an irresponsible claim, defiance of laws/regulations (e.g., 'we will ignore regulations', 'zero dependencies', 'hardware appears magically', 'unlimited free services'), or provides ungrounded/non-measurable statements:
      (a) In `reply_text`, you MUST challenge the statement, explain why enterprise governance/law/physics rejects it, and prompt the user for valid, accountable requirements.
      (b) You MUST NOT fabricate opposite compliant requirements into `answer_text` on the user's behalf! If the user's input is non-compliant or fallacious, DO NOT add unconfirmed claims to `answer_text`. Retain only previously confirmed items, or leave `answer_text` as empty (`""`).
      (c) Keep `completeness` low (0-25) and list the unconfirmed items in `missing_items`.
+10. DO NOT include the section title or section number as a header in your `answer_text`. Start immediately with the content.
 
 # CURRENT SECTION CONTEXT
 <current_section_context>
@@ -139,6 +143,33 @@ Example Output:
   "completeness": 50,
   "confidence": 90,
   "missing_items": ["Specific metric for customer satisfaction", "Target value"]
+}}
+"""
+
+
+CHOICE_SECTION_PROMPT = """You are an expert, senior Business Analyst acting as a BRD (Business Requirement Document) Consultant.
+Your task is to guide the user through a conversational interface.
+
+# CURRENT SECTION CONTEXT
+- Section Title: {room_title}
+- Section Purpose: {room_purpose}
+
+# RECENT CHAT HISTORY
+{history_context}
+
+# OBJECTIVE
+This is a structured Choice Section (List of Values). 
+DO NOT draft any answer text. DO NOT evaluate completeness. DO NOT flag missing items.
+Your only job is to chat with the user, answer their questions, and help them brainstorm which options they should select. 
+Remind them that to officially answer this section, they MUST click the "Choose options" button in the user interface.
+
+Respond with a JSON object matching this exact schema:
+{{
+  "reply_text": "Your natural conversational response helping them brainstorm.",
+  "answer_text": null,
+  "completeness": 0,
+  "confidence": null,
+  "missing_items": []
 }}
 """
 
@@ -181,7 +212,6 @@ async def _execute_agent1_llm(
 
     return LLMReplySchema.model_validate(raw_data)
 
-
 async def get_reply(
     *,
     room_id: str,
@@ -194,6 +224,7 @@ async def get_reply(
     context_answers: dict[str, str] | None = None,
     judge_critique: dict | None = None,
     project_evidence: str | None = None,
+    is_choice_section: bool = False,
 ) -> AgentReply:
     """Real AI Integration: LiteLLM routing processing room data and outputting AgentReply."""
     api_key = settings.gemini_api_key or settings.groq_api_key
@@ -226,7 +257,14 @@ async def get_reply(
     current_completeness = (current_answer or {}).get("completeness") or 0
     current_missing_items = json.dumps((current_answer or {}).get("missing_items") or [])
 
-    system_instruction = SYSTEM_PROMPT.format(
+    if is_choice_section:
+        system_instruction = CHOICE_SECTION_PROMPT.format(
+            room_title=room_title,
+            room_purpose=room_purpose or "Not specified",
+            history_context=history_context,
+        )
+    else:
+        system_instruction = SYSTEM_PROMPT.format(
         project_evidence=project_evidence or "Not provided",
         section_rules_prompt=get_section_rules_prompt(room_id, context_answers or {}),
         room_title=room_title,
@@ -260,10 +298,10 @@ async def get_reply(
 
         return AgentReply(
             reply_text=llm_reply.reply_text,
-            answer_text=llm_reply.answer_text,
-            completeness=llm_reply.completeness,
+            answer_text=current_answer_text if is_choice_section else llm_reply.answer_text,
+            completeness=current_completeness if is_choice_section else llm_reply.completeness,
             confidence=None,
-            missing_items=llm_reply.missing_items,
+            missing_items=json.loads(current_missing_items) if is_choice_section else llm_reply.missing_items,
             confidence_breakdown=None,
         )
 

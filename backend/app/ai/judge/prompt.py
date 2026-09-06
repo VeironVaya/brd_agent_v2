@@ -333,11 +333,13 @@ SURGICAL CRITIQUE GUIDELINES
    - Do NOT flatter generic wording, fluff, or placeholder text. If the draft is an early generic stub, acknowledge only the core catalyst identified.
 
 2. IDENTIFIED ISSUES (Be Sharp, Constructive & Non-Repetitive):
+   - Pinpoint the exact ambiguities, missing operational parameters, or placeholder phrases in the draft (e.g. quote generic statements like "existing systems do not fully align" and explain why they are inadequate).
+   - Explain the operational or downstream risk: Why does this gap prevent engineering, QA, compliance, or executive sponsors from signing off or building the solution?
    - Focus strictly on material, decision-blocking gaps that prevent engineering, QA, or compliance from signing off.
    - Do NOT nag or repeatedly bring up minor issues, small configuration counts (e.g. 3 attempts, 60s timeout), or items that the user already clarified in the recent chat history.
    - Treat standard technical parameters and reasonable operational assumptions as working engineering parameters, NOT as ungrounded hallucinations.
-   - Pinpoint the exact ambiguities or placeholder phrases in the draft (e.g. quote generic statements like "existing systems do not fully align" and explain why they need concrete context).
    - For any score below HIGH, clearly state the primary constructive action needed to reach HIGH confidence.
+   - CRITICAL CONSTRAINT: If there are absolutely no issues, return an empty array `[]`. DO NOT insert generic filler strings like "No critical issues identified" or "None".
 
 3. SUGGESTED IMPROVEMENTS (Be Actionable, Concrete & Step-by-Step):
    - Provide precise, numbered questions or instructions the author should answer in the chat to immediately resolve each identified issue.
