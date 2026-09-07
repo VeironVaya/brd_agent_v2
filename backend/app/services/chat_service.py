@@ -202,6 +202,9 @@ async def post_message(
                     if not val_result.is_safe:
                         claims_str = ", ".join(val_result.unsupported_claims)
                         validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
+                    else:
+                        validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
+
                     # 2c. RAG Reference Retrieval
                     try:
                         raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
