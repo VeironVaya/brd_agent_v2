@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173"
     groq_api_key: str | None = None
     gemini_api_key: str | None = None
+    rag_database_url: str | None = None
 
     @property
     def cors_origin_list(self) -> list[str]:

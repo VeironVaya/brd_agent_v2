@@ -117,12 +117,8 @@ def determine_confidence_level(score: int | float) -> str:
 
 
 def determine_judge_confidence_level(score: int) -> str:
-    """Map integer score 0-100 to HIGH / MEDIUM / LOW."""
-    if score >= HIGH_THRESHOLD:
-        return "HIGH"
-    if score >= MEDIUM_THRESHOLD:
-        return "MEDIUM"
-    return "LOW"
+    """Map integer score 0-100 to HIGH / MEDIUM / LOW (delegates to determine_confidence_level)."""
+    return determine_confidence_level(score)
 
 
 def _calculate_component_scores(stage_a: Any) -> dict[str, int | None]:

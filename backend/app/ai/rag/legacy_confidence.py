@@ -25,106 +25,21 @@ from .embeddings import EmbeddingGenerator
 from .llm_client import LLMClient
 
 # ---------------------------------------------------------------------------
-# Agent 2 Deterministic Confidence Configuration (V1)
+# Agent 2 Deterministic Confidence Configuration & Engine (Single Source of Truth)
+# Re-exported from app.ai.judge.scoring for backward-compatibility.
 # ---------------------------------------------------------------------------
-
-# Component weights (20% each, sum = 1.0)
-COMPONENT_WEIGHTS: dict[str, float] = {
-    "grounding": 0.20,
-    "reference_context": 0.20,
-    "section_compliance": 0.20,
-    "testability": 0.20,
-    "consistency": 0.20,
-}
-
-# Metric mapping for rubric judgment labels
-# Note: N_A is intentionally excluded — callers must filter it before averaging
-LABEL_TO_SCORE: dict[str, int] = {
-    "MET": 100,
-    "MOSTLY_MET": 75,
-    "PARTIALLY_MET": 50,
-    "NOT_MET": 0,
-}
-
-# Production confidence level thresholds
-HIGH_CONFIDENCE_THRESHOLD: int = 85    # score >= 85 -> "HIGH"
-MEDIUM_CONFIDENCE_THRESHOLD: int = 60  # score >= 60 -> "MEDIUM", < 60 -> "LOW"
-
-
-# ---------------------------------------------------------------------------
-# Production Deterministic Functions (Agent 2)
-# ---------------------------------------------------------------------------
-
-def calculate_component_score(judgments: Sequence[Any]) -> int | None:
-    """Calculates the average score for a single component from its criterion judgments.
-
-    Rules:
-    - MET = 100, MOSTLY_MET = 75, PARTIALLY_MET = 50, NOT_MET = 0.
-    - N_A criteria are strictly excluded from the denominator.
-    - If ALL criteria are N_A (or list is empty), returns None (component is unavailable).
-    """
-    if not judgments:
-        return None
-
-    scored_values: list[int] = []
-    for j in judgments:
-        label = getattr(j, "label", j)
-        # Convert enum or str to string value
-        label_str = label.value if hasattr(label, "value") else str(label)
-        if label_str != "N_A" and label_str in LABEL_TO_SCORE:
-            scored_values.append(LABEL_TO_SCORE[label_str])
-
-    if not scored_values:
-        return None
-
-    return round(sum(scored_values) / len(scored_values))
-
-
-def calculate_final_confidence(component_scores: Mapping[str, int | None]) -> int:
-    """Calculates the overall confidence score (0-100) from component scores.
-
-    Rules:
-    - Weighted average using COMPONENT_WEIGHTS (20% each).
-    - If any component is None (all N_A), dynamically renormalizes weights
-      of available components so they sum to 1.0.
-    - If all components are None, returns 0.
-    """
-    available = {
-        k: score for k, score in component_scores.items() if score is not None
-    }
-    if not available:
-        return 0
-
-    total_weight = sum(COMPONENT_WEIGHTS.get(k, 0.20) for k in available)
-    if total_weight <= 0:
-        return 0
-
-    weighted_sum = sum(
-        COMPONENT_WEIGHTS.get(k, 0.20) * score for k, score in available.items()
-    )
-    return round(weighted_sum / total_weight)
-
-
-def determine_confidence_level(score: int | float) -> str:
-    """Classifies confidence score into level name.
-
-    If score is float in [0.0, 1.0], returns lowercase ('high', 'medium', 'low')
-    with legacy thresholds (0.80, 0.65) for backward-compatibility.
-    If score is integer (0-100), returns uppercase ('HIGH', 'MEDIUM', 'LOW')
-    with Agent 2 production thresholds (85, 60).
-    """
-    if isinstance(score, float) and score <= 1.0:
-        if score >= 0.80:
-            return "high"
-        elif score >= 0.65:
-            return "medium"
-        return "low"
-
-    if score >= HIGH_CONFIDENCE_THRESHOLD:
-        return "HIGH"
-    elif score >= MEDIUM_CONFIDENCE_THRESHOLD:
-        return "MEDIUM"
-    return "LOW"
+from app.ai.judge.scoring import (
+    COMPONENT_WEIGHTS,
+    HIGH_CONFIDENCE_THRESHOLD,
+    HIGH_THRESHOLD,
+    LABEL_TO_SCORE,
+    MEDIUM_CONFIDENCE_THRESHOLD,
+    MEDIUM_THRESHOLD,
+    calculate_component_score,
+    calculate_final_confidence,
+    determine_confidence_level,
+    determine_judge_confidence_level,
+)
 
 
 # ---------------------------------------------------------------------------

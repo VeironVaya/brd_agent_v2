@@ -49,3 +49,7 @@ crash.log
 crash.*.log
 *.pem
 *-deployer-key*
+*.ses
+:memory:.ses
+.venv/
+__pycache__/

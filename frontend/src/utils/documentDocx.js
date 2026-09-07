@@ -16,6 +16,10 @@ export async function downloadDocx(markdown, filename) {
       children.push(new Paragraph({ text: line.slice(3), heading: HeadingLevel.HEADING_2 }))
     } else if (line.startsWith('### ')) {
       children.push(new Paragraph({ text: line.slice(4), heading: HeadingLevel.HEADING_3 }))
+    } else if (line.startsWith('#### ')) {
+      children.push(new Paragraph({ text: line.slice(5), heading: HeadingLevel.HEADING_4 }))
+    } else if (line.startsWith('##### ')) {
+      children.push(new Paragraph({ text: line.slice(6), heading: HeadingLevel.HEADING_5 }))
     } else if (line.startsWith('**') && line.endsWith('**') && line.length > 3) {
       children.push(new Paragraph({ children: [new TextRun({ text: line.slice(2, -2), bold: true })] }))
     } else if (line.startsWith('_') && line.endsWith('_') && line.length > 1) {

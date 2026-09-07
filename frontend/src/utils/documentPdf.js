@@ -62,6 +62,10 @@ function markdownToPdfBlob(markdown) {
       paragraph(line.slice(3), { font: 'bold', size: 14, lineHeight: 18, gapAfter: 8 })
     } else if (line.startsWith('### ')) {
       paragraph(line.slice(4), { font: 'bold', size: 11.5, lineHeight: 15, gapAfter: 6 })
+    } else if (line.startsWith('#### ')) {
+      paragraph(line.slice(5), { font: 'bold', size: 10.5, lineHeight: 14, gapAfter: 4 })
+    } else if (line.startsWith('##### ')) {
+      paragraph(line.slice(6), { font: 'bold', size: 10.5, lineHeight: 14, gapAfter: 4 })
     } else if (line.startsWith('**') && line.endsWith('**') && line.length > 3) {
       paragraph(line.slice(2, -2), { font: 'bold', size: 10.5, lineHeight: 14, gapAfter: 3 })
     } else if (line.startsWith('_') && line.endsWith('_') && line.length > 1) {
