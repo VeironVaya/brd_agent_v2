@@ -132,7 +132,9 @@ async def test_generate_includes_custom_sections_with_computed_codes(client):
     )
     markdown = res.json()["markdown"]
     assert "## Custom Sections" in markdown
-    assert "**6 Regional Rollout Notes**" in markdown  # continues after the 5 top-level template sections
+    # continues after the 5 top-level template sections; document_service.py renders
+    # top-level custom nodes as "### <code> <title>" markdown headings (not bold text)
+    assert "### 6 Regional Rollout Notes" in markdown
 
 
 async def test_generate_for_unowned_conversation_404s(client):

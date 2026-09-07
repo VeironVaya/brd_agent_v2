@@ -45,6 +45,27 @@ def extract_numeric_tokens(text: str) -> list[str]:
     return [t.strip() for t in tokens if t.strip()]
 
 
+_QUANTITY_UNIT_PATTERN = r"(?:hours?|days?|weeks?|months?|years?|minutes?|seconds?|%|percent)"
+
+
+def _extract_quantity_unit_pairs(text: str) -> list[tuple[str, str]]:
+    """Extracts (number, unit) pairs for time/percentage quantities (e.g. SLA claims
+    like "2 hours" or "99%"). These always require an exact evidence match regardless
+    of the benign-small-digit exemption in validate_project_facts — a small number is
+    a reasonable unconfirmed retry count/priority, but a small number attached to a
+    time/percentage unit is very often an SLA-style claim that can directly contradict
+    a different value already stated in evidence (e.g. draft says "2 hours" while the
+    user said "1 hour")."""
+    return re.findall(rf"\b(\d+(?:[.,]\d+)?)\s*({_QUANTITY_UNIT_PATTERN})\b", text, re.IGNORECASE)
+
+
+def _normalize_unit(unit: str) -> str:
+    unit = unit.lower()
+    if unit in ("%", "percent"):
+        return "%"
+    return unit[:-1] if unit.endswith("s") else unit
+
+
 def validate_project_facts(
     generated_text: str,
     project_evidence_text: str,
@@ -65,7 +86,25 @@ def validate_project_facts(
 
     unsupported: list[str] = []
 
-    # 1. Numeric and metric verification
+    # 1a. Time/percentage quantity claims ("2 hours", "99%") always require an exact
+    # match in evidence — these are SLA-style claims, not generic small config digits,
+    # so the benign-small-digit allowlist below must NOT apply to them (a hallucinated
+    # "2 hours" when evidence says "1 hour" must still be flagged even though "2" alone
+    # would otherwise be allowlisted).
+    flagged_quantity_numbers: set[str] = set()
+    gen_quantities = _extract_quantity_unit_pairs(generated_text)
+    if gen_quantities:
+        evidence_quantities = {
+            (number, _normalize_unit(unit)) for number, unit in _extract_quantity_unit_pairs(combined_evidence)
+        }
+        for number, unit in gen_quantities:
+            normalized_unit = _normalize_unit(unit)
+            if (number, normalized_unit) not in evidence_quantities:
+                unsupported.append(number)
+                flagged_quantity_numbers.add(number)
+
+    # 1b. Generic numeric and metric verification (currency, counts, percentages
+    # not already covered by the quantity-unit check above).
     gen_numeric = extract_numeric_tokens(generated_text)
     if gen_numeric:
         evidence_numeric = set(extract_numeric_tokens(combined_evidence))
@@ -75,6 +114,8 @@ def validate_project_facts(
         benign_small_digits = {"0", "1", "2", "3", "4", "5"}
 
         for token in gen_numeric:
+            if token in flagged_quantity_numbers:
+                continue
             clean_digit = re.sub(r"[^\d.]", "", token)
             # Allowed if found in evidence or if it's a small standard technical config digit
             if token in evidence_numeric or clean_digit in evidence_digits or token in benign_small_digits:
