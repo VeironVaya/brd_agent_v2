@@ -53,3 +53,4 @@ crash.*.log
 :memory:.ses
 .venv/
 __pycache__/
+adminer.htpasswd

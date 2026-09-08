@@ -17,6 +17,15 @@ services:
       retries: 10
     restart: unless-stopped
 
+  adminer:
+    image: adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   app:
     image: ghcr.io/veironvaya/brd-agent-v2-backend:${IMAGE_TAG:-latest}
     environment:
@@ -42,9 +51,13 @@ services:
     image: ghcr.io/veironvaya/brd-agent-v2-frontend:${IMAGE_TAG:-latest}
     ports:
       - "80:80"
+    volumes:
+      - ./adminer.htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
       app:
         condition: service_healthy
+      adminer:
+        condition: service_started
     restart: unless-stopped
 
 volumes:
