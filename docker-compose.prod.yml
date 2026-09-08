@@ -52,6 +52,9 @@ services:
     ports:
       - "80:80"
     volumes:
+      # ./adminer.htpasswd must be world-readable (chmod 644) — nginx's
+      # worker process runs as an unprivileged user and reads this file
+      # on every request, not just at startup, so 600 causes a 500 error.
       - ./adminer.htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
       app:
