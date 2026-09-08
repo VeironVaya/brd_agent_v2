@@ -19,6 +19,7 @@ from .models import GeneratedDocument, GeneratedSection, ReferenceCitation, Sear
 from .prompts import build_section_generation_prompt, extract_canonical_gaps, extract_confirmed_evidence
 from .retrieval import search_references
 from app.ai.validator import extract_numeric_tokens, validate_project_facts
+from app.ai.utils import parse_llm_json
 
 BRD_FIELDS_PATH = Path(__file__).resolve().parent / "config" / "brd_fields.json"
 
@@ -62,13 +63,9 @@ CANONICAL_ANSWERABLE_FIELDS = set(CANONICAL_FIELDS_META.keys())
 
 
 def _parse_structured_llm_json(raw_output: str) -> dict:
-    text = raw_output.strip()
-    if text.startswith("```"):
-        text = re.sub(r"^```(?:json)?\s*", "", text)
-        text = re.sub(r"\s*```$", "", text)
     try:
-        data = json.loads(text)
-    except json.JSONDecodeError as exc:
+        data = parse_llm_json(raw_output)
+    except (ValueError, json.JSONDecodeError) as exc:
         raise UnsafeGenerationError(f"LLM output could not be parsed as valid JSON: {exc}\nRaw output: {raw_output[:200]}") from exc
 
     if not isinstance(data, dict):

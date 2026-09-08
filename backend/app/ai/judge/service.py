@@ -23,14 +23,8 @@ from datetime import datetime, timezone
 from typing import Any, Sequence
 import litellm
 
-from app.models.bubble import Bubble
-
-from app.ai.rag import (
-    CANONICAL_ANSWERABLE_FIELDS,
-    CANONICAL_FIELDS_META,
-    ReferenceCitation,
-    search_references,
-)
+from app.ai.rag.models import ReferenceCitation
+from app.ai.rag.retrieval import search_references
 from app.services.brd_rules import DEPENDENCY_RULES
 from app.ai.judge.scoring import (
     calculate_component_score,
@@ -52,17 +46,20 @@ from app.services.brd_rules import (
 )
 from app.ai.judge.prompt import build_stage_a_context, build_stage_b_context
 from app.config import settings
+from app.models.bubble import Bubble
+from app.ai.utils import parse_llm_json
 
 
 # ---------------------------------------------------------------------------
 # LLM model selection for Agent 2
 # ---------------------------------------------------------------------------
 
-_JUDGE_MODEL = "gemini/gemini-3.5-flash-lite"
+_JUDGE_MODEL = "gemini/gemini-3.1-flash-lite"
 _JUDGE_FALLBACKS = [
-    "gemini/gemini-3.1-flash-lite",
+    "gemini/gemini-3.5-flash-lite",
     "gemini/gemini-3.5-flash",
     "gemini/gemini-3.6-flash",
+    "gemini/gemini-2.5-flash",
 ]
 
 # Aliases for direct function calls and tests
@@ -78,25 +75,20 @@ def _classify_user_input(text: str) -> str:
     """Classifies a user message to distinguish confirmed facts/requirements from exploratory questions and hypotheses.
 
     Rules:
-    - User questions (ending with '?' or starting with question words) are labeled UNCONFIRMED.
-    - Brainstorming/hypothetical expressions ('mungkin', 'maybe', 'what if', etc.) are labeled UNCONFIRMED.
-    - Definitive statements, numbers, constraints, and business rules are labeled CONFIRMED.
+    - User questions (ending with '?') are labeled UNCONFIRMED.
+    - Purely exploratory/hypothetical expressions ('what if', 'brainstorming', etc.) are labeled UNCONFIRMED.
+    - Definitive statements, proposals, numbers, constraints, and business preferences are labeled CONFIRMED.
     """
     stripped = text.strip()
     lower = stripped.lower()
 
-    # Question patterns
-    question_starters = (
-        # "apakah", "bagaimana", "kenapa", "mengapa", "bisakah", "kapan", "siapa", "dimana", "mana",
-        "can we", "could we", "what if", "should we", "is it possible", "how about", "why", "when", "who", "where", "how"
-    )
-    if stripped.endswith("?") or any(lower.startswith(q) for q in question_starters):
+    # Question patterns (explicitly asking)
+    if stripped.endswith("?"):
         return f"[User Question / Inquiry — UNCONFIRMED]: {stripped}"
 
-    # Brainstorming / Hypothesis patterns
+    # Purely speculative/brainstorming patterns (exclude polite conversational phrasing like "i think", "suggest", "consider")
     speculative_starters = (
-        # "mungkin", "kayaknya", "sepertinya", "bisa jadi", "kira-kira", "usul", "ide", "bagus kalau", "gimana kalau",
-        "maybe", "perhaps", "suppose", "consider", "brainstorming", "suggest", "i think", "tentative", "what about"
+        "what if", "brainstorming", "purely hypothetical", "just an idea", "hypothetically", "tentative idea"
     )
     if any(lower.startswith(s) for s in speculative_starters):
         return f"[User Hypothesis / Brainstorming — UNCONFIRMED]: {stripped}"
@@ -147,6 +139,8 @@ def _build_context_sections_str(
     context_answers: dict[str, str],
 ) -> str:
     """Format completed sections (excluding the current field) for injection."""
+    from app.ai.rag.generator import CANONICAL_FIELDS_META
+
     lines: list[str] = []
     dep_entry = DEPENDENCY_RULES.get(field_id, {})
     deps: list[dict[str, Any]] = [d for d in dep_entry.get("dependencies", []) if isinstance(d, dict)]
@@ -158,7 +152,7 @@ def _build_context_sections_str(
         marker = " [DEPENDENCY]" if fid in dep_ids else ""
         meta = CANONICAL_FIELDS_META.get(fid, {})
         title = meta.get("title", fid)
-        lines.append(f"[{fid} — {title}]{marker}\n{text[:500]}{'...' if len(text) > 500 else ''}")
+        lines.append(f"[{fid} — {title}]{marker}\n{text[:2500]}{'...' if len(text) > 2500 else ''}")
 
     return "\n\n".join(lines) if lines else "(No other sections completed yet — cross-section consistency criteria MUST be marked N_A)"
 
@@ -233,13 +227,9 @@ def _build_stage_a_summary(stage_a: JudgeStageAOutput) -> str:
 
 async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any]:
     """Call LiteLLM with Gemini for Agent 2 Judge and return parsed JSON dict."""
-    if not settings.groq_api_key and not settings.gemini_api_key:
+    api_key = settings.gemini_api_key or settings.groq_api_key
+    if not api_key:
         raise RuntimeError("No API key configured for LiteLLM.")
-
-    if settings.gemini_api_key:
-        os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
-    if settings.groq_api_key:
-        os.environ["GROQ_API_KEY"] = settings.groq_api_key
 
     max_attempts = 4
     for attempt in range(max_attempts):
@@ -253,12 +243,13 @@ async def _call_llm_json(prompt: str, temperature: float = 0.1) -> dict[str, Any
                         "content": prompt,
                     }
                 ],
+                api_key=api_key,
                 response_format={"type": "json_object"},
                 temperature=temperature,
             )
             raw = chat_completion.choices[0].message.content
             print(f"[AGENT 2 JUDGE MODEL]: {chat_completion.model}")
-            return json.loads(raw or "{}")
+            return parse_llm_json(raw or "{}")
         except Exception as exc:
             if attempt == max_attempts - 1:
                 raise RuntimeError(f"Agent 2 Judge failed after {max_attempts} attempts: {exc}") from exc
@@ -280,6 +271,7 @@ async def evaluate_section(
     missing_items: Sequence[str] = (),
     validator_findings: str | None = None,
     retrieved_references: list[ReferenceCitation] | None = None,
+    completeness: int | None = None,
 ) -> dict[str, Any]:
     """Orchestrates Agent 2's two-stage evaluation of a single BRD section.
 
@@ -291,12 +283,6 @@ async def evaluate_section(
     - confidence_breakdown (full breakdown payload persisted to DB)
     """
     context_answers = context_answers or {}
-
-    # Inject API Keys into environment for LiteLLM
-    if settings.groq_api_key:
-        os.environ["GROQ_API_KEY"] = settings.groq_api_key
-    if settings.gemini_api_key:
-        os.environ["GEMINI_API_KEY"] = settings.gemini_api_key
 
     # Retrieve same-field references if not provided (benchmark context only)
     if retrieved_references is None:
@@ -323,6 +309,11 @@ async def evaluate_section(
     dependencies_str = _build_dependencies_str(field_id)
     reference_excerpts_str = _build_reference_excerpts_str(retrieved_references)
     validator_str = validator_findings or "(No hard validator findings)"
+    missing_items_str = (
+        "\n".join(f"- {item}" for item in missing_items)
+        if missing_items
+        else "(No outstanding missing items identified)"
+    )
 
     # Stage A: Verifier + Grader
     stage_a_prompt = build_stage_a_context(
@@ -334,6 +325,7 @@ async def evaluate_section(
         canonical_dependencies=dependencies_str,
         reference_excerpts=reference_excerpts_str,
         validator_findings=validator_str,
+        missing_items=missing_items_str,
         grounding_criteria=_build_criteria_str(GLOBAL_GROUNDING_CRITERIA),
         reference_criteria=_build_criteria_str(GLOBAL_REFERENCE_CRITERIA),
         field_specific_criteria=field_specific_criteria_str,
@@ -396,6 +388,16 @@ async def evaluate_section(
             j.rationale = "No reference BRDs available for this field."
 
     final_confidence = calculate_final_confidence(component_scores)
+
+    # Principle 5 & Enterprise Quality Gate:
+    # A draft with active missing items or low completeness cannot receive HIGH confidence.
+    if completeness is not None and completeness <= 40:
+        final_confidence = min(final_confidence, 55)
+    elif missing_items and len(missing_items) >= 3:
+        final_confidence = min(final_confidence, 70)
+    elif missing_items and len(missing_items) >= 1:
+        final_confidence = min(final_confidence, 84)
+
     confidence_level = determine_confidence_level(final_confidence)
     review_status = "REVIEW_REQUIRED" if stage_a.critical_flags else "PASS"
 
@@ -415,6 +417,7 @@ async def evaluate_section(
         confidence_level=confidence_level,
         critical_flags_count=len(stage_a.critical_flags),
         review_status=review_status,
+        missing_items=missing_items_str,
     )
 
     stage_b_raw = await _call_llm_json(stage_b_prompt, temperature=0.3)

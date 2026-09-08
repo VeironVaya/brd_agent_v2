@@ -1,10 +1,10 @@
 from pydantic import BaseModel, Field, field_validator
 
 # Arbitrary but generous cap — prevents accidental or malicious payloads
-# from inflating the LLM prompt unboundedly. 4 000 chars ≈ ~1 000 tokens,
-# well within model context limits while still covering any realistic
-# single message a user would actually type.
-MAX_MESSAGE_LENGTH = 4000
+# from inflating the LLM prompt unboundedly. 16 000 chars ≈ ~4 000 tokens,
+# well within model context limits while comfortably supporting real-world
+# enterprise requirements, policies, and multi-paragraph technical specs.
+MAX_MESSAGE_LENGTH = 16000
 
 
 class PostMessageRequest(BaseModel):

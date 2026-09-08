@@ -38,3 +38,7 @@ desktop.ini
 CLAUDE.md
 /brainstorming
 /out
+*.ses
+:memory:.ses
+.venv/
+__pycache__/

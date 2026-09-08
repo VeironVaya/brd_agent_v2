@@ -130,7 +130,7 @@ export default function DraftSessionPage() {
   const roomId = roomTab === 'question' ? focusedFieldId : GENERAL_ROOM_ID
   const isSending = pending?.roomId === roomId
   const messages = isSending
-    ? [...(conversation.messages[roomId] || []), { id: '__pending__', role: 'user', text: pending.text }]
+    ? [...(conversation.messages[roomId] || []), ...(pending.text ? [{ id: '__pending__', role: 'user', text: pending.text }] : [])]
     : conversation.messages[roomId] || []
   const focusedTemplateLeaf = focusedFieldId ? FIELD_META[focusedFieldId] : null
   const focusedCustomNode =
@@ -199,6 +199,10 @@ export default function DraftSessionPage() {
 
         setSectionCompleteData({ completedTitle, nextFieldId, nextTitle })
       }
+    } catch (err) {
+      console.error('Failed to post message:', err)
+      alert(err.message || 'Failed to send message. Please try again.')
+      throw err
     } finally {
       setPending(null)
     }

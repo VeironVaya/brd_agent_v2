@@ -148,19 +148,7 @@ class ConfidenceAssessment:
         }
 
 
-@dataclass(frozen=True)
-class ValidationResult:
-    """Result of anti-hallucination validation on generated BRD content against project evidence."""
-    is_safe: bool
-    unsupported_claims: tuple[str, ...] = ()
-    reason: str | None = None
-
-    def to_dict(self) -> dict[str, object]:
-        return {
-            "is_safe": self.is_safe,
-            "unsupported_claims": list(self.unsupported_claims),
-            "reason": self.reason,
-        }
+from app.ai.validator import ValidationResult
 
 
 @dataclass(frozen=True)

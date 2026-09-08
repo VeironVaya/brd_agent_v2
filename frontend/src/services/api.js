@@ -40,8 +40,17 @@ async function request(path, { method = 'GET', body } = {}) {
     clearToken()
     window.dispatchEvent(new CustomEvent('auth:expired'))
     const data = await res.json().catch(() => null)
-    const message = data?.message || data?.detail || 'Your session has expired. Please sign in again.'
-    const err = new Error(message)
+    let message = data?.message
+    if (!message && data?.detail) {
+      if (typeof data.detail === 'string') {
+        message = data.detail
+      } else if (Array.isArray(data.detail)) {
+        message = data.detail.map((d) => (d.msg ? `${(d.loc || []).join('.')}: ${d.msg}` : JSON.stringify(d))).join('; ')
+      } else {
+        message = JSON.stringify(data.detail)
+      }
+    }
+    const err = new Error(message || 'Your session has expired. Please sign in again.')
     err.code = data?.error
     err.status = 401
     throw err
@@ -49,8 +58,17 @@ async function request(path, { method = 'GET', body } = {}) {
 
   const data = await res.json().catch(() => null)
   if (!res.ok) {
-    const message = data?.message || data?.detail || 'Something went wrong. Please try again.'
-    const err = new Error(message)
+    let message = data?.message
+    if (!message && data?.detail) {
+      if (typeof data.detail === 'string') {
+        message = data.detail
+      } else if (Array.isArray(data.detail)) {
+        message = data.detail.map((d) => (d.msg ? `${(d.loc || []).join('.')}: ${d.msg}` : JSON.stringify(d))).join('; ')
+      } else {
+        message = JSON.stringify(data.detail)
+      }
+    }
+    const err = new Error(message || 'Something went wrong. Please try again.')
     err.code = data?.error
     err.status = res.status
     throw err

@@ -131,58 +131,113 @@ async def post_message(
     # 2. AUTONOMOUS REFLECTION LOOP (Agent 2 Judge -> Agent 1 Fix)       #
     # ------------------------------------------------------------------ #
     if section.is_leaf and not is_choice_section:
-        if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS and reply.answer_text:
-            try:
-                # 2b. Hard Validator
-                val_result = validate_project_facts(reply.answer_text, project_evidence)
-                if not val_result.is_safe:
-                    claims_str = ", ".join(val_result.unsupported_claims)
-                    validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
-                else:
-                    validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
-
-                # 2c. RAG Reference Retrieval
+        if field_id and field_id in CANONICAL_ANSWERABLE_FIELDS:
+            if not reply.answer_text or not reply.answer_text.strip():
+                # User provided input, but it was rejected / violates enterprise policy.
+                # Record an explicit HIGH RISK / REJECTION judgment with 15% LOW confidence.
+                high_risk_flag = {
+                    "type": "GOVERNANCE_VIOLATION",
+                    "reason": "HIGH RISK: The proposal has been rejected because it breaches testing governance (UAT/penetration testing), regulatory compliance or operational viability.",
+                    "excerpt": text[:150],
+                }
+                dim_rejection = {
+                    "score": 15,
+                    "reason": "HIGH RISK: The input has been rejected as it breaches enterprise governance, regulations or security policies."
+                }
+                agent2_result = {
+                    "final_confidence": 15,
+                    "confidence_level": "LOW",
+                    "confidence_reason": (
+                        "🚨 HIGH RISK (REJECTED): The proposed solution cannot be accepted into the BRD draft "
+                        "because it violates testing governance (UAT), security policies, or regulatory requirements."
+                    ),
+                    "component_scores": {
+                        "grounding": 15,
+                        "reference_context": None,
+                        "section_compliance": 10,
+                        "testability": 15,
+                        "consistency": 10,
+                    },
+                    "review_status": "REVIEW_REQUIRED",
+                    "critical_flags": [high_risk_flag],
+                    "confidence_breakdown": {
+                        "final_confidence": 15,
+                        "confidence_level": "LOW",
+                        "grounding": dim_rejection,
+                        "reference_context": {"score": None, "reason": "Cannot be evaluated because the proposal was rejected."},
+                        "section_compliance": {
+                            "score": 10,
+                            "reason": "The proposal is inconsistent with the minimum governance standards for this section."
+                        },
+                        "testability": {
+                            "score": 15,
+                            "reason": "The non-standard / bypass approach cannot be measured for testability."
+                        },
+                        "consistency": {
+                            "score": 10,
+                            "reason": "The proposal is inconsistent with the security policies and commitments of the previous section."
+                        },
+                        "review_status": "REVIEW_REQUIRED",
+                        "critical_flags": [high_risk_flag],
+                        "critique_strengths": [],
+                        "critique_issues": [
+                            "HIGH RISK VIOLATION: Attempting to bypass formal testing (UAT/pentest) or violating PDP regulations.",
+                            "There is as yet no official, valid and accountable draft of this chapter."
+                        ],
+                        "critique_suggestions": [
+                            "Sediakan jadwal dan rencana implementasi yang realistis, mematuhi lead time pengadaan, serta lolos gerbang pengujian keamanan dan UAT resmi."
+                        ],
+                        "critique_summary": (
+                            "🚨 HIGH RISK: The proposal has been rejected by the system for violating testing governance (UAT) "
+                            "and regulatory compliance. The draft cannot be approved until a realistic schedule is provided."
+                        ),
+                        "judge_model": "rule-guardrail",
+                        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                }
+            else:
                 try:
-                    raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
-                    retrieved_refs = [
-                        ReferenceCitation.from_search_result(f"R{i}", r)
-                        for i, r in enumerate(raw_results, start=1)
-                    ]
-                except Exception as rag_err:
-                    print(f"[RAG SEARCH NOTE] {rag_err}")
-                    retrieved_refs = []
-
-                # 2d. Initial Agent 2 Evaluation
-                agent2_result = await judge.evaluate_section(
-                    field_id=field_id,
-                    section_title=section.title,
-                    generated_content=reply.answer_text,
-                    project_evidence=project_evidence,
-                    context_answers=context_answers,
-                    missing_items=reply.missing_items or [],
-                    validator_findings=validator_findings,
-                    retrieved_references=retrieved_refs,
-                )
-
-                if agent2_result:
-                    print(f"📊 AGENT 2 INITIAL SCORE: {agent2_result['final_confidence']}/100")
-                    if agent2_result["final_confidence"] < 100:
-                        print(f"❌ Reason: {agent2_result['confidence_reason']}")
+                    # 2b. Hard Validator (anti-hallucination fact check)
+                    val_result = validate_project_facts(reply.answer_text, project_evidence, context_answers)
+                    if not val_result.is_safe:
+                        claims_str = ", ".join(val_result.unsupported_claims)
+                        validator_findings = f"FLAGGED UNSUPPORTED CLAIMS: {claims_str}. {val_result.reason}"
                     else:
-                        print(f"✅ PERFECT SCORE. No reflection needed.")
+                        validator_findings = "PASS: No unconfirmed numeric tokens, dates, or SLAs detected."
 
-                # REFLECTION CHECK REMOVED: 
-                # Agent 2's evaluation is directly passed to the frontend sidebar. 
-                # Agent 1's initial draft is retained without regeneration to save inference costs.
-                if agent2_result and agent2_result["final_confidence"] < 100:
-                    print("\n" + "="*65)
-                    print(f"🧐 AGENT 2 (Judge) evaluated the draft: {agent2_result['final_confidence']}/100.")
-                    print("🚀 Forwarding initial draft and Judge evaluation to User sidebar.")
-                    print("="*65 + "\n")
+                    # 2c. RAG Reference Retrieval
+                    try:
+                        raw_results = await asyncio.to_thread(search_references, reply.answer_text, field_id, 3)
+                        retrieved_refs = [
+                            ReferenceCitation.from_search_result(f"R{i}", r)
+                            for i, r in enumerate(raw_results, start=1)
+                        ]
+                    except Exception as rag_err:
+                        print(f"[RAG SEARCH NOTE] {rag_err}")
+                        retrieved_refs = []
 
+                    # 2d. Initial Agent 2 Evaluation (Stage A Grader + Stage B Critic)
+                    agent2_result = await judge.evaluate_section(
+                        field_id=field_id,
+                        section_title=section.title,
+                        generated_content=reply.answer_text,
+                        project_evidence=project_evidence,
+                        context_answers=context_answers,
+                        missing_items=reply.missing_items or [],
+                        validator_findings=validator_findings,
+                        retrieved_references=retrieved_refs,
+                        completeness=reply.completeness,
+                    )
 
-            except Exception as judge_exc:
-                print(f"[AGENT 2 ERROR] field={field_id} section={section.section_id}: {judge_exc}")
+                    if agent2_result:
+                        print(f"📊 AGENT 2 INITIAL SCORE: {agent2_result['final_confidence']}/100")
+                        if agent2_result['final_confidence'] < 100:
+                            print(f"❌ Reason: {agent2_result['confidence_reason']}")
+                        else:
+                            print("✅ PERFECT SCORE. No reflection needed.")
+
+                except Exception as judge_exc:
+                    print(f"[AGENT 2 ERROR] field={field_id} section={section.section_id}: {judge_exc}")
 
     # ------------------------------------------------------------------ #
     # 3. Persist Final Bubble and Answer                                 #
@@ -273,7 +328,6 @@ async def init_chat_room(
     
     if section.is_leaf:
         existing_answer = await answer_repository.find_by_section_id(session, section.section_id)
-        
         breakdown = reply.confidence_breakdown or (existing_answer.confidence_breakdown if existing_answer else None)
         issues_count = 0
         if breakdown and isinstance(breakdown, dict) and "critique_issues" in breakdown:
@@ -298,5 +352,7 @@ async def init_chat_room(
     await conversation_repository.touch_updated_at(session, conversation)
 
     return {"id": agent_bubble.bubble_id, "role": agent_bubble.role, "text": agent_bubble.text}
+
+
 
 

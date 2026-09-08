@@ -12,11 +12,15 @@ export default function MessageInput({ onSend, disabled }) {
     }
   }, [value])
 
-  function handleSend() {
+  async function handleSend() {
     const text = value.trim()
     if (!text || disabled) return
-    onSend(text)
-    setValue('')
+    try {
+      await onSend(text)
+      setValue('')
+    } catch {
+      // Keep value so the user doesn't lose their input on failure
+    }
   }
 
   function handleKeyDown(e) {
