@@ -21,6 +21,12 @@ services:
     image: adminer
     environment:
       ADMINER_DEFAULT_SERVER: postgres
+      # Without this, Adminer's brute-force lockout keys off REMOTE_ADDR,
+      # which is always the nginx container's internal IP since Adminer
+      # only sees traffic through the reverse proxy -- one bad login from
+      # ANY user (or bot probing the URL) locks out EVERYONE behind the
+      # proxy. This official plugin keys off X-Forwarded-For instead.
+      ADMINER_PLUGINS: login-reverse-proxy
     depends_on:
       postgres:
         condition: service_healthy
